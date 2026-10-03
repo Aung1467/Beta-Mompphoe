@@ -1,730 +1,1183 @@
-// Supabase Credentials
-const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>မုန့်ဖိုးတောင်းလွှာ Web App</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-let supabaseClient = null;
+  <style>
+    :root {
+      --primary: #ff0055;
+      --primary-hover: #ff3377;
+      --accent: #00f2fe;
+      --accent-glow: rgba(0, 242, 254, 0.9);
+      --bg-glass: rgba(10, 12, 28, 0.96);
+      --radius-custom: 26px;
+      --text-color: #ffffff;
+    }
 
-function getSupabase() {
-  if (!supabaseClient && window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-  return supabaseClient;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Padauk', 'Poppins', sans-serif;
+    }
 
-let currentUser = null;
-let savedBgImage = '';
-let savedQrImage = '';
-let selectedBgFile = null;
-let selectedQrFile = null;
-let currentShareableLink = '';
-let currentLang = 'my';
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #131238, #05030f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: var(--text-color);
+    }
 
-const i18n = {
-  my: {
-    introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
-    loaderMsg: "ခဏစောင့်ပါ...",
-    authTitle: "အကောင့်ဝင်ရန်",
-    modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
-    optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
-    optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
-    loginName: "သင်၏ နာမည်",
-    loginPass: "Password",
-    btnLogin: "အကောင့်ဝင်မည် 🔓",
-    signupName: "သင်၏ နာမည်",
-    signupNum: "ဂဏန်း (ကုဒ်နံပါတ်)",
-    signupPass1: "Password",
-    signupPass2: "Password ထပ်မံရိုက်ပါ (Confirm)",
-    btnSignup: "အကောင့်အသစ်ဖွင့်မည် ✨",
-    profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
-    changeAvatar: "📷 Profile ပုံပြောင်းရန်",
-    reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
-    historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
-    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
-    dropdown: "အကြောင်းအရာ ရွေးချယ်ရန်",
-    customReason: "ကိုယ်တိုင်စာရေးရန်",
-    customNote: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
-    bgLabel: "နောက်ခံပုံ",
-    qrLabel: "QR Code / အချက်အလက်ပုံ",
-    backStep3: "⬅ နောက်သို့",
-    genCard: "ကတ်ဖန်တီးမည် ✨",
-    step4Title: "🎉 မုန့်ဖိုးတောင်းလွှာ 🎉",
-    qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveQr: "Save QR",
-    share: "Share",
-    profileReturn: "🏠 Profile သို့ပြန်ရန်",
-    modalTitle: "📤 မျှဝေရန် (Share)",
-    modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
-    copyLink: "📋 လင့်ခ် ကူးယူရန်",
-    dlQrModal: "📥 1:1 ပုံ သိမ်းရန်",
-    closeModal: "ပိတ်မည်",
-    alertNote: "❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။",
-    alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။",
-    alertQr: "❌ ကျေးဇူးပြု၍ QR Code / အချက်အလက်ပုံ ထည့်ပါ။",
-    reasons: [
-      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "သတင်းကျွတ်မုန့်ဖိုး" },
-      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "ရည်းစားနဲ့လျှောက်လည်ရန်" },
-      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်" },
-      { val: "သုံးစရာမရှိတော့လို့", text: "သုံးစရာမရှိတော့လို့" },
-      { val: "အခြား", text: "အခြား (ကိုယ်တိုင်ရေးမည်)" }
-    ]
-  },
-  en: {
-    introMsg: "Welcome 👋 Please wait...",
-    loaderMsg: "Please wait...",
-    authTitle: "Login / Signup",
-    modeSelect: "Select Option",
-    optLogin: "Login (Existing Account)",
-    optSignup: "Sign Up (New Account)",
-    loginName: "Your Name",
-    loginPass: "Password",
-    btnLogin: "Login 🔓",
-    signupName: "Your Name",
-    signupNum: "Number / Code",
-    signupPass1: "Password",
-    signupPass2: "Confirm Password",
-    btnSignup: "Create Account ✨",
-    profileTitle: "👤 Profile Dashboard",
-    changeAvatar: "📷 Change Profile Picture",
-    reqPocketBtn: "🧧 Request Pocket Money",
-    historyBtn: "📜 Request History",
-    step3Title: "Select Request Reason",
-    dropdown: "Choose Reason",
-    customReason: "Custom Reason",
-    customNote: "Write Request Note",
-    bgLabel: "Background Image",
-    qrLabel: "Payment QR Code",
-    backStep3: "⬅ Back",
-    genCard: "Create Card ✨",
-    step4Title: "🎉 Your Request Card 🎉",
-    qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveQr: "Save QR",
-    share: "Share",
-    profileReturn: "🏠 Back to Profile",
-    modalTitle: "📤 Share Request",
-    modalSub: "Send card and link via:",
-    copyLink: "📋 Copy Link",
-    dlQrModal: "📥 Download QR",
-    closeModal: "Close",
-    alertNote: "❌ Please write a request note.",
-    alertBg: "❌ Please upload a background image.",
-    alertQr: "❌ Please upload a QR code image.",
-    reasons: [
-      { val: "Pocket Money Request", text: "Pocket Money Request" },
-      { val: "Date with Lover", text: "Date with Lover" },
-      { val: "Hangout with Friends", text: "Hangout with Friends" },
-      { val: "Out of Money", text: "Out of Money" },
-      { val: "အခြား", text: "Other (Custom Write)" }
-    ]
-  },
-  th: {
-    introMsg: "ยินดีต้อนรับ 👋 กรุณารอสักครู่...",
-    loaderMsg: "กรุณารอสักครู่...",
-    authTitle: "เข้าสู่ระบบ / สมัครสมาชิก",
-    modeSelect: "เลือกตัวเลือก",
-    optLogin: "เข้าสู่ระบบ (บัญชีที่มีอยู่)",
-    optSignup: "สมัครสมาชิก (บัญชีใหม่)",
-    loginName: "ชื่อของคุณ",
-    loginPass: "รหัสผ่าน",
-    btnLogin: "เข้าสู่ระบบ 🔓",
-    signupName: "ชื่อของคุณ",
-    signupNum: "หมายเลข / รหัส",
-    signupPass1: "รหัสผ่าน",
-    signupPass2: "ยืนยันรหัสผ่าน",
-    btnSignup: "สร้างบัญชี ✨",
-    profileTitle: "👤 หน้าโปรไฟล์",
-    changeAvatar: "📷 เปลี่ยนรูปโปรไฟล์",
-    reqPocketBtn: "🧧 ขอค่าขนม",
-    historyBtn: "📜 ประวัติการขอ",
-    step3Title: "เลือกเหตุผลในการขอค่าขนม",
-    dropdown: "เลือกเหตุผล",
-    customReason: "เหตุผลอื่นๆ",
-    customNote: "เขียนข้อความขอค่าขนม",
-    bgLabel: "รูปภาพพื้นหลัง",
-    qrLabel: "รูปคิวอาร์โค้ดชำระเงิน",
-    backStep3: "⬅ ย้อนกลับ",
-    genCard: "สร้างการ์ด ✨",
-    step4Title: "🎉 การ์ดขอค่าขนมของคุณ 🎉",
-    qrHint: "สแกนหรือจ่ายเพื่อส่งค่าขนม 👇",
-    saveQr: "บันทึก QR",
-    share: "แชร์",
-    profileReturn: "🏠 กลับสู่โปรไฟล์",
-    modalTitle: "📤 แชร์คำขอ",
-    modalSub: "ส่งการ์ดและลิงก์ผ่าน:",
-    copyLink: "📋 คัดลอกลิงก์",
-    dlQrModal: "📥 บันทึกรูป QR",
-    closeModal: "ปิด",
-    alertNote: "❌ กรุณากรอกข้อความขอค่าขนม",
-    alertBg: "❌ กรุณาอัปโหลดรูปภาพพื้นหลัง",
-    alertQr: "❌ กรุณาอัปโหลดรูป QR Code",
-    reasons: [
-      { val: "ขอค่าขนม", text: "ขอค่าขนม" },
-      { val: "ไปเดทกับแฟน", text: "ไปเดทกับแฟน" },
-      { val: "ไปเที่ยวกับเพื่อน", text: "ไปเที่ยวกับเพื่อน" },
-      { val: "เงินหมดแล้ว", text: "เงินหมดแล้ว" },
-      { val: "အခြား", text: "อื่นๆ (เขียนเอง)" }
-    ]
-  },
-  zh: {
-    introMsg: "欢迎 👋 请稍候...",
-    loaderMsg: "请稍候...",
-    authTitle: "登录 / 注册",
-    modeSelect: "选择选项",
-    optLogin: "登录（已有账号）",
-    optSignup: "注册（新账号）",
-    loginName: "您的姓名",
-    loginPass: "密码",
-    btnLogin: "登录 🔓",
-    signupName: "您的姓名",
-    signupNum: "编号",
-    signupPass1: "密码",
-    signupPass2: "确认密码",
-    btnSignup: "创建账号 ✨",
-    profileTitle: "👤 个人中心",
-    changeAvatar: "📷 更换头像",
-    reqPocketBtn: "🧧 索要零花钱",
-    historyBtn: "📜 历史记录",
-    step3Title: "选择索要原因",
-    dropdown: "选择原因",
-    customReason: "自定义原因",
-    customNote: "填写留言",
-    bgLabel: "背景图片",
-    qrLabel: "收款二维码",
-    backStep3: "⬅ 返回",
-    genCard: "生成卡片 ✨",
-    step4Title: "🎉 您的零花钱申请卡 🎉",
-    qrHint: "扫码或转账零花钱 👇",
-    saveQr: "保存二维码",
-    share: "分享",
-    profileReturn: "🏠 返回个人中心",
-    modalTitle: "📤 分享申请",
-    modalSub: "通过以下方式发送卡片和链接：",
-    copyLink: "📋 复制链接",
-    dlQrModal: "📥 下载二维码",
-    closeModal: "关闭",
-    alertNote: "❌ 请填写留言内容。",
-    alertBg: "❌ 请上传背景图片。",
-    alertQr: "❌ 请上传二维码图片。",
-    reasons: [
-      { val: "零花钱申请", text: "零花钱申请" },
-      { val: "约会", text: "约会" },
-      { val: "和朋友聚会", text: "和朋友聚会" },
-      { val: "没钱了", text: "没钱了" },
-      { val: "အခြား", text: "其他 (自定义)" }
-    ]
-  },
-  ja: {
-    introMsg: "ようこそ 👋 少々お待ちください...",
-    loaderMsg: "お待ちください...",
-    authTitle: "ログイン / 登録",
-    modeSelect: "オプション選択",
-    optLogin: "ログイン (既存アカウント)",
-    optSignup: "新規登録 (アカウント作成)",
-    loginName: "お名前",
-    loginPass: "パスワード",
-    btnLogin: "ログイン 🔓",
-    signupName: "お名前",
-    signupNum: "番号 / コード",
-    signupPass1: "パスワード",
-    signupPass2: "パスワード確認",
-    btnSignup: "アカウント作成 ✨",
-    profileTitle: "👤 プロフィール",
-    changeAvatar: "📷 アバター変更",
-    reqPocketBtn: "🧧 お小遣いを請求する",
-    historyBtn: "📜 履歴",
-    step3Title: "請求理由の選択",
-    dropdown: "理由を選択",
-    customReason: "カスタム理由",
-    customNote: "メッセージを入力",
-    bgLabel: "背景画像",
-    qrLabel: "QRコード画像",
-    backStep3: "⬅ 戻る",
-    genCard: "カード作成 ✨",
-    step4Title: "🎉 あなたのお小遣い請求カード 🎉",
-    qrHint: "スキャンして送金 👇",
-    saveQr: "QR保存",
-    share: "シェア",
-    profileReturn: "🏠 プロフィールに戻る",
-    modalTitle: "📤 シェア",
-    modalSub: "カードとリンクを送信:",
-    copyLink: "📋 リンクコピー",
-    dlQrModal: "📥 QR保存",
-    closeModal: "閉じる",
-    alertNote: "❌ メッセージを入力してください。",
-    alertBg: "❌ 背景画像をアップロードしてください。",
-    alertQr: "❌ QRコード画像をアップロードしてください。",
-    reasons: [
-      { val: "お小遣い請求", text: "お小遣い請求" },
-      { val: "デート", text: "デート" },
-      { val: "友達とお出かけ", text: "友達とお出かけ" },
-      { val: "お金がない", text: "お金がない" },
-      { val: "အခြား", text: "その他 (自由入力)" }
-    ]
-  },
-  ko: {
-    introMsg: "환영합니다 👋 잠시만 기다려주세요...",
-    loaderMsg: "잠시만 기다려주세요...",
-    authTitle: "로그인 / 회원가입",
-    modeSelect: "옵션 선택",
-    optLogin: "로그인 (기존 계정)",
-    optSignup: "회원가입 (새 계정)",
-    loginName: "이름",
-    loginPass: "비밀번호",
-    btnLogin: "로그인 🔓",
-    signupName: "이름",
-    signupNum: "번호 / 코드",
-    signupPass1: "비밀번호",
-    signupPass2: "비밀번호 확인",
-    btnSignup: "계정 생성 ✨",
-    profileTitle: "👤 프로필 대시보드",
-    changeAvatar: "📷 아바타 변경",
-    reqPocketBtn: "🧧 용돈 요청하기",
-    historyBtn: "📜 요청 내역",
-    step3Title: "용돈 요청 사유 선택",
-    dropdown: "사유 선택",
-    customReason: "직접 입력",
-    customNote: "요청 메시지 작성",
-    bgLabel: "배경 이미지",
-    qrLabel: "결제 QR 코드",
-    backStep3: "⬅ 뒤로",
-    genCard: "카드 만들기 ✨",
-    step4Title: "🎉 용돈 요청 카드 🎉",
-    qrHint: "스캔하여 송금하세요 👇",
-    saveQr: "QR 저장",
-    share: "공유",
-    profileReturn: "🏠 프로필로 돌아가기",
-    modalTitle: "📤 공유하기",
-    modalSub: "카드 및 링크 공유:",
-    copyLink: "📋 링크 복사",
-    dlQrModal: "📥 QR 다운로드",
-    closeModal: "닫기",
-    alertNote: "❌ 요청 메시지를 작성해주세요.",
-    alertBg: "❌ 배경 이미지를 업로드해주세요.",
-    alertQr: "❌ QR 코드 이미지를 업로드해주세요.",
-    reasons: [
-      { val: "용돈 요청", text: "용돈 요청" },
-      { val: "데이트 비용", text: "데이트 비용" },
-      { val: "친구들과 놀기", text: "친구들과 놀기" },
-      { val: "잔고 부족", text: "잔고 부족" },
-      { val: "အခြား", text: "기타 (직접 작성)" }
-    ]
-  }
-};
+    /* Intro Splash Screen */
+    #introSplash {
+      position: fixed;
+      inset: 0;
+      background: #05030f;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
 
-function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
-  return new Promise((resolve) => {
-    if (!file) return resolve('');
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        } catch (err) {
-          resolve(e.target.result);
-        }
-      };
-      img.onerror = () => resolve(e.target.result);
-      img.src = e.target.result;
-    };
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(file);
-  });
-}
+    #introSplash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  changeLanguage(currentLang);
+    /* Ocean Waves Background */
+    .ocean {
+      height: 160px;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
 
-  setTimeout(() => {
-    const splash = document.getElementById('introSplash');
-    if (splash) splash.classList.add('fade-out');
-  }, 1500);
+    .wave {
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(0, 242, 254, 0.25)"/></svg>');
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      animation: waveMove 10s linear infinite;
+    }
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const cardId = urlParams.get('id');
+    .wave:nth-of-type(2) {
+      bottom: -10px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(255, 0, 85, 0.25)"/></svg>');
+      animation: waveMove 6s linear infinite, waveSwell 4s ease-in-out infinite;
+    }
 
-  if (cardId) {
-    const loader = document.getElementById('stepLoader');
-    if (loader) loader.classList.add('show');
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
 
-    try {
-      const sb = getSupabase();
-      if (sb) {
-        const { data, error } = await sb
-          .from('cards')
-          .select('*')
-          .eq('id', cardId)
-          .single();
+    @keyframes waveSwell {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
 
-        if (data && !error) {
-          renderCardData({
-            sender: data.sender,
-            reason: data.reason,
-            note: data.note,
-            bgImage: data.bg_image,
-            qrImage: data.qr_image
-          });
-          if (loader) loader.classList.remove('show');
-          showStep(4);
-          return;
-        }
+    /* Top Language Switcher */
+    .top-lang-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .top-lang-switcher select {
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      background: rgba(10, 12, 28, 0.95);
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* Step Loader */
+    #stepLoader {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    #stepLoader.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .blue-white-spinner {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #00f2fe;
+      border-right-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main App Container */
+    .app-card {
+      width: 90%;
+      max-width: 410px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--bg-glass);
+      backdrop-filter: blur(25px);
+      border-radius: var(--radius-custom);
+      border: 2.5px solid var(--accent);
+      box-shadow: 0 0 40px var(--accent-glow), inset 0 0 20px rgba(255, 0, 85, 0.25);
+      padding: 22px;
+      position: relative;
+      z-index: 10;
+      animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes cardEntrance {
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .step {
+      display: none;
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .step.active {
+      display: block;
+      animation: stepFadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes stepFadeSlideIn {
+      0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .step.active > * {
+      opacity: 0;
+      animation: elementStaggerSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .step.active > *:nth-child(1) { animation-delay: 0.05s; }
+    .step.active > *:nth-child(2) { animation-delay: 0.10s; }
+    .step.active > *:nth-child(3) { animation-delay: 0.15s; }
+    .step.active > *:nth-child(4) { animation-delay: 0.20s; }
+    .step.active > *:nth-child(5) { animation-delay: 0.25s; }
+    .step.active > *:nth-child(6) { animation-delay: 0.30s; }
+
+    @keyframes elementStaggerSlide {
+      0% { opacity: 0; transform: translateY(12px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      color: var(--accent);
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 18px;
+      font-weight: 700;
+      text-shadow: 0 0 15px var(--accent-glow);
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    /* Prominent Labels */
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 14px;
+      text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    }
+
+    /* Smooth Custom Drawdown with Delay & Push Effect */
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+      user-select: none;
+    }
+
+    .custom-select-trigger {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 2px solid rgba(0, 242, 254, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-select-trigger:hover, .custom-select-wrapper.open .custom-select-trigger {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .custom-select-trigger svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--accent);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger svg {
+      transform: rotate(180deg);
+    }
+
+    .custom-options {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease 0.05s, margin-top 0.35s ease;
+      opacity: 0;
+      background: #0e1124;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      margin-top: 0;
+    }
+
+    .custom-select-wrapper.open .custom-options {
+      max-height: 280px;
+      opacity: 1;
+      border-color: var(--accent);
+      margin-top: 8px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 20px var(--accent-glow);
+    }
+
+    .custom-option {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      transition: background 0.25s ease, padding-left 0.25s ease, color 0.25s ease;
+    }
+
+    .custom-option:last-child {
+      border-bottom: none;
+    }
+
+    .custom-option:hover {
+      background: rgba(0, 242, 254, 0.2);
+      padding-left: 22px;
+      color: var(--accent);
+    }
+
+    /* Standard Inputs (No Placeholder) */
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 2px solid rgba(0, 242, 254, 0.4);
+      background: rgba(255, 255, 255, 0.07);
+      color: #ffffff;
+      outline: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px dashed rgba(0, 242, 254, 0.6);
+      border-radius: 14px;
+      color: #e2e8f0;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+
+    .file-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 242, 254, 0.1);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), #ff3377);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255, 0, 85, 0.6);
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(255, 0, 85, 0.8);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      box-shadow: none;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    /* Profile Section */
+    .profile-container { text-align: center; }
+    .profile-avatar-box {
+      width: 90px; height: 90px; border-radius: 50%;
+      margin: 0 auto 12px; border: 3px solid var(--accent);
+      overflow: hidden; background: rgba(255,255,255,0.06);
+      display: flex; justify-content: center; align-items: center;
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+    .profile-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-size: 20px; font-weight: 700; color: #ffeaa7; margin-bottom: 4px; text-shadow: 0 0 10px rgba(255,234,167,0.5); }
+    .profile-id { font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 16px; }
+    .dashboard-actions { display: flex; flex-direction: column; gap: 10px; }
+
+    /* 4:3 Ratio Export Card */
+    #exportCard {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 4 / 3;
+      margin: 0 auto 14px auto;
+      border-radius: 22px;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 40px var(--accent-glow), 0 12px 28px rgba(0, 0, 0, 0.8);
+      background: #0f1123;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px;
+      animation: neonBorderGlow 4s ease-in-out infinite alternate, randomCardFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes neonBorderGlow {
+      0% { border-color: rgba(0, 242, 254, 0.8); box-shadow: 0 0 20px rgba(0, 242, 254, 0.5); }
+      100% { border-color: rgba(255, 0, 85, 0.8); box-shadow: 0 0 25px rgba(255, 0, 85, 0.6); }
+    }
+
+    @keyframes randomCardFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      33% { transform: translateY(-5px) rotate(0.4deg); }
+      66% { transform: translateY(3px) rotate(-0.4deg); }
+    }
+
+    .card-full-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+      display: none;
+    }
+
+    .card-header-content {
+      position: relative;
+      z-index: 2;
+      background: rgba(8, 10, 20, 0.85);
+      backdrop-filter: blur(6px);
+      padding: 8px 12px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .sender-tag {
+      display: inline-block;
+      font-size: 11px;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 2px 10px;
+      border-radius: 6px;
+      margin-bottom: 3px;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.6);
+    }
+
+    .card-header-content h3 {
+      font-size: 16px;
+      color: #ffeaa7;
+      margin-bottom: 2px;
+      font-weight: 700;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.95);
+    }
+
+    .card-header-content p {
+      font-size: 12px;
+      line-height: 1.3;
+      color: #ffffff;
+      font-weight: 600;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.95);
+    }
+
+    .card-qr-overlay {
+      position: relative;
+      z-index: 2;
+      background: rgba(8, 10, 20, 0.85);
+      backdrop-filter: blur(6px);
+      padding: 6px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .card-qr-overlay p {
+      font-size: 10px;
+      color: var(--accent);
+      margin-bottom: 3px;
+      font-weight: 700;
+    }
+
+    .qr-img-wrapper {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      background: #ffffff;
+      display: none;
+    }
+
+    .qr-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .save-btn { background: linear-gradient(135deg, #00b09b, #96c93d); box-shadow: 0 4px 18px rgba(0, 176, 155, 0.5); }
+    .share-btn { background: linear-gradient(135deg, #3742fa, #5352ed); box-shadow: 0 4px 18px rgba(55, 66, 250, 0.5); }
+
+    /* Share Modal */
+    #shareModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 995;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #111326;
+      padding: 24px;
+      border-radius: 22px;
+      width: 100%;
+      max-width: 330px;
+      text-align: center;
+      border: 2.5px solid var(--accent);
+      box-shadow: 0 0 35px var(--accent-glow);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro Splash Screen -->
+  <div id="introSplash">
+    <div style="margin-bottom: 15px;">
+      <svg width="50" height="50" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="#FFD93D" stroke="#00f2fe" stroke-width="4"/>
+        <path d="M 32 38 Q 38 28 44 38" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+        <path d="M 56 38 Q 62 28 68 38" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+        <path d="M 32 55 Q 50 78 68 55 Z" fill="#333"/>
+      </svg>
+    </div>
+    <div id="introMsg" style="font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 15px; text-shadow: 0 0 12px var(--accent-glow);">ခဏစောင့်ပေးပါ</div>
+    <div class="blue-white-spinner"></div>
+  </div>
+
+  <!-- Ocean Waves Background -->
+  <div class="ocean">
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+
+  <!-- Language Switcher -->
+  <div class="top-lang-switcher">
+    <select id="userLang" onchange="changeLanguage(this.value)">
+      <option value="my" selected>မြန်မာ</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+  <div id="stepLoader">
+    <div class="blue-white-spinner"></div>
+    <p id="lbl_loaderMsg" style="margin-top: 14px; color: var(--accent); font-weight: 700; font-size: 14px; text-shadow: 0 0 10px var(--accent-glow);">ခဏစောင့်ပါ</p>
+  </div>
+
+  <div id="shareModal">
+    <div class="modal-content">
+      <h3 id="lbl_modalTitle" style="color:var(--accent); margin-bottom:10px; text-shadow: 0 0 10px var(--accent-glow);">မျှဝေရန်</h3>
+      <p id="lbl_modalSub" style="font-size:13px; font-weight:600; margin-bottom:16px; color:#cbd5e1;">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန်</p>
+      <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 10px; font-size: 14px;" onclick="copyShareLink()">လင့်ခ် ကူးယူရန်</button>
+      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 10px; font-size: 14px;" onclick="downloadSingleQrFromModal()">QR ပုံ သိမ်းရန်</button>
+      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 14px;" onclick="closeShareModal()">ပိတ်မည်</button>
+    </div>
+  </div>
+
+  <div class="app-card">
+
+    <!-- STEP 1 -->
+    <div class="step active" id="step1">
+      <h2 id="lbl_authTitle">အကောင့်ဝင်ရန်</h2>
+      <div class="form-group">
+        <label id="lbl_modeSelect">အမျိုးအစား ရွေးချယ်ရန်</label>
+        
+        <div class="custom-select-wrapper" id="authModeCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('authModeCustomSelect')">
+            <span id="authModeTriggerText">အကောင့်ရှိပြီးသား (Login)</span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="authModeCustomOptions">
+            <div class="custom-option" onclick="selectAuthModeOption('login', currentLang === 'en' ? 'Login (Existing Account)' : 'အကောင့်ရှိပြီးသား (Login)')" id="opt_login">အကောင့်ရှိပြီးသား (Login)</div>
+            <div class="custom-option" onclick="selectAuthModeOption('signup', currentLang === 'en' ? 'Sign Up (New Account)' : 'အကောင့်သစ်ဖွင့်ရန် (Sign Up)')" id="opt_signup">အကောင့်သစ်ဖွင့်ရန် (Sign Up)</div>
+          </div>
+        </div>
+        <input type="hidden" id="authModeSelect" value="login">
+      </div>
+
+      <div id="loginFormSection">
+        <div class="form-group">
+          <label id="lbl_loginName">သင်၏ နာမည်</label>
+          <input type="text" id="loginName">
+        </div>
+        <div class="form-group">
+          <label id="lbl_loginPass">လျှို့ဝှက်နံပါတ်</label>
+          <input type="password" id="loginPass">
+        </div>
+        <button class="btn" id="btn_login" onclick="handleLogin()">အကောင့်ဝင်မည်</button>
+      </div>
+
+      <div id="signupFormSection" style="display: none;">
+        <div class="form-group">
+          <label id="lbl_signupName">သင်၏ နာမည်</label>
+          <input type="text" id="signupName">
+        </div>
+        <div class="form-group">
+          <label id="lbl_signupNum">ကုဒ်နံပါတ်</label>
+          <input type="text" id="signupNum">
+        </div>
+        <div class="form-group">
+          <label id="lbl_signupPass1">လျှို့ဝှက်နံပါတ်အသစ်</label>
+          <input type="password" id="signupPass1">
+        </div>
+        <div class="form-group">
+          <label id="lbl_signupPass2">လျှို့ဝှက်နံပါတ်ကို ထပ်မံရိုက်ပါ</label>
+          <input type="password" id="signupPass2">
+        </div>
+        <button class="btn" id="btn_signup" onclick="handleSignup()">အကောင့်အသစ်ဖွင့်မည်</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="step2">
+      <h2 id="lbl_profileTitle">ကိုယ်ရေးအချက်အလက်</h2>
+      <div class="profile-container">
+        <div class="profile-avatar-box" id="profileAvatarBox">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#cbd5e1">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="file-input-wrapper" style="margin-bottom: 14px;">
+          <div class="file-btn" id="lbl_changeAvatar">ပရိုဖိုင်ပုံပြောင်းရန်</div>
+          <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
+        </div>
+        <div class="profile-name" id="displayProfileName">အမည်</div>
+        <div class="profile-id" id="displayProfileNum">ကုဒ်နံပါတ် -</div>
+        <div class="dashboard-actions">
+          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)">မုန့်ဖိုးတောင်းရန်</button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()">မှတ်တမ်းများ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="step3">
+      <h2 id="lbl_step3Title">မုန့်ဖိုးတောင်းမည့်အကြောင်းအရာ</h2>
+      <div class="form-group">
+        <label for="reasonDropdown" id="lbl_dropdown">အကြောင်းအရာရွေးချယ်ရန်</label>
+        
+        <div class="custom-select-wrapper" id="reasonCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
+            <span id="reasonTriggerText">အကြောင်းအရာရွေးပါ</span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="reasonCustomOptions"></div>
+        </div>
+        <input type="hidden" id="reasonDropdown" value="">
+      </div>
+
+      <div class="form-group" id="customReasonGroup" style="display: none;">
+        <label for="customReason" id="lbl_customReason">ကိုယ်တိုင်ရေးသားရန်</label>
+        <input type="text" id="customReason">
+      </div>
+      <div class="form-group">
+        <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းစာစီရန်</label>
+        <textarea id="customNote" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label id="lbl_bgLabel">နောက်ခံပုံ (4:3)</label>
+        <div class="file-input-wrapper">
+          <div class="file-btn" id="bgImgLabel">နောက်ခံပုံရွေးရန်</div>
+          <input type="file" accept="image/*" onchange="handleBgImage(this)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="lbl_qrLabel">ကျူအာလ်ပုံ / ငွေပေးချေမှုအချက်အလက်</label>
+        <div class="file-input-wrapper">
+          <div class="file-btn" id="qrImgLabel">ကျူအာလ်ပုံရွေးရန်</div>
+          <input type="file" accept="image/*" onchange="handleQrImage(this)">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)">နောက်သို့</button>
+        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()">ကတ်ဖန်တီးမည်</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="step4">
+      <h2 id="lbl_step4Title">မုန့်ဖိုးတောင်းလွှာ</h2>
+
+      <div id="exportCard">
+        <img id="cardBgImg" class="card-full-bg" alt="Card Background">
+        <div class="card-header-content">
+          <span class="sender-tag" id="outSender">From: Aung</span>
+          <h3 id="outReason">Reason</h3>
+          <p id="outNote">Note text</p>
+        </div>
+        <div class="card-qr-overlay">
+          <p id="lbl_qrHint">ငွေပေးချေရန် ကျူအာလ်ကိုစကန်ဖတ်ပါ</p>
+          <div class="qr-img-wrapper" id="qrWrapper">
+            <img id="cardQrImg" alt="QR">
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">ကျူအာလ်သိမ်းရန်</button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()">မျှဝေမည်</button>
+      </div>
+      <div class="btn-group" style="margin-top: 8px;">
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)">ပရိုဖိုင်သို့ပြန်ရန်</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentUser = null;
+    let currentAvatarUrl = "";
+    let currentBgUrl = "";
+    let currentQrUrl = "";
+    let currentLang = 'my';
+
+    const translations = {
+      my: {
+        introMsg: "ခဏစောင့်ပေးပါ",
+        loaderMsg: "ခဏစောင့်ပါ",
+        authTitle: "အကောင့်ဝင်ရန်",
+        modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
+        optLogin: "အကောင့်ရှိပြီးသား (Login)",
+        optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
+        loginName: "သင်၏ နာမည်",
+        loginPass: "လျှို့ဝှက်နံပါတ်",
+        btnLogin: "အကောင့်ဝင်မည်",
+        signupName: "သင်၏ နာမည်",
+        signupNum: "ကုဒ်နံပါတ်",
+        signupPass1: "လျှို့ဝှက်နံပါတ်အသစ်",
+        signupPass2: "လျှို့ဝှက်နံပါတ်ကို ထပ်မံရိုက်ပါ",
+        btnSignup: "အကောင့်အသစ်ဖွင့်မည်",
+        profileTitle: "ကိုယ်ရေးအချက်အလက်",
+        changeAvatar: "ပရိုဖိုင်ပုံပြောင်းရန်",
+        reqPocketBtn: "မုန့်ဖိုးတောင်းရန်",
+        historyBtn: "မှတ်တမ်းများ",
+        step3Title: "မုန့်ဖိုးတောင်းမည့်အကြောင်းအရာ",
+        dropdown: "အကြောင်းအရာရွေးချယ်ရန်",
+        customReason: "ကိုယ်တိုင်ရေးသားရန်",
+        customNote: "မုန့်ဖိုးတောင်းစာစီရန်",
+        bgLabel: "နောက်ခံပုံ (4:3)",
+        qrLabel: "ကျူအာလ်ပုံ / ငွေပေးချေမှုအချက်အလက်",
+        bgImgLabelText: "နောက်ခံပုံရွေးရန်",
+        qrImgLabelText: "ကျူအာလ်ပုံရွေးရန်",
+        btnBack: "နောက်သို့",
+        btnGen: "ကတ်ဖန်တီးမည်",
+        step4Title: "မုန့်ဖိုးတောင်းလွှာ",
+        qrHint: "ငွေပေးချေရန် ကျူအာလ်ကိုစကန်ဖတ်ပါ",
+        saveQr: "ကျူအာလ်သိမ်းရန်",
+        share: "မျှဝေမည်",
+        profileReturn: "ပရိုဖိုင်သို့ပြန်ရန်",
+        modalTitle: "မျှဝေရန်",
+        modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန်",
+        copyLink: "လင့်ခ် ကူးယူရန်",
+        dlQrModal: "QR ပုံ သိမ်းရန်",
+        closeModal: "ပိတ်မည်",
+        reasons: [
+          { val: 'snack', text: 'မုန့်ဖိုးဝယ်စားဖို့ပါ' },
+          { val: 'game', text: 'ဂိမ်းငွေဖြည့်ဖို့ပါ' },
+          { val: 'date', text: 'ချစ်သူနဲ့ချိန်းတွေ့ဖို့ပါ' },
+          { val: 'shopping', text: 'ပစ္စည်းဝယ်ယူဖို့ပါ' },
+          { val: 'custom', text: 'အခြားအကြောင်းအရာ (ကိုယ်တိုင်ရေးရန်)' }
+        ]
+      },
+      en: {
+        introMsg: "Please wait",
+        loaderMsg: "Please wait",
+        authTitle: "Sign In",
+        modeSelect: "Select Mode",
+        optLogin: "Login (Existing Account)",
+        optSignup: "Sign Up (New Account)",
+        loginName: "Your Name",
+        loginPass: "Password",
+        btnLogin: "Login",
+        signupName: "Your Name",
+        signupNum: "Number Code",
+        signupPass1: "New Password",
+        signupPass2: "Confirm Password",
+        btnSignup: "Sign Up",
+        profileTitle: "Profile",
+        changeAvatar: "Change Profile Picture",
+        reqPocketBtn: "Request Pocket Money",
+        historyBtn: "History",
+        step3Title: "Reason for Request",
+        dropdown: "Select Reason",
+        customReason: "Custom Reason",
+        customNote: "Custom Note",
+        bgLabel: "Background (4:3 Ratio)",
+        qrLabel: "QR Code / Payment Info",
+        bgImgLabelText: "Select Background",
+        qrImgLabelText: "Select QR Code",
+        btnBack: "Back",
+        btnGen: "Generate Card",
+        step4Title: "Pocket Money Card",
+        qrHint: "Scan or Pay to Send Pocket Money",
+        saveQr: "Save QR",
+        share: "Share",
+        profileReturn: "Return to Profile",
+        modalTitle: "Share",
+        modalSub: "Send card and link",
+        copyLink: "Copy Link",
+        dlQrModal: "Save QR",
+        closeModal: "Close",
+        reasons: [
+          { val: 'snack', text: 'For Snacks' },
+          { val: 'game', text: 'For Gaming' },
+          { val: 'date', text: 'For Dating' },
+          { val: 'shopping', text: 'For Shopping' },
+          { val: 'custom', text: 'Custom Reason' }
+        ]
       }
-    } catch (err) {
-      console.error('Supabase load error:', err);
-    }
-    if (loader) loader.classList.remove('show');
-  }
-});
-
-function renderCardData(data) {
-  document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
-  document.getElementById('outReason').innerText = data.reason || '';
-  document.getElementById('outNote').innerText = data.note || '';
-
-  if (data.bgImage) {
-    savedBgImage = data.bgImage;
-    const bgEl = document.getElementById('cardBgImg');
-    bgEl.src = data.bgImage;
-    bgEl.style.display = 'block';
-  }
-  if (data.qrImage) {
-    savedQrImage = data.qrImage;
-    const qrEl = document.getElementById('cardQrImg');
-    const qrWr = document.getElementById('qrWrapper');
-    qrEl.src = data.qrImage;
-    qrWr.style.display = 'block';
-  }
-}
-
-function switchAuthMode(mode) {
-  const loginSec = document.getElementById('loginFormSection');
-  const signupSec = document.getElementById('signupFormSection');
-
-  if (mode === 'login') {
-    loginSec.style.display = 'block';
-    signupSec.style.display = 'none';
-  } else {
-    loginSec.style.display = 'none';
-    signupSec.style.display = 'block';
-  }
-}
-
-function handleSignup() {
-  const name = document.getElementById('signupName').value.trim();
-  const num = document.getElementById('signupNum').value.trim();
-  const p1 = document.getElementById('signupPass1').value;
-  const p2 = document.getElementById('signupPass2').value;
-
-  if (!name || !num || !p1 || !p2) {
-    alert('အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
-    return;
-  }
-  if (p1 !== p2) {
-    alert('Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
-    return;
-  }
-
-  const userData = { name, num, pass: p1, avatar: '' };
-  localStorage.setItem(`user_${num}`, JSON.stringify(userData));
-  
-  alert('✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
-  currentUser = userData;
-  setupProfileView();
-  goToStep(2);
-}
-
-function handleLogin() {
-  const name = document.getElementById('loginName').value.trim();
-  const pass = document.getElementById('loginPass').value;
-
-  if (!name || !pass) {
-    alert('နာမည်နှင့် Password ဖြည့်ပါ။');
-    return;
-  }
-
-  let foundUser = null;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('user_')) {
-      const u = JSON.parse(localStorage.getItem(key));
-      if (u.name === name) {
-        foundUser = u;
-        break;
-      }
-    }
-  }
-
-  if (!foundUser) {
-    alert('ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။ အကောင့်သစ်ဖွင့်ပါ။');
-    return;
-  }
-
-  if (foundUser.pass !== pass) {
-    alert('Password မှားယွင်းနေပါသည်။');
-    return;
-  }
-
-  currentUser = foundUser;
-  setupProfileView();
-  goToStep(2);
-}
-
-function setupProfileView() {
-  if (!currentUser) return;
-  document.getElementById('displayProfileName').innerText = currentUser.name;
-  document.getElementById('displayProfileNum').innerText = `ဂဏန်း: ${currentUser.num}`;
-  
-  if (currentUser.avatar) {
-    document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
-  }
-}
-
-function updateProfileAvatar(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      currentUser.avatar = e.target.result;
-      localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
-      document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-function viewHistory() {
-  alert('📜 သင် တောင်းဆိုခဲ့ဖူးသော မှတ်တမ်းများ မရှိသေးပါ။');
-}
-
-function goToStep(stepNumber) {
-  const loader = document.getElementById('stepLoader');
-  loader.classList.add('show');
-  setTimeout(() => {
-    loader.classList.remove('show');
-    showStep(stepNumber);
-  }, 800);
-}
-
-function showStep(stepNumber) {
-  const steps = document.querySelectorAll('.step');
-  steps.forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  const target = document.getElementById(`step${stepNumber}`);
-  if (target) {
-    target.style.display = 'block';
-    setTimeout(() => target.classList.add('active'), 50);
-  }
-}
-
-function toggleCustomReason() {
-  const dropdown = document.getElementById('reasonDropdown');
-  const customGroup = document.getElementById('customReasonGroup');
-  customGroup.style.display = (dropdown.value === 'အခြား') ? 'block' : 'none';
-}
-
-function populateReasonDropdown(lang) {
-  const dropdown = document.getElementById('reasonDropdown');
-  if (!dropdown) return;
-  const currentVal = dropdown.value;
-  dropdown.innerHTML = '';
-  
-  const reasonsList = i18n[lang] ? i18n[lang].reasons : i18n['my'].reasons;
-  reasonsList.forEach(item => {
-    const opt = document.createElement('option');
-    opt.value = item.val;
-    opt.innerText = item.text;
-    dropdown.appendChild(opt);
-  });
-
-  if (currentVal) dropdown.value = currentVal;
-  toggleCustomReason();
-}
-
-function handleBgImage(input) {
-  if (input.files && input.files[0]) {
-    selectedBgFile = input.files[0];
-    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ`;
-  }
-}
-
-function handleQrImage(input) {
-  if (input.files && input.files[0]) {
-    selectedQrFile = input.files[0];
-    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ`;
-  }
-}
-
-async function generateAndSaveCard() {
-  const reasonDropdown = document.getElementById('reasonDropdown').value;
-  const customReason = document.getElementById('customReason').value.trim();
-  const customNote = document.getElementById('customNote').value.trim();
-  const finalReason = (reasonDropdown === 'အခြား' && customReason) ? customReason : reasonDropdown;
-
-  const d = i18n[currentLang] || i18n['my'];
-
-  if (!customNote) {
-    alert(d.alertNote);
-    return;
-  }
-  if (!selectedBgFile && !savedBgImage) {
-    alert(d.alertBg);
-    return;
-  }
-  if (!selectedQrFile && !savedQrImage) {
-    alert(d.alertQr);
-    return;
-  }
-
-  const loader = document.getElementById('stepLoader');
-  if (loader) loader.classList.add('show');
-
-  try {
-    if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
-    }
-    if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
-    }
-
-    const payload = {
-      sender: currentUser ? currentUser.name : 'Aung',
-      reason: finalReason,
-      note: customNote,
-      bg_image: savedBgImage,
-      qr_image: savedQrImage
     };
 
-    const sb = getSupabase();
-    if (!sb) {
-      throw new Error('Supabase SDK error.');
-    }
-
-    const { data, error } = await sb
-      .from('cards')
-      .insert([payload])
-      .select();
-
-    if (error) throw error;
-
-    if (data && data.length > 0) {
-      const generatedId = data[0].id;
-      currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
+    function changeLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang] || translations['my'];
       
-      renderCardData({
-        sender: payload.sender,
-        reason: payload.reason,
-        note: payload.note,
-        bgImage: payload.bg_image,
-        qrImage: payload.qr_image
+      if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = t.introMsg;
+      if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = t.loaderMsg;
+      if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = t.authTitle;
+      if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = t.modeSelect;
+      if(document.getElementById('opt_login')) document.getElementById('opt_login').innerText = t.optLogin;
+      if(document.getElementById('opt_signup')) document.getElementById('opt_signup').innerText = t.optSignup;
+      
+      const authModeVal = document.getElementById('authModeSelect').value;
+      if(authModeVal === 'login') {
+        document.getElementById('authModeTriggerText').innerText = t.optLogin;
+      } else {
+        document.getElementById('authModeTriggerText').innerText = t.optSignup;
+      }
+
+      if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = t.loginName;
+      if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = t.loginPass;
+      if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = t.btnLogin;
+      if(document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = t.signupName;
+      if(document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = t.signupNum;
+      if(document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = t.signupPass1;
+      if(document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = t.signupPass2;
+      if(document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = t.btnSignup;
+      if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = t.profileTitle;
+      if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = t.changeAvatar;
+      if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = t.reqPocketBtn;
+      if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = t.historyBtn;
+      if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = t.step3Title;
+      if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = t.dropdown;
+      if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = t.customReason;
+      if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = t.customNote;
+      if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = t.bgLabel;
+      if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = t.qrLabel;
+      if(document.getElementById('bgImgLabel') && !currentBgUrl) document.getElementById('bgImgLabel').innerText = t.bgImgLabelText;
+      if(document.getElementById('qrImgLabel') && !currentQrUrl) document.getElementById('qrImgLabel').innerText = t.qrImgLabelText;
+      if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = t.btnBack;
+      if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = t.btnGen;
+      if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = t.step4Title;
+      if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = t.qrHint;
+      if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = t.saveQr;
+      if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = t.share;
+      if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = t.profileReturn;
+      if(document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = t.modalTitle;
+      if(document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = t.modalSub;
+      if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = t.copyLink;
+      if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = t.dlQrModal;
+      if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = t.closeModal;
+
+      populateReasons();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('introSplash');
+        if(splash) splash.classList.add('fade-out');
+        populateReasons();
+      }, 400);
+    });
+
+    setTimeout(() => {
+      const splash = document.getElementById('introSplash');
+      if(splash && !splash.classList.contains('fade-out')) {
+        splash.classList.add('fade-out');
+        populateReasons();
+      }
+    }, 1000);
+
+    function showLoader(show) {
+      const loader = document.getElementById('stepLoader');
+      if(loader) {
+        if(show) loader.classList.add('show');
+        else loader.classList.remove('show');
+      }
+    }
+
+    function goToStep(stepNum) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('step' + stepNum);
+      if(target) target.classList.add('active');
+    }
+
+    function switchAuthMode(mode) {
+      const loginSec = document.getElementById('loginFormSection');
+      const signupSec = document.getElementById('signupFormSection');
+      if(mode === 'login') {
+        if(loginSec) loginSec.style.display = 'block';
+        if(signupSec) signupSec.style.display = 'none';
+      } else {
+        if(loginSec) loginSec.style.display = 'none';
+        if(signupSec) signupSec.style.display = 'block';
+      }
+    }
+
+    function selectAuthModeOption(val, text) {
+      document.getElementById('authModeTriggerText').innerText = text;
+      document.getElementById('authModeSelect').value = val;
+      document.getElementById('authModeCustomSelect').classList.remove('open');
+      switchAuthMode(val);
+    }
+
+    function populateReasons() {
+      const t = translations[currentLang] || translations['my'];
+      const reasons = t.reasons;
+      const container = document.getElementById('reasonCustomOptions');
+      if(!container) return;
+
+      const currentVal = document.getElementById('reasonDropdown').value;
+      container.innerHTML = '';
+
+      let found = false;
+      reasons.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'custom-option';
+        div.innerText = r.text;
+        div.onclick = () => selectReasonOption(r.val, r.text);
+        container.appendChild(div);
+        if(r.val === currentVal) {
+          document.getElementById('reasonTriggerText').innerText = r.text;
+          found = true;
+        }
       });
 
-      if (loader) loader.classList.remove('show');
-      showStep(4);
+      if(!found && reasons.length > 0) {
+        document.getElementById('reasonTriggerText').innerText = reasons[0].text;
+        document.getElementById('reasonDropdown').value = reasons[0].val;
+      }
+      toggleCustomReason();
     }
-  } catch (err) {
-    console.error('Supabase Save Error:', err);
-    if (loader) loader.classList.remove('show');
-    alert('Error: ' + (err.message || JSON.stringify(err)));
-  }
-}
 
-function downloadSingleQr() {
-  if (!savedQrImage) {
-    alert('QR ပုံ မထည့်ရသေးပါ။');
-    return;
-  }
-  const link = document.createElement('a');
-  link.download = 'Payment_QR_HD.png';
-  link.href = savedQrImage;
-  link.click();
-}
+    function selectReasonOption(val, text) {
+      document.getElementById('reasonTriggerText').innerText = text;
+      document.getElementById('reasonDropdown').value = val;
+      document.getElementById('reasonCustomSelect').classList.remove('open');
+      toggleCustomReason();
+    }
 
-function downloadSingleQrFromModal() {
-  downloadSingleQr();
-  closeShareModal();
-}
+    function toggleCustomDropdown(wrapperId) {
+      document.querySelectorAll('.custom-select-wrapper').forEach(el => {
+        if(el.id !== wrapperId) el.classList.remove('open');
+      });
+      document.getElementById(wrapperId).classList.toggle('open');
+    }
 
-function openShareModal() {
-  document.getElementById('shareModal').style.display = 'flex';
-}
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.custom-select-wrapper')) {
+        document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
+      }
+    });
 
-function closeShareModal() {
-  document.getElementById('shareModal').style.display = 'none';
-}
+    function toggleCustomReason() {
+      const val = document.getElementById('reasonDropdown').value;
+      const customGroup = document.getElementById('customReasonGroup');
+      if(customGroup) {
+        if(val === 'custom') {
+          customGroup.style.display = 'block';
+        } else {
+          customGroup.style.display = 'none';
+        }
+      }
+    }
 
-function copyShareLink() {
-  navigator.clipboard.writeText(currentShareableLink).then(() => {
-    alert('✅ လင့်ခ်ကူးယူပြီးပါပြီ!');
-    closeShareModal();
-  });
-}
+    function handleLogin() {
+      const name = document.getElementById('loginName').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      if(!name || !pass) {
+        alert(currentLang === 'en' ? 'Please enter name and password.' : 'ကျေးဇူးပြု၍ နာမည်နှင့် လျှို့ဝှက်နံပါတ် ဖြည့်ပါ။');
+        return;
+      }
+      showLoader(true);
+      setTimeout(() => {
+        showLoader(false);
+        currentUser = { name: name, num: 'VIP-001' };
+        document.getElementById('displayProfileName').innerText = name;
+        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + 'VIP-001';
+        goToStep(2);
+      }, 500);
+    }
 
-function changeLanguage(lang) {
-  currentLang = lang;
-  const t = i18n[lang] || i18n['my'];
-  
-  // Update UI texts safely
-  const setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
-  
-  setTxt('introMsg', t.introMsg);
-  setTxt('lbl_loaderMsg', t.loaderMsg);
-  setTxt('lbl_authTitle', t.authTitle);
-  setTxt('lbl_modeSelect', t.modeSelect);
-  
-  const authModeSelect = document.getElementById('authModeSelect');
-  if(authModeSelect && authModeSelect.options.length >= 2) {
-    authModeSelect.options[0].text = t.optLogin;
-    authModeSelect.options[1].text = t.optSignup;
-  }
-  
-  setTxt('lbl_loginName', t.loginName);
-  setTxt('lbl_loginPass', t.loginPass);
-  setTxt('btn_login', t.btnLogin);
-  
-  setTxt('lbl_signupName', t.signupName);
-  setTxt('lbl_signupNum', t.signupNum);
-  setTxt('lbl_signupPass1', t.signupPass1);
-  setTxt('lbl_signupPass2', t.signupPass2);
-  setTxt('btn_signup', t.btnSignup);
-  
-  setTxt('lbl_profileTitle', t.profileTitle);
-  setTxt('lbl_changeAvatar', t.changeAvatar);
-  setTxt('lbl_reqPocketBtn', t.reqPocketBtn);
-  setTxt('lbl_historyBtn', t.historyBtn);
-  
-  setTxt('lbl_step3Title', t.step3Title);
-  setTxt('lbl_dropdown', t.dropdown);
-  setTxt('lbl_customReason', t.customReason);
-  setTxt('lbl_customNote', t.customNote);
-  setTxt('lbl_bgLabel', t.bgLabel);
-  setTxt('lbl_qrLabel', t.qrLabel);
-  setTxt('btn_backStep3', t.backStep3);
-  setTxt('btn_genCard', t.genCard);
-  
-  setTxt('lbl_step4Title', t.step4Title);
-  setTxt('lbl_qrHint', t.qrHint);
-  setTxt('btn_saveQr', t.saveQr);
-  setTxt('btn_share', t.share);
-  setTxt('btn_profileReturn', t.profileReturn);
-  
-  setTxt('lbl_modalTitle', t.modalTitle);
-  setTxt('lbl_modalSub', t.modalSub);
-  setTxt('btn_copyLink', t.copyLink);
-  setTxt('btn_dlQrModal', t.dlQrModal);
-  setTxt('btn_closeModal', t.closeModal);
-  
-  populateReasonDropdown(lang);
-}
+    function handleSignup() {
+      const name = document.getElementById('signupName').value.trim();
+      const num = document.getElementById('signupNum').value.trim();
+      const p1 = document.getElementById('signupPass1').value.trim();
+      const p2 = document.getElementById('signupPass2').value.trim();
+
+      if(!name || !num || !p1 || !p2) {
+        alert(currentLang === 'en' ? 'Please fill all fields.' : 'အချက်အလက်အားလုံး ဖြည့်ပါ။');
+        return;
+      }
+      if(p1 !== p2) {
+        alert(currentLang === 'en' ? 'Passwords do not match.' : 'လျှို့ဝှက်နံပါတ် နှစ်ခု မတူပါ။');
+        return;
+      }
+      showLoader(true);
+      setTimeout(() => {
+        showLoader(false);
+        currentUser = { name: name, num: num };
+        document.getElementById('displayProfileName').innerText = name;
+        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + num;
+        goToStep(2);
+      }, 500);
+    }
+
+    function updateProfileAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentAvatarUrl = e.target.result;
+          const box = document.getElementById('profileAvatarBox');
+          box.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function handleBgImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentBgUrl = e.target.result;
+          document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? "Background selected" : "နောက်ခံပုံ ရွေးပြီးပါပြီ";
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function handleQrImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentQrUrl = e.target.result;
+          document.getElementById('qrImgLabel').innerText = currentLang === 'en' ? "QR selected" : "ကျူအာလ်ပုံ ရွေးပြီးပါပြီ";
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function generateAndSaveCard() {
+      const reasonVal = document.getElementById('reasonDropdown').value;
+      let reasonText = "";
+      
+      if(reasonVal === 'custom') {
+        reasonText = document.getElementById('customReason').value.trim() || (currentLang === 'en' ? 'Pocket Money Request' : 'မုန့်ဖိုးတောင်းခြင်း');
+      } else {
+        const triggerEl = document.getElementById('reasonTriggerText');
+        reasonText = triggerEl ? triggerEl.innerText : "မုန့်ဖိုးတောင်းခြင်း";
+      }
+
+      const noteText = document.getElementById('customNote').value.trim() || (currentLang === 'en' ? 'Please send me some pocket money' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးထည့်ပေးပါရှင့်');
+      const senderName = currentUser ? currentUser.name : "Guest";
+
+      document.getElementById('outSender').innerText = "From: " + senderName;
+      document.getElementById('outReason').innerText = reasonText;
+      document.getElementById('outNote').innerText = noteText;
+
+      const bgImgEl = document.getElementById('cardBgImg');
+      if(currentBgUrl) {
+        bgImgEl.src = currentBgUrl;
+        bgImgEl.style.display = 'block';
+      } else {
+        bgImgEl.style.display = 'none';
+      }
+
+      const qrImgEl = document.getElementById('cardQrImg');
+      const qrWrapper = document.getElementById('qrWrapper');
+      if(currentQrUrl) {
+        qrImgEl.src = currentQrUrl;
+        qrWrapper.style.display = 'block';
+      } else {
+        qrWrapper.style.display = 'none';
+      }
+
+      showLoader(true);
+      setTimeout(() => {
+        showLoader(false);
+        goToStep(4);
+      }, 500);
+    }
+
+    function openShareModal() {
+      document.getElementById('shareModal').style.display = 'flex';
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').style.display = 'none';
+    }
+
+    function copyShareLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert(currentLang === 'en' ? 'Link copied!' : 'လင့်ခ်ကို ကူးယူပြီးပါပြီ');
+      closeShareModal();
+    }
+
+    function downloadSingleQr() {
+      if(!currentQrUrl) {
+        alert(currentLang === 'en' ? 'No QR image available.' : 'ကျူအာလ်ပုံ မရှိသေးပါ။');
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = currentQrUrl;
+      a.download = 'PocketMoney_QR.png';
+      a.click();
+    }
+
+    function downloadSingleQrFromModal() {
+      downloadSingleQr();
+      closeShareModal();
+    }
+
+    function viewHistory() {
+      alert(currentLang === 'en' ? 'No history found.' : 'မှတ်တမ်းများ မရှိသေးပါ။');
+    }
+  </script>
+</body>
+</html>
