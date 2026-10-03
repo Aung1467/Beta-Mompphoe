@@ -83,11 +83,11 @@
     }
 
     .top-lang-switcher select {
-      padding: 4px 8px;
+      padding: 6px 10px;
       font-size: 12px;
       border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(20, 24, 38, 0.8);
+      background: rgba(20, 24, 38, 0.85);
       color: #fff;
       outline: none;
       cursor: pointer;
@@ -491,26 +491,30 @@
     <div class="circle-spinner"></div>
   </div>
 
-  <!-- အပေါ်ညာဘက်ဒေါင့် ဘာသာစကားရွေးရန် -->
+  <!-- ဘာသာစကား ရွေးချယ်စရာ (၆ မျိုး) -->
   <div class="top-lang-switcher">
     <select id="userLang" onchange="changeLanguage(this.value)">
-      <option value="my" selected>မြန်မာ</option>
-      <option value="en">English</option>
+      <option value="my" selected>🇲🇲 မြန်မာ</option>
+      <option value="en">🇬🇧 English</option>
+      <option value="th">🇹🇭 ไทย</option>
+      <option value="zh">🇨🇳 中文</option>
+      <option value="ja">🇯🇵 日本語</option>
+      <option value="ko">🇰🇷 한국어</option>
     </select>
   </div>
 
   <div id="stepLoader">
     <div class="circle-spinner"></div>
-    <p style="margin-top: 12px; color: #00d2d3; font-weight: bold; font-size: 13px;">ခဏစောင့်ပါ...</p>
+    <p id="lbl_loaderMsg" style="margin-top: 12px; color: #00d2d3; font-weight: bold; font-size: 13px;">ခဏစောင့်ပါ...</p>
   </div>
 
   <div id="shareModal">
     <div class="modal-content">
       <h3 id="lbl_modalTitle">📤 မျှဝေရန် (Share)</h3>
       <p id="lbl_modalSub">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -</p>
-      <button class="btn" style="margin-bottom: 10px; background: linear-gradient(135deg, #3742fa, #2f3542); font-size: 14px;" onclick="copyShareLink()">📋 လင့်ခ် ကူးယူရန်</button>
-      <button class="btn" style="margin-bottom: 10px; background: linear-gradient(135deg, #2ed573, #26af5f); font-size: 14px;" onclick="downloadSingleQrFromModal()">📥 1:1 ပုံ သိမ်းရန်</button>
-      <button class="btn btn-secondary" style="font-size: 14px;" onclick="closeShareModal()">ပိတ်မည်</button>
+      <button class="btn" id="btn_copyLink" style="margin-bottom: 10px; background: linear-gradient(135deg, #3742fa, #2f3542); font-size: 14px;" onclick="copyShareLink()">📋 လင့်ခ် ကူးယူရန်</button>
+      <button class="btn" id="btn_dlQrModal" style="margin-bottom: 10px; background: linear-gradient(135deg, #2ed573, #26af5f); font-size: 14px;" onclick="downloadSingleQrFromModal()">📥 1:1 ပုံ သိမ်းရန်</button>
+      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 14px;" onclick="closeShareModal()">ပိတ်မည်</button>
     </div>
   </div>
 
@@ -521,11 +525,10 @@
 
   <div class="app-card">
 
-    <!-- STEP 1: LOGIN / SIGNUP (INTRO AUTH) -->
+    <!-- STEP 1: LOGIN / SIGNUP -->
     <div class="step active" id="step1">
       <h2 id="lbl_authTitle">✨ အကောင့်ဝင်ရန် (Login / Signup) ✨</h2>
       
-      <!-- Dropdown ပုံစံဖြင့် အကောင့်ဝင်ရန် / အကောင့်သစ်ဖွင့်ရန် ရွေးချယ်မှု -->
       <div class="form-group">
         <label id="lbl_modeSelect">အမျိုးအစား ရွေးချယ်ရန်</label>
         <select id="authModeSelect" onchange="switchAuthMode(this.value)">
@@ -534,7 +537,7 @@
         </select>
       </div>
 
-      <!-- LOGIN FORM (Name & Password only) -->
+      <!-- LOGIN FORM -->
       <div id="loginFormSection">
         <div class="form-group">
           <label id="lbl_loginName">သင်၏ နာမည်</label>
@@ -544,10 +547,10 @@
           <label id="lbl_loginPass">Password</label>
           <input type="password" id="loginPass" placeholder="Password ရိုက်ပါ">
         </div>
-        <button class="btn" onclick="handleLogin()">အကောင့်ဝင်မည် 🔓</button>
+        <button class="btn" id="btn_login" onclick="handleLogin()">အကောင့်ဝင်မည် 🔓</button>
       </div>
 
-      <!-- SIGNUP FORM (Name, Number, Password 2 times) -->
+      <!-- SIGNUP FORM -->
       <div id="signupFormSection" style="display: none;">
         <div class="form-group">
           <label id="lbl_signupName">သင်၏ နာမည်</label>
@@ -565,7 +568,7 @@
           <label id="lbl_signupPass2">Password ထပ်မံရိုက်ပါ (Confirm)</label>
           <input type="password" id="signupPass2" placeholder="Password ကို ထပ်ရိုက်ပါ">
         </div>
-        <button class="btn" onclick="handleSignup()">အကောင့်အသစ်ဖွင့်မည် ✨</button>
+        <button class="btn" id="btn_signup" onclick="handleSignup()">အကောင့်အသစ်ဖွင့်မည် ✨</button>
       </div>
     </div>
 
@@ -588,8 +591,8 @@
         <div class="profile-id" id="displayProfileNum">ဂဏန်း: -</div>
 
         <div class="dashboard-actions">
-          <button class="btn" onclick="goToStep(3)" id="lbl_reqPocketBtn">🧧 မုန့်ဖိုးတောင်းရန်</button>
-          <button class="btn btn-secondary" onclick="viewHistory()" id="lbl_historyBtn">📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ</button>
+          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)">🧧 မုန့်ဖိုးတောင်းရန်</button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()">📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ</button>
         </div>
       </div>
     </div>
@@ -601,22 +604,18 @@
       <div class="form-group">
         <label for="reasonDropdown" id="lbl_dropdown">အကြောင်းအရာ ရွေးချယ်ရန်</label>
         <select id="reasonDropdown" onchange="toggleCustomReason()">
-          <option value="သတင်းကျွတ်မုန့်ဖိုး">သတင်းကျွတ်မုန့်ဖိုး</option>
-          <option value="ရည်းစားနဲ့လျှောက်လည်ရန်">ရည်းစားနဲ့လျှောက်လည်ရန်</option>
-          <option value="သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်">သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်</option>
-          <option value="သုံးစရာမရှိတော့လို့">သုံးစရာမရှိတော့လို့</option>
-          <option value="အခြား">အခြား (ကိုယ်တိုင်ရေးမည်)</option>
+          <!-- JavaScript မှ အလိုအလျောက် ဘာသာစကားအလိုက် ဖြည့်စွက်ပေးမည် -->
         </select>
       </div>
 
       <div class="form-group" id="customReasonGroup" style="display: none;">
         <label for="customReason" id="lbl_customReason">ကိုယ်တိုင်စာရေးရန်</label>
-        <input type="text" id="customReason">
+        <input type="text" id="customReason" placeholder="အကြောင်းအရာ ရေးပါ">
       </div>
 
       <div class="form-group">
         <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းဖို့ စာစီရန်</label>
-        <textarea id="customNote" rows="2"></textarea>
+        <textarea id="customNote" rows="2" placeholder="စာစီပါ"></textarea>
       </div>
 
       <div class="form-group">
@@ -636,8 +635,8 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-secondary" onclick="goToStep(2)">⬅ နောက်သို့</button>
-        <button class="btn" onclick="generateAndSaveCard()">ကတ်ဖန်တီးမည် ✨</button>
+        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)">⬅ နောက်သို့</button>
+        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()">ကတ်ဖန်တီးမည် ✨</button>
       </div>
     </div>
 
@@ -661,12 +660,12 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" onclick="downloadSingleQr()">💾 Save QR</button>
-        <button class="btn share-btn" onclick="openShareModal()">📤 Share</button>
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">💾 Save QR</button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()">📤 Share</button>
       </div>
       
       <div class="btn-group" style="margin-top: 10px;">
-        <button class="btn btn-secondary" onclick="goToStep(2)">🏠 Profile သို့ပြန်ရန်</button>
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)">🏠 Profile သို့ပြန်ရန်</button>
       </div>
     </div>
 
