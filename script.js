@@ -47,9 +47,9 @@ const i18n = {
     customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
     customNoteLabel: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
     customNotePlaceholder: "စာစီပါ...",
-    bgLabel: "နောက်ခံပုံ (3:4 Ratio)",
-    bgBtn: "📸 နောက်ခံပုံ ရွေးရန်",
-    qrLabel: "QR Code / အချက်အလက်ပုံ (1:1 Ratio)",
+    bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
+    bgBtn: "📸 နောက်ခံပုံ ရွေးရန် (အကြည်)",
+    qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
     qrBtn: "💳 QR Code ပုံ ရွေးရန်",
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
@@ -101,9 +101,9 @@ const i18n = {
     customReasonPlaceholder: "Write custom reason",
     customNoteLabel: "Write Request Note",
     customNotePlaceholder: "Write your note here...",
-    bgLabel: "Background Image (3:4)",
-    bgBtn: "📸 Select Background Image",
-    qrLabel: "Payment QR Code (1:1 Ratio)",
+    bgLabel: "Background Image (3:4 HD)",
+    bgBtn: "📸 Select HD Background",
+    qrLabel: "Payment QR Code (HD)",
     qrBtn: "💳 Select QR Code Image",
     backBtn: "⬅ Back",
     genCardBtn: "Create Card ✨",
@@ -130,7 +130,8 @@ const i18n = {
   }
 };
 
-function compressFileToDataUrl(file, maxWidth, quality) {
+// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85) သို့ မြှင့်ထားပါသည်
+function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
     const reader = new FileReader();
@@ -141,13 +142,20 @@ function compressFileToDataUrl(file, maxWidth, quality) {
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
+          
           if (width > maxWidth) {
             height = Math.round((height * maxWidth) / width);
             width = maxWidth;
           }
+          
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
+          
+          // ပုံအရည်အသွေး အထူးကောင်းမွန်စေရန် Smooth Image Rendering သုံးခြင်း
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          
           ctx.drawImage(img, 0, 0, width, height);
           resolve(canvas.toDataURL('image/jpeg', quality));
         } catch (err) {
@@ -216,6 +224,10 @@ function renderCardData(data) {
     const bgEl = document.getElementById('cardBgImg');
     bgEl.src = data.bgImage;
     bgEl.style.display = 'block';
+    // 3:4 Ratio နှင့် လှပစေရန် CSS Styling ထည့်သွင်းခြင်း
+    bgEl.style.width = '100%';
+    bgEl.style.height = '100%';
+    bgEl.style.objectFit = 'cover';
   }
   if (data.qrImage) {
     savedQrImage = data.qrImage;
@@ -374,14 +386,14 @@ function populateReasonDropdown(lang) {
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
     selectedBgFile = input.files[0];
-    document.getElementById('bgImgLabel').innerText = `✅ ${input.files[0].name}`;
+    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
   }
 }
 
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
     selectedQrFile = input.files[0];
-    document.getElementById('qrImgLabel').innerText = `✅ ${input.files[0].name}`;
+    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
   }
 }
 
@@ -410,12 +422,12 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
-    // ပုံဖိုင်ဆိုဒ်ကို ပိုမိုသေးငယ်အောင် သေချာကျုံ့ထားပါသည်
+    // ပုံမဝါးစေရန် အကြည်ဓာတ်အမြင့်ဆုံး (HD) ဖြင့် ပြုပြင်သိမ်းဆည်းခြင်း
     if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 250, 0.3);
+      savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
     }
     if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 200, 0.4);
+      savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
     }
 
     const payload = {
@@ -428,7 +440,7 @@ async function generateAndSaveCard() {
 
     const sb = getSupabase();
     if (!sb) {
-      throw new Error('Supabase SDK မတက်ပါ။ index.html တွင် Supabase Script သေချာပါမပါ စစ်ဆေးပါ။');
+      throw new Error('Supabase SDK မတက်ပါ။ index.html တွင် Supabase Script ရှိမရှိ စစ်ဆေးပါ။');
     }
 
     const { data, error } = await sb
@@ -468,7 +480,7 @@ function downloadSingleQr() {
     return;
   }
   const link = document.createElement('a');
-  link.download = 'Payment_QR.png';
+  link.download = 'Payment_QR_HD.png';
   link.href = savedQrImage;
   link.click();
 }
