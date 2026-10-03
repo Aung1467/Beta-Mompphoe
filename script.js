@@ -127,222 +127,6 @@ const i18n = {
       { val: "Out of Money", text: "Out of Money" },
       { val: "အခြား", text: "Other (Custom Write)" }
     ]
-  },
-  th: {
-    introMsg: "ยินดีต้อนรับ 👋 โปรดรอสักครู่...",
-    loaderMsg: "กำลังโหลด...",
-    authTitle: "✨ เข้าสู่ระบบ / ลงทะเบียน ✨",
-    modeSelectLabel: "เลือกรูปแบบ",
-    optLogin: "เข้าสู่ระบบ (มีบัญชีแล้ว)",
-    optSignup: "ลงทะเบียน (สร้างบัญชีใหม่)",
-    nameLabel: "ชื่อของคุณ",
-    namePlaceholder: "ใส่ชื่อของคุณ",
-    numLabel: "รหัสตัวเลข",
-    numPlaceholder: "ใส่ตัวเลข",
-    passLabel: "รหัสผ่าน",
-    passPlaceholder: "ใส่รหัสผ่าน",
-    pass2Label: "ยืนยันรหัสผ่าน",
-    pass2Placeholder: "ใส่รหัสผ่านอีกครั้ง",
-    loginBtn: "เข้าสู่ระบบ 🔓",
-    signupBtn: "สร้างบัญชี ✨",
-    profileTitle: "👤 ข้อมูลส่วนตัว (Profile)",
-    changeAvatar: "📷 เปลี่ยนรูปโปรไฟล์",
-    reqPocketBtn: "🧧 ขอเงินค่าขนม",
-    historyBtn: "📜 ประวัติการขอเงิน",
-    step3Title: "🎈 เลือกเหตุผลการขอเงิน 🎈",
-    dropdownLabel: "เลือกเหตุผล",
-    customReasonLabel: "ระบุเหตุผลเอง",
-    customReasonPlaceholder: "พิมพ์เหตุผล...",
-    customNoteLabel: "เขียนข้อความขอเงิน",
-    customNotePlaceholder: "พิมพ์ข้อความ...",
-    bgLabel: "ภาพพื้นหลัง (แนวตั้ง 3:4)",
-    bgBtn: "📸 เลือกภาพพื้นหลัง",
-    qrLabel: "รูป QR Code รับเงิน (1:1)",
-    qrBtn: "💳 เลือกรูป QR Code",
-    backBtn: "⬅ ย้อนกลับ",
-    genCardBtn: "สร้างการ์ด ✨",
-    step4Title: "🎉 การ์ดขอเงินของคุณ 🎉",
-    qrHint: "สแกนเพื่อโอนเงินค่าขนม 👇",
-    saveBtn: "💾 บันทึก QR",
-    shareBtn: "📤 แชร์การ์ด",
-    profileReturnBtn: "🏠 กลับสู่หน้าโปรไฟล์",
-    modalTitle: "📤 แชร์การ์ด",
-    modalSub: "ส่งลิงก์และรูปภาพให้เพื่อน:",
-    copyLinkBtn: "📋 คัดลอกลิงก์",
-    dl1to1Btn: "📥 ดาวน์โหลดรูป 1:1",
-    closeBtn: "ปิด",
-    alertNote: "❌ กรุณากรอกข้อความขอเงิน",
-    alertBg: "❌ กรุณาอัปโหลดภาพพื้นหลัง",
-    alertQr: "❌ กรุณาอัปโหลดรูป QR Code",
-    reasons: [
-      { val: "ขอเงินค่าขนม", text: "ขอเงินค่าขนม" },
-      { val: "ไปเที่ยวกับแฟน", text: "ไปเที่ยวกับแฟน" },
-      { val: "ไปเที่ยวกับเพื่อน", text: "ไปเที่ยวกับเพื่อน" },
-      { val: "เงินหมดแล้ว", text: "เงินหมดแล้ว" },
-      { val: "အခြား", text: "อื่นๆ (พิมพ์เอง)" }
-    ]
-  },
-  zh: {
-    introMsg: "欢迎 👋 请稍候...",
-    loaderMsg: "请稍候...",
-    authTitle: "✨ 登录 / 注册 ✨",
-    modeSelectLabel: "选择模式",
-    optLogin: "登录 (已有账号)",
-    optSignup: "注册 (新用户)",
-    nameLabel: "您的姓名",
-    namePlaceholder: "请输入姓名",
-    numLabel: "识别码 / 数字",
-    numPlaceholder: "请输入数字",
-    passLabel: "密码",
-    passPlaceholder: "请输入密码",
-    pass2Label: "确认密码",
-    pass2Placeholder: "请再次输入密码",
-    loginBtn: "登录 🔓",
-    signupBtn: "创建账号 ✨",
-    profileTitle: "👤 个人中心 (Profile)",
-    changeAvatar: "📷 更换头像",
-    reqPocketBtn: "🧧 讨要零花钱",
-    historyBtn: "📜 历史记录",
-    step3Title: "🎈 选择讨要理由 🎈",
-    dropdownLabel: "选择理由",
-    customReasonLabel: "自定义理由",
-    customReasonPlaceholder: "请输入自定义理由",
-    customNoteLabel: "编写留言",
-    customNotePlaceholder: "写点什么吧...",
-    bgLabel: "背景图片 (3:4)",
-    bgBtn: "📸 选择背景图",
-    qrLabel: "收款 QR 码图片 (1:1)",
-    qrBtn: "💳 选择 QR 码",
-    backBtn: "⬅ 返回",
-    genCardBtn: "生成卡片 ✨",
-    step4Title: "🎉 您的零花钱请求卡 🎉",
-    qrHint: "扫码支持一下零花钱 👇",
-    saveBtn: "💾 保存 QR 码",
-    shareBtn: "📤 分享",
-    profileReturnBtn: "🏠 返回个人中心",
-    modalTitle: "📤 分享卡片",
-    modalSub: "发送链接与卡片：",
-    copyLinkBtn: "📋 复制链接",
-    dl1to1Btn: "📥 下载 1:1 图片",
-    closeBtn: "关闭",
-    alertNote: "❌ 请填写留言内容。",
-    alertBg: "❌ 请上传背景图片。",
-    alertQr: "❌ 请上传收款二维码。",
-    reasons: [
-      { val: "讨要节日零花钱", text: "讨要节日零花钱" },
-      { val: "与对象约会", text: "与对象约会" },
-      { val: "与朋友聚会", text: "与朋友聚会" },
-      { val: "钱包空空", text: "钱包空空" },
-      { val: "အခြား", text: "其他 (自定义)" }
-    ]
-  },
-  ja: {
-    introMsg: "ようこそ 👋 少々お待ちください...",
-    loaderMsg: "読み込み中...",
-    authTitle: "✨ ログイン / 新規登録 ✨",
-    modeSelectLabel: "モードを選択",
-    optLogin: "ログイン (アカウントをお持ちの方)",
-    optSignup: "新規登録 (アカウント作成)",
-    nameLabel: "お名前",
-    namePlaceholder: "名前を入力",
-    numLabel: "識別番号",
-    numPlaceholder: "番号を入力",
-    passLabel: "パスワード",
-    passPlaceholder: "パスワードを入力",
-    pass2Label: "パスワード再入力",
-    pass2Placeholder: "もう一度入力してください",
-    loginBtn: "ログイン 🔓",
-    signupBtn: "アカウント作成 ✨",
-    profileTitle: "👤 プロフィール (Profile)",
-    changeAvatar: "📷 アバター変更",
-    reqPocketBtn: "🧧 お小遣いをおねだり",
-    historyBtn: "📜 リクエスト履歴",
-    step3Title: "🎈 おねだりの理由を選択 🎈",
-    dropdownLabel: "理由を選択",
-    customReasonLabel: "自由入力",
-    customReasonPlaceholder: "理由を入力...",
-    customNoteLabel: "メッセージを添える",
-    customNotePlaceholder: "メッセージを入力...",
-    bgLabel: "背景画像 (3:4 Ratio)",
-    bgBtn: "📸 背景画像を選択",
-    qrLabel: "受取用QRコード (1:1 Ratio)",
-    qrBtn: "💳 QRコードを選択",
-    backBtn: "⬅ 戻る",
-    genCardBtn: "カードを作成 ✨",
-    step4Title: "🎉 おねだりカード完成 🎉",
-    qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 QRを保存",
-    shareBtn: "📤 共有する",
-    profileReturnBtn: "🏠 プロフィールへ戻る",
-    modalTitle: "📤 カードを共有",
-    modalSub: "リンクと画像を送信:",
-    copyLinkBtn: "📋 リンクをコピー",
-    dl1to1Btn: "📥 1:1画像を保存",
-    closeBtn: "閉じる",
-    alertNote: "❌ メッセージを入力してください。",
-    alertBg: "❌ 背景画像をアップロードしてください。",
-    alertQr: "❌ QRコード画像をアップロードしてください。",
-    reasons: [
-      { val: "お小遣いリクエスト", text: "お小遣いリクエスト" },
-      { val: "恋人とデート費用", text: "恋人とデート費用" },
-      { val: "友達とお出かけ", text: "友達とお出かけ" },
-      { val: "ピンチでお金がない", text: "ピンチでお金がない" },
-      { val: "အခြား", text: "その他 (自由入力)" }
-    ]
-  },
-  ko: {
-    introMsg: "환영합니다 👋 잠시만 기다려주세요...",
-    loaderMsg: "로딩 중...",
-    authTitle: "✨ 로그인 / 회원가입 ✨",
-    modeSelectLabel: "모드 선택",
-    optLogin: "로그인 (기존 계정)",
-    optSignup: "회원가입 (신규 계정)",
-    nameLabel: "이름",
-    namePlaceholder: "이름을 입력하세요",
-    numLabel: "식별 번호",
-    numPlaceholder: "번호를 입력하세요",
-    passLabel: "비밀번호",
-    passPlaceholder: "비밀번호 입력",
-    pass2Label: "비밀번호 확인",
-    pass2Placeholder: "비밀번호 재입력",
-    loginBtn: "로그인 🔓",
-    signupBtn: "계정 생성 ✨",
-    profileTitle: "👤 프로필 대시보드",
-    changeAvatar: "📷 프로필 사진 변경",
-    reqPocketBtn: "🧧 용돈 요청하기",
-    historyBtn: "📜 요청 내역",
-    step3Title: "🎈 요청 이유 선택 🎈",
-    dropdownLabel: "이유 선택",
-    customReasonLabel: "직접 입력",
-    customReasonPlaceholder: "이유를 입력하세요",
-    customNoteLabel: "메시지 작성",
-    customNotePlaceholder: "메시지를 작성하세요...",
-    bgLabel: "배경 이미지 (3:4 비율)",
-    bgBtn: "📸 배경 이미지 선택",
-    qrLabel: "송금 QR 코드 (1:1 비율)",
-    qrBtn: "💳 QR 코드 이미지 선택",
-    backBtn: "⬅ 뒤로가기",
-    genCardBtn: "카드 만들기 ✨",
-    step4Title: "🎉 용돈 요청 카드 🎉",
-    qrHint: "스캔하여 용돈 보내기 👇",
-    saveBtn: "💾 QR 저장",
-    shareBtn: "📤 공유하기",
-    profileReturnBtn: "🏠 프로필로 돌아가기",
-    modalTitle: "📤 카드 공유",
-    modalSub: "링크 및 이미지 전달:",
-    copyLinkBtn: "📋 링크 복사",
-    dl1to1Btn: "📥 1:1 이미지 다운로드",
-    closeBtn: "닫기",
-    alertNote: "❌ 요청 메시지를 작성해 주세요.",
-    alertBg: "❌ 배경 이미지를 업로드해 주세요.",
-    alertQr: "❌ QR 코드 이미지를 업로드해 주세요.",
-    reasons: [
-      { val: "용돈 요청", text: "용돈 요청" },
-      { val: "연인과 데이트 비용", text: "연인과 데이트 비용" },
-      { val: "친구들과 놀러가기", text: "친구들과 놀러가기" },
-      { val: "지갑이 비었어요", text: "지갑이 비었어요" },
-      { val: "အခြား", text: "기타 (직접 작성)" }
-    ]
   }
 };
 
@@ -626,11 +410,12 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
+    // ပုံဖိုင်ဆိုဒ်ကို ပိုမိုသေးငယ်အောင် သေချာကျုံ့ထားပါသည်
     if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 400, 0.6);
+      savedBgImage = await compressFileToDataUrl(selectedBgFile, 250, 0.3);
     }
     if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 300, 0.7);
+      savedQrImage = await compressFileToDataUrl(selectedQrFile, 200, 0.4);
     }
 
     const payload = {
@@ -643,7 +428,7 @@ async function generateAndSaveCard() {
 
     const sb = getSupabase();
     if (!sb) {
-      throw new Error('Supabase client failed to load');
+      throw new Error('Supabase SDK မတက်ပါ။ index.html တွင် Supabase Script သေချာပါမပါ စစ်ဆေးပါ။');
     }
 
     const { data, error } = await sb
@@ -673,7 +458,7 @@ async function generateAndSaveCard() {
   } catch (err) {
     console.error('Supabase Save Error:', err);
     if (loader) loader.classList.remove('show');
-    alert('ကတ်ဖန်တီးရာတွင် အမှားအယွင်းရှိပါသည်။ အင်တာနက်လိုင်း စစ်ဆေးပြီး ပြန်စမ်းပေးပါ။');
+    alert('Error: ' + (err.message || JSON.stringify(err)));
   }
 }
 
@@ -710,71 +495,5 @@ function copyShareLink() {
 
 function changeLanguage(lang) {
   currentLang = lang;
-  const d = i18n[lang] || i18n['my'];
-
-  if (document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
-  if (document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
-
-  if (document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
-  if (document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = d.modeSelectLabel;
-  
-  const authSelect = document.getElementById('authModeSelect');
-  if (authSelect) {
-    authSelect.options[0].text = d.optLogin;
-    authSelect.options[1].text = d.optSignup;
-  }
-
-  if (document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = d.nameLabel;
-  if (document.getElementById('loginName')) document.getElementById('loginName').placeholder = d.namePlaceholder;
-
-  if (document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = d.passLabel;
-  if (document.getElementById('loginPass')) document.getElementById('loginPass').placeholder = d.passPlaceholder;
-
-  if (document.getElementById('btn_login')) document.getElementById('btn_login').innerText = d.loginBtn;
-
-  if (document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = d.nameLabel;
-  if (document.getElementById('signupName')) document.getElementById('signupName').placeholder = d.namePlaceholder;
-
-  if (document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = d.numLabel;
-  if (document.getElementById('signupNum')) document.getElementById('signupNum').placeholder = d.numPlaceholder;
-
-  if (document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = d.passLabel;
-  if (document.getElementById('signupPass1')) document.getElementById('signupPass1').placeholder = d.passPlaceholder;
-
-  if (document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = d.pass2Label;
-  if (document.getElementById('signupPass2')) document.getElementById('signupPass2').placeholder = d.pass2Placeholder;
-
-  if (document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = d.signupBtn;
-
-  if (document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
-  if (document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
-  if (document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
-  if (document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
-
-  if (document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
-  if (document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
-  if (document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
-  if (document.getElementById('customReason')) document.getElementById('customReason').placeholder = d.customReasonPlaceholder;
-  if (document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = d.customNoteLabel;
-  if (document.getElementById('customNote')) document.getElementById('customNote').placeholder = d.customNotePlaceholder;
-  if (document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = d.bgLabel;
-  if (document.getElementById('bgImgLabel') && !savedBgImage) document.getElementById('bgImgLabel').innerText = d.bgBtn;
-  if (document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = d.qrLabel;
-  if (document.getElementById('qrImgLabel') && !savedQrImage) document.getElementById('qrImgLabel').innerText = d.qrBtn;
-  if (document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = d.backBtn;
-  if (document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
-
   populateReasonDropdown(lang);
-
-  if (document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
-  if (document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = d.qrHint;
-  if (document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
-  if (document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
-  if (document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
-
-  if (document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = d.modalTitle;
-  if (document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = d.modalSub;
-  if (document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = d.copyLinkBtn;
-  if (document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = d.dl1to1Btn;
-  if (document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
 }
