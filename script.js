@@ -1,4 +1,4 @@
-// 🔑 သင်၏ Supabase URL နှင့် API Key များကို တိုက်ရိုက် ထည့်သွင်းထားပါသည်။
+// Supabase Credentials
 const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
 
@@ -386,7 +386,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (splash) splash.classList.add('fade-out');
   }, 1500);
 
-  // Supabase မှ ကတ်အချက်အလက်ကို ID ဖြင့် တိုက်ရိုက် ရယူခြင်း
   const urlParams = new URLSearchParams(window.location.search);
   const cardId = urlParams.get('id');
 
@@ -412,7 +411,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             qrImage: data.qr_image
           });
           if (loader) loader.classList.remove('show');
-          showStep(4); // ကတ်ပြားသို့ တိုက်ရိုက်ရောက်ရှိမည်
+          showStep(4);
           return;
         }
       }
@@ -602,7 +601,6 @@ function handleQrImage(input) {
   }
 }
 
-// Supabase Database ထဲသို့ ကတ်အချက်အလက် သိမ်းဆည်းခြင်း
 async function generateAndSaveCard() {
   const reasonDropdown = document.getElementById('reasonDropdown').value;
   const customReason = document.getElementById('customReason').value.trim();

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> မုန့်ဖိုးတောင်းလွှာ Web App</title>
+  <title>မုန့်ဖိုးတောင်းလွှာ Web App</title>
   
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
@@ -40,7 +39,6 @@
       color: var(--text-color);
     }
 
-    /* Intro Splash Screen */
     #introSplash {
       position: fixed;
       inset: 0;
@@ -76,7 +74,6 @@
       margin-bottom: 18px;
     }
 
-    /* အပေါ်ညာဘက်ဒေါင့် ဘာသာစကားရွေးရန် */
     .top-lang-switcher {
       position: absolute;
       top: 15px;
@@ -298,7 +295,6 @@
       box-shadow: none;
     }
 
-    /* Profile Dashboard Styles */
     .profile-container {
       text-align: center;
     }
@@ -343,7 +339,6 @@
       gap: 12px;
     }
 
-    /* Card Export & Qr Styles */
     #exportCard {
       width: 100%;
       aspect-ratio: 3 / 4;
@@ -493,7 +488,7 @@
     <div class="circle-spinner"></div>
   </div>
 
-  <!-- ဘာသာစကား ရွေးချယ်စရာ (၆ မျိုး) -->
+  <!-- ဘာသာစကား ရွေးချယ်စရာ -->
   <div class="top-lang-switcher">
     <select id="userLang" onchange="changeLanguage(this.value)">
       <option value="my" selected>🇲🇲 မြန်မာ</option>
@@ -606,7 +601,6 @@
       <div class="form-group">
         <label for="reasonDropdown" id="lbl_dropdown">အကြောင်းအရာ ရွေးချယ်ရန်</label>
         <select id="reasonDropdown" onchange="toggleCustomReason()">
-          <!-- JavaScript မှ အလိုအလျောက် ဘာသာစကားအလိုက် ဖြည့်စွက်ပေးမည် -->
         </select>
       </div>
 
