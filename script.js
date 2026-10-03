@@ -23,46 +23,40 @@ const i18n = {
   my: {
     introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
-    authTitle: "✨ အကောင့်ဝင်ရန် (Login / Signup) ✨",
-    modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
+    authTitle: "အကောင့်ဝင်ရန်",
+    modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
     optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
     optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
-    nameLabel: "သင်၏ နာမည်",
-    namePlaceholder: "နာမည်ရိုက်ပါ",
-    numLabel: "ဂဏန်း (ကုဒ်နံပါတ်)",
-    numPlaceholder: "ဂဏန်းရိုက်ပါ",
-    passLabel: "Password",
-    passPlaceholder: "Password ရိုက်ပါ",
-    pass2Label: "Password ထပ်မံရိုက်ပါ (Confirm)",
-    pass2Placeholder: "Password ကို ထပ်ရိုက်ပါ",
-    loginBtn: "အကောင့်ဝင်မည် 🔓",
-    signupBtn: "အကောင့်အသစ်ဖွင့်မည် ✨",
+    loginName: "သင်၏ နာမည်",
+    loginPass: "Password",
+    btnLogin: "အကောင့်ဝင်မည် 🔓",
+    signupName: "သင်၏ နာမည်",
+    signupNum: "ဂဏန်း (ကုဒ်နံပါတ်)",
+    signupPass1: "Password",
+    signupPass2: "Password ထပ်မံရိုက်ပါ (Confirm)",
+    btnSignup: "အကောင့်အသစ်ဖွင့်မည် ✨",
     profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
     changeAvatar: "📷 Profile ပုံပြောင်းရန်",
     reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
     historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
-    step3Title: "🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈",
-    dropdownLabel: "အကြောင်းအရာ ရွေးချယ်ရန်",
-    customReasonLabel: "ကိုယ်တိုင်စာရေးရန်",
-    customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
-    customNoteLabel: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
-    customNotePlaceholder: "စာစီပါ...",
-    bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
-    bgBtn: "📸 နောက်ခံပုံ ရွေးရန် (အကြည်)",
-    qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
-    qrBtn: "💳 QR Code ပုံ ရွေးရန်",
-    backBtn: "⬅ နောက်သို့",
-    genCardBtn: "ကတ်ဖန်တီးမည် ✨",
-    step4Title: "🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉",
+    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
+    dropdown: "အကြောင်းအရာ ရွေးချယ်ရန်",
+    customReason: "ကိုယ်တိုင်စာရေးရန်",
+    customNote: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
+    bgLabel: "နောက်ခံပုံ",
+    qrLabel: "QR Code / အချက်အလက်ပုံ",
+    backStep3: "⬅ နောက်သို့",
+    genCard: "ကတ်ဖန်တီးမည် ✨",
+    step4Title: "🎉 မုန့်ဖိုးတောင်းလွှာ 🎉",
     qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 Save QR",
-    shareBtn: "📤 Share",
-    profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
+    saveQr: "Save QR",
+    share: "Share",
+    profileReturn: "🏠 Profile သို့ပြန်ရန်",
     modalTitle: "📤 မျှဝေရန် (Share)",
     modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
-    copyLinkBtn: "📋 လင့်ခ် ကူးယူရန်",
-    dl1to1Btn: "📥 1:1 ပုံ သိမ်းရန်",
-    closeBtn: "ပိတ်မည်",
+    copyLink: "📋 လင့်ခ် ကူးယူရန်",
+    dlQrModal: "📥 1:1 ပုံ သိမ်းရန်",
+    closeModal: "ပိတ်မည်",
     alertNote: "❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။",
     alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။",
     alertQr: "❌ ကျေးဇူးပြု၍ QR Code / အချက်အလက်ပုံ ထည့်ပါ။",
@@ -77,46 +71,40 @@ const i18n = {
   en: {
     introMsg: "Welcome 👋 Please wait...",
     loaderMsg: "Please wait...",
-    authTitle: "✨ Login / Signup ✨",
-    modeSelectLabel: "Select Option",
+    authTitle: "Login / Signup",
+    modeSelect: "Select Option",
     optLogin: "Login (Existing Account)",
     optSignup: "Sign Up (New Account)",
-    nameLabel: "Your Name",
-    namePlaceholder: "Enter your name",
-    numLabel: "Number / Code",
-    numPlaceholder: "Enter code number",
-    passLabel: "Password",
-    passPlaceholder: "Enter password",
-    pass2Label: "Confirm Password",
-    pass2Placeholder: "Re-enter password",
-    loginBtn: "Login 🔓",
-    signupBtn: "Create Account ✨",
+    loginName: "Your Name",
+    loginPass: "Password",
+    btnLogin: "Login 🔓",
+    signupName: "Your Name",
+    signupNum: "Number / Code",
+    signupPass1: "Password",
+    signupPass2: "Confirm Password",
+    btnSignup: "Create Account ✨",
     profileTitle: "👤 Profile Dashboard",
     changeAvatar: "📷 Change Profile Picture",
     reqPocketBtn: "🧧 Request Pocket Money",
     historyBtn: "📜 Request History",
-    step3Title: "🎈 Select Request Reason 🎈",
-    dropdownLabel: "Choose Reason",
-    customReasonLabel: "Custom Reason",
-    customReasonPlaceholder: "Write custom reason",
-    customNoteLabel: "Write Request Note",
-    customNotePlaceholder: "Write your note here...",
-    bgLabel: "Background Image (3:4 HD)",
-    bgBtn: "📸 Select HD Background",
-    qrLabel: "Payment QR Code (HD)",
-    qrBtn: "💳 Select QR Code Image",
-    backBtn: "⬅ Back",
-    genCardBtn: "Create Card ✨",
+    step3Title: "Select Request Reason",
+    dropdown: "Choose Reason",
+    customReason: "Custom Reason",
+    customNote: "Write Request Note",
+    bgLabel: "Background Image",
+    qrLabel: "Payment QR Code",
+    backStep3: "⬅ Back",
+    genCard: "Create Card ✨",
     step4Title: "🎉 Your Request Card 🎉",
     qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 Save QR",
-    shareBtn: "📤 Share",
-    profileReturnBtn: "🏠 Back to Profile",
+    saveQr: "Save QR",
+    share: "Share",
+    profileReturn: "🏠 Back to Profile",
     modalTitle: "📤 Share Request",
     modalSub: "Send card and link via:",
-    copyLinkBtn: "📋 Copy Link",
-    dl1to1Btn: "📥 Download 1:1 Image",
-    closeBtn: "Close",
+    copyLink: "📋 Copy Link",
+    dlQrModal: "📥 Download QR",
+    closeModal: "Close",
     alertNote: "❌ Please write a request note.",
     alertBg: "❌ Please upload a background image.",
     alertQr: "❌ Please upload a QR code image.",
@@ -127,10 +115,201 @@ const i18n = {
       { val: "Out of Money", text: "Out of Money" },
       { val: "အခြား", text: "Other (Custom Write)" }
     ]
+  },
+  th: {
+    introMsg: "ยินดีต้อนรับ 👋 กรุณารอสักครู่...",
+    loaderMsg: "กรุณารอสักครู่...",
+    authTitle: "เข้าสู่ระบบ / สมัครสมาชิก",
+    modeSelect: "เลือกตัวเลือก",
+    optLogin: "เข้าสู่ระบบ (บัญชีที่มีอยู่)",
+    optSignup: "สมัครสมาชิก (บัญชีใหม่)",
+    loginName: "ชื่อของคุณ",
+    loginPass: "รหัสผ่าน",
+    btnLogin: "เข้าสู่ระบบ 🔓",
+    signupName: "ชื่อของคุณ",
+    signupNum: "หมายเลข / รหัส",
+    signupPass1: "รหัสผ่าน",
+    signupPass2: "ยืนยันรหัสผ่าน",
+    btnSignup: "สร้างบัญชี ✨",
+    profileTitle: "👤 หน้าโปรไฟล์",
+    changeAvatar: "📷 เปลี่ยนรูปโปรไฟล์",
+    reqPocketBtn: "🧧 ขอค่าขนม",
+    historyBtn: "📜 ประวัติการขอ",
+    step3Title: "เลือกเหตุผลในการขอค่าขนม",
+    dropdown: "เลือกเหตุผล",
+    customReason: "เหตุผลอื่นๆ",
+    customNote: "เขียนข้อความขอค่าขนม",
+    bgLabel: "รูปภาพพื้นหลัง",
+    qrLabel: "รูปคิวอาร์โค้ดชำระเงิน",
+    backStep3: "⬅ ย้อนกลับ",
+    genCard: "สร้างการ์ด ✨",
+    step4Title: "🎉 การ์ดขอค่าขนมของคุณ 🎉",
+    qrHint: "สแกนหรือจ่ายเพื่อส่งค่าขนม 👇",
+    saveQr: "บันทึก QR",
+    share: "แชร์",
+    profileReturn: "🏠 กลับสู่โปรไฟล์",
+    modalTitle: "📤 แชร์คำขอ",
+    modalSub: "ส่งการ์ดและลิงก์ผ่าน:",
+    copyLink: "📋 คัดลอกลิงก์",
+    dlQrModal: "📥 บันทึกรูป QR",
+    closeModal: "ปิด",
+    alertNote: "❌ กรุณากรอกข้อความขอค่าขนม",
+    alertBg: "❌ กรุณาอัปโหลดรูปภาพพื้นหลัง",
+    alertQr: "❌ กรุณาอัปโหลดรูป QR Code",
+    reasons: [
+      { val: "ขอค่าขนม", text: "ขอค่าขนม" },
+      { val: "ไปเดทกับแฟน", text: "ไปเดทกับแฟน" },
+      { val: "ไปเที่ยวกับเพื่อน", text: "ไปเที่ยวกับเพื่อน" },
+      { val: "เงินหมดแล้ว", text: "เงินหมดแล้ว" },
+      { val: "အခြား", text: "อื่นๆ (เขียนเอง)" }
+    ]
+  },
+  zh: {
+    introMsg: "欢迎 👋 请稍候...",
+    loaderMsg: "请稍候...",
+    authTitle: "登录 / 注册",
+    modeSelect: "选择选项",
+    optLogin: "登录（已有账号）",
+    optSignup: "注册（新账号）",
+    loginName: "您的姓名",
+    loginPass: "密码",
+    btnLogin: "登录 🔓",
+    signupName: "您的姓名",
+    signupNum: "编号",
+    signupPass1: "密码",
+    signupPass2: "确认密码",
+    btnSignup: "创建账号 ✨",
+    profileTitle: "👤 个人中心",
+    changeAvatar: "📷 更换头像",
+    reqPocketBtn: "🧧 索要零花钱",
+    historyBtn: "📜 历史记录",
+    step3Title: "选择索要原因",
+    dropdown: "选择原因",
+    customReason: "自定义原因",
+    customNote: "填写留言",
+    bgLabel: "背景图片",
+    qrLabel: "收款二维码",
+    backStep3: "⬅ 返回",
+    genCard: "生成卡片 ✨",
+    step4Title: "🎉 您的零花钱申请卡 🎉",
+    qrHint: "扫码或转账零花钱 👇",
+    saveQr: "保存二维码",
+    share: "分享",
+    profileReturn: "🏠 返回个人中心",
+    modalTitle: "📤 分享申请",
+    modalSub: "通过以下方式发送卡片和链接：",
+    copyLink: "📋 复制链接",
+    dlQrModal: "📥 下载二维码",
+    closeModal: "关闭",
+    alertNote: "❌ 请填写留言内容。",
+    alertBg: "❌ 请上传背景图片。",
+    alertQr: "❌ 请上传二维码图片。",
+    reasons: [
+      { val: "零花钱申请", text: "零花钱申请" },
+      { val: "约会", text: "约会" },
+      { val: "和朋友聚会", text: "和朋友聚会" },
+      { val: "没钱了", text: "没钱了" },
+      { val: "အခြား", text: "其他 (自定义)" }
+    ]
+  },
+  ja: {
+    introMsg: "ようこそ 👋 少々お待ちください...",
+    loaderMsg: "お待ちください...",
+    authTitle: "ログイン / 登録",
+    modeSelect: "オプション選択",
+    optLogin: "ログイン (既存アカウント)",
+    optSignup: "新規登録 (アカウント作成)",
+    loginName: "お名前",
+    loginPass: "パスワード",
+    btnLogin: "ログイン 🔓",
+    signupName: "お名前",
+    signupNum: "番号 / コード",
+    signupPass1: "パスワード",
+    signupPass2: "パスワード確認",
+    btnSignup: "アカウント作成 ✨",
+    profileTitle: "👤 プロフィール",
+    changeAvatar: "📷 アバター変更",
+    reqPocketBtn: "🧧 お小遣いを請求する",
+    historyBtn: "📜 履歴",
+    step3Title: "請求理由の選択",
+    dropdown: "理由を選択",
+    customReason: "カスタム理由",
+    customNote: "メッセージを入力",
+    bgLabel: "背景画像",
+    qrLabel: "QRコード画像",
+    backStep3: "⬅ 戻る",
+    genCard: "カード作成 ✨",
+    step4Title: "🎉 あなたのお小遣い請求カード 🎉",
+    qrHint: "スキャンして送金 👇",
+    saveQr: "QR保存",
+    share: "シェア",
+    profileReturn: "🏠 プロフィールに戻る",
+    modalTitle: "📤 シェア",
+    modalSub: "カードとリンクを送信:",
+    copyLink: "📋 リンクコピー",
+    dlQrModal: "📥 QR保存",
+    closeModal: "閉じる",
+    alertNote: "❌ メッセージを入力してください。",
+    alertBg: "❌ 背景画像をアップロードしてください。",
+    alertQr: "❌ QRコード画像をアップロードしてください。",
+    reasons: [
+      { val: "お小遣い請求", text: "お小遣い請求" },
+      { val: "デート", text: "デート" },
+      { val: "友達とお出かけ", text: "友達とお出かけ" },
+      { val: "お金がない", text: "お金がない" },
+      { val: "အခြား", text: "その他 (自由入力)" }
+    ]
+  },
+  ko: {
+    introMsg: "환영합니다 👋 잠시만 기다려주세요...",
+    loaderMsg: "잠시만 기다려주세요...",
+    authTitle: "로그인 / 회원가입",
+    modeSelect: "옵션 선택",
+    optLogin: "로그인 (기존 계정)",
+    optSignup: "회원가입 (새 계정)",
+    loginName: "이름",
+    loginPass: "비밀번호",
+    btnLogin: "로그인 🔓",
+    signupName: "이름",
+    signupNum: "번호 / 코드",
+    signupPass1: "비밀번호",
+    signupPass2: "비밀번호 확인",
+    btnSignup: "계정 생성 ✨",
+    profileTitle: "👤 프로필 대시보드",
+    changeAvatar: "📷 아바타 변경",
+    reqPocketBtn: "🧧 용돈 요청하기",
+    historyBtn: "📜 요청 내역",
+    step3Title: "용돈 요청 사유 선택",
+    dropdown: "사유 선택",
+    customReason: "직접 입력",
+    customNote: "요청 메시지 작성",
+    bgLabel: "배경 이미지",
+    qrLabel: "결제 QR 코드",
+    backStep3: "⬅ 뒤로",
+    genCard: "카드 만들기 ✨",
+    step4Title: "🎉 용돈 요청 카드 🎉",
+    qrHint: "스캔하여 송금하세요 👇",
+    saveQr: "QR 저장",
+    share: "공유",
+    profileReturn: "🏠 프로필로 돌아가기",
+    modalTitle: "📤 공유하기",
+    modalSub: "카드 및 링크 공유:",
+    copyLink: "📋 링크 복사",
+    dlQrModal: "📥 QR 다운로드",
+    closeModal: "닫기",
+    alertNote: "❌ 요청 메시지를 작성해주세요.",
+    alertBg: "❌ 배경 이미지를 업로드해주세요.",
+    alertQr: "❌ QR 코드 이미지를 업로드해주세요.",
+    reasons: [
+      { val: "용돈 요청", text: "용돈 요청" },
+      { val: "데이트 비용", text: "데이트 비용" },
+      { val: "친구들과 놀기", text: "친구들과 놀기" },
+      { val: "잔고 부족", text: "잔고 부족" },
+      { val: "အခြား", text: "기타 (직접 작성)" }
+    ]
   }
 };
 
-// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85) သို့ မြှင့်ထားပါသည်
 function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
@@ -142,20 +321,15 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          
           if (width > maxWidth) {
             height = Math.round((height * maxWidth) / width);
             width = maxWidth;
           }
-          
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
-          
-          // ပုံအရည်အသွေး အထူးကောင်းမွန်စေရန် Smooth Image Rendering သုံးခြင်း
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
-          
           ctx.drawImage(img, 0, 0, width, height);
           resolve(canvas.toDataURL('image/jpeg', quality));
         } catch (err) {
@@ -171,7 +345,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  populateReasonDropdown(currentLang);
+  changeLanguage(currentLang);
 
   setTimeout(() => {
     const splash = document.getElementById('introSplash');
@@ -224,10 +398,6 @@ function renderCardData(data) {
     const bgEl = document.getElementById('cardBgImg');
     bgEl.src = data.bgImage;
     bgEl.style.display = 'block';
-    // 3:4 Ratio နှင့် လှပစေရန် CSS Styling ထည့်သွင်းခြင်း
-    bgEl.style.width = '100%';
-    bgEl.style.height = '100%';
-    bgEl.style.objectFit = 'cover';
   }
   if (data.qrImage) {
     savedQrImage = data.qrImage;
@@ -386,14 +556,14 @@ function populateReasonDropdown(lang) {
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
     selectedBgFile = input.files[0];
-    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
+    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ`;
   }
 }
 
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
     selectedQrFile = input.files[0];
-    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
+    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ`;
   }
 }
 
@@ -422,7 +592,6 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
-    // ပုံမဝါးစေရန် အကြည်ဓာတ်အမြင့်ဆုံး (HD) ဖြင့် ပြုပြင်သိမ်းဆည်းခြင်း
     if (selectedBgFile) {
       savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
     }
@@ -440,7 +609,7 @@ async function generateAndSaveCard() {
 
     const sb = getSupabase();
     if (!sb) {
-      throw new Error('Supabase SDK မတက်ပါ။ index.html တွင် Supabase Script ရှိမရှိ စစ်ဆေးပါ။');
+      throw new Error('Supabase SDK error.');
     }
 
     const { data, error } = await sb
@@ -448,9 +617,7 @@ async function generateAndSaveCard() {
       .insert([payload])
       .select();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (data && data.length > 0) {
       const generatedId = data[0].id;
@@ -507,5 +674,57 @@ function copyShareLink() {
 
 function changeLanguage(lang) {
   currentLang = lang;
+  const t = i18n[lang] || i18n['my'];
+  
+  // Update UI texts safely
+  const setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+  
+  setTxt('introMsg', t.introMsg);
+  setTxt('lbl_loaderMsg', t.loaderMsg);
+  setTxt('lbl_authTitle', t.authTitle);
+  setTxt('lbl_modeSelect', t.modeSelect);
+  
+  const authModeSelect = document.getElementById('authModeSelect');
+  if(authModeSelect && authModeSelect.options.length >= 2) {
+    authModeSelect.options[0].text = t.optLogin;
+    authModeSelect.options[1].text = t.optSignup;
+  }
+  
+  setTxt('lbl_loginName', t.loginName);
+  setTxt('lbl_loginPass', t.loginPass);
+  setTxt('btn_login', t.btnLogin);
+  
+  setTxt('lbl_signupName', t.signupName);
+  setTxt('lbl_signupNum', t.signupNum);
+  setTxt('lbl_signupPass1', t.signupPass1);
+  setTxt('lbl_signupPass2', t.signupPass2);
+  setTxt('btn_signup', t.btnSignup);
+  
+  setTxt('lbl_profileTitle', t.profileTitle);
+  setTxt('lbl_changeAvatar', t.changeAvatar);
+  setTxt('lbl_reqPocketBtn', t.reqPocketBtn);
+  setTxt('lbl_historyBtn', t.historyBtn);
+  
+  setTxt('lbl_step3Title', t.step3Title);
+  setTxt('lbl_dropdown', t.dropdown);
+  setTxt('lbl_customReason', t.customReason);
+  setTxt('lbl_customNote', t.customNote);
+  setTxt('lbl_bgLabel', t.bgLabel);
+  setTxt('lbl_qrLabel', t.qrLabel);
+  setTxt('btn_backStep3', t.backStep3);
+  setTxt('btn_genCard', t.genCard);
+  
+  setTxt('lbl_step4Title', t.step4Title);
+  setTxt('lbl_qrHint', t.qrHint);
+  setTxt('btn_saveQr', t.saveQr);
+  setTxt('btn_share', t.share);
+  setTxt('btn_profileReturn', t.profileReturn);
+  
+  setTxt('lbl_modalTitle', t.modalTitle);
+  setTxt('lbl_modalSub', t.modalSub);
+  setTxt('btn_copyLink', t.copyLink);
+  setTxt('btn_dlQrModal', t.dlQrModal);
+  setTxt('btn_closeModal', t.closeModal);
+  
   populateReasonDropdown(lang);
 }
