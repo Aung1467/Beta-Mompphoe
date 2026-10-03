@@ -1,6 +1,8 @@
 let currentUser = null;
 let savedBgImage = '';
 let savedQrImage = '';
+let selectedBgFile = null;
+let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 
@@ -331,28 +333,36 @@ const i18n = {
   }
 };
 
-// ပုံအရွယ်အစားနှင့် ဖိုင်ဆိုဒ်ကို မြန်ဆန်စွာ အဆင်ပြေအောင် သေးပေးသည့် ဖန်ရှင်
-function compressImage(file, maxWidth, quality, callback) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      let width = img.width;
-      let height = img.height;
-      if (width > maxWidth) {
-        height = Math.round((height * maxWidth) / width);
-        width = maxWidth;
-      }
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
-      callback(canvas.toDataURL('image/jpeg', quality));
+function compressFileToDataUrl(file, maxWidth, quality) {
+  return new Promise((resolve) => {
+    if (!file) return resolve('');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } catch (err) {
+          resolve(e.target.result);
+        }
+      };
+      img.onerror = () => resolve(e.target.result);
+      img.src = e.target.result;
     };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -363,7 +373,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (splash) splash.classList.add('fade-out');
   }, 1500);
 
-  // လင့်ခ်ထဲမှ ID ကို စစ်ဆေး၍ ကတ်ကို တိုက်ရိုက် (Direct) ပြသခြင်း
   const urlParams = new URLSearchParams(window.location.search);
   const cardId = urlParams.get('id');
 
@@ -372,20 +381,31 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (loader) loader.classList.add('show');
 
     try {
-      const res = await fetch(`https://jsonblob.com/api/jsonBlob/${cardId}`);
+      const res = await fetch(`https://api.restful-api.dev/objects/${cardId}`);
       if (res.ok) {
-        const data = await res.json();
-        renderCardData(data);
+        const resData = await res.json();
+        const cardData = resData.data || resData;
+        renderCardData(cardData);
         if (loader) loader.classList.remove('show');
-        showStep(4); // ကတ်ပြားဆီ သို့ တိုက်ရိုက်ရောက်ရှိမည်
-      } else {
-        if (loader) loader.classList.remove('show');
-        alert('ကတ်အချက်အလက် ရှာမတွေ့ပါ။');
+        showStep(4);
+        return;
       }
     } catch (err) {
-      console.error(err);
-      if (loader) loader.classList.remove('show');
-      alert('အချက်အလက် ရယူရာတွင် အမှားအယွင်းရှိပါသည်။');
+      console.error('Fetch card error:', err);
+    }
+    if (loader) loader.classList.remove('show');
+  }
+
+  // Fallback for Hash links (#c=)
+  if (window.location.hash.startsWith('#c=')) {
+    try {
+      const encodedData = window.location.hash.substring(3);
+      const jsonString = decodeURIComponent(encodedData);
+      const data = JSON.parse(jsonString);
+      renderCardData(data);
+      showStep(4);
+    } catch (err) {
+      console.error('Hash parse error:', err);
     }
   }
 });
@@ -557,19 +577,15 @@ function populateReasonDropdown(lang) {
 
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
+    selectedBgFile = input.files[0];
     document.getElementById('bgImgLabel').innerText = `✅ ${input.files[0].name}`;
-    compressImage(input.files[0], 400, 0.6, (compressedBase64) => {
-      savedBgImage = compressedBase64;
-    });
   }
 }
 
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
+    selectedQrFile = input.files[0];
     document.getElementById('qrImgLabel').innerText = `✅ ${input.files[0].name}`;
-    compressImage(input.files[0], 300, 0.7, (compressedBase64) => {
-      savedQrImage = compressedBase64;
-    });
   }
 }
 
@@ -585,63 +601,63 @@ async function generateAndSaveCard() {
     alert(d.alertNote);
     return;
   }
-  if (!savedBgImage) {
+  if (!selectedBgFile && !savedBgImage) {
     alert(d.alertBg);
     return;
   }
-  if (!savedQrImage) {
+  if (!selectedQrFile && !savedQrImage) {
     alert(d.alertQr);
     return;
   }
 
   const loader = document.getElementById('stepLoader');
-  loader.classList.add('show');
-
-  const payload = {
-    sender: currentUser ? currentUser.name : 'Aung',
-    reason: finalReason,
-    note: customNote,
-    bgImage: savedBgImage,
-    qrImage: savedQrImage
-  };
+  if (loader) loader.classList.add('show');
 
   try {
-    const res = await fetch('https://jsonblob.com/api/jsonBlob', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-      const locationUrl = res.headers.get('Location') || res.headers.get('location');
-      let blobId = '';
-      if (locationUrl) {
-        blobId = locationUrl.substring(locationUrl.lastIndexOf('/') + 1);
-      }
-
-      if (!blobId) {
-        const resData = await res.json();
-        blobId = resData.id || '';
-      }
-
-      if (blobId) {
-        currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${blobId}`;
-        renderCardData(payload);
-        loader.classList.remove('show');
-        showStep(4);
-      } else {
-        throw new Error('No blob ID returned');
-      }
-    } else {
-      throw new Error('Server returned ' + res.status);
+    if (selectedBgFile) {
+      savedBgImage = await compressFileToDataUrl(selectedBgFile, 350, 0.5);
     }
+    if (selectedQrFile) {
+      savedQrImage = await compressFileToDataUrl(selectedQrFile, 250, 0.6);
+    }
+
+    const payload = {
+      sender: currentUser ? currentUser.name : 'Aung',
+      reason: finalReason,
+      note: customNote,
+      bgImage: savedBgImage,
+      qrImage: savedQrImage
+    };
+
+    let cardId = null;
+    try {
+      const res = await fetch('https://api.restful-api.dev/objects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: "PocketMoneyCard", data: payload })
+      });
+      if (res.ok) {
+        const resData = await res.json();
+        cardId = resData.id;
+      }
+    } catch (e) {
+      console.warn('API save failed, fallback used:', e);
+    }
+
+    if (cardId) {
+      currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${cardId}`;
+    } else {
+      const encoded = encodeURIComponent(JSON.stringify(payload));
+      currentShareableLink = `${window.location.origin}${window.location.pathname}#c=${encoded}`;
+    }
+
+    renderCardData(payload);
+    if (loader) loader.classList.remove('show');
+    showStep(4);
   } catch (err) {
     console.error('Save card error:', err);
-    loader.classList.remove('show');
-    alert('ကတ်ဖန်တီးရာတွင် အမှားအယွင်းရှိပါသည်။ အင်တာနက်လိုင်း စစ်ဆေးပြီး ပြန်စမ်းပေးပါ။');
+    if (loader) loader.classList.remove('show');
+    alert('ကတ်ဖန်တီးရာတွင် အမှားအယွင်းရှိပါသည်။ ပြန်စမ်းပေးပါ။');
   }
 }
 
