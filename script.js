@@ -256,7 +256,7 @@ const i18n = {
     genCardBtn: "カードを作成 ✨",
     step4Title: "🎉 おねだりカード完成 🎉",
     qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 QRကို保存",
+    saveBtn: "💾 QRを保存",
     shareBtn: "📤 共有する",
     profileReturnBtn: "🏠 プロフィールへ戻る",
     modalTitle: "📤 カードを共有",
@@ -331,7 +331,7 @@ const i18n = {
   }
 };
 
-// ပုံအရွယ်အစားနှင့် ဖိုင်ဆိုဒ်ကို သေးငယ်အောင် ချုံ့ပေးသည့် Helper Function
+// ပုံအရွယ်အစားနှင့် ဖိုင်ဆိုဒ်ကို မြန်ဆန်စွာ အဆင်ပြေအောင် သေးပေးသည့် ဖန်ရှင်
 function compressImage(file, maxWidth, quality, callback) {
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -361,30 +361,34 @@ window.addEventListener('DOMContentLoaded', async () => {
   setTimeout(() => {
     const splash = document.getElementById('introSplash');
     if (splash) splash.classList.add('fade-out');
-  }, 2000);
+  }, 1500);
 
-  // လင့်ခ်ထဲတွင် ပေးပို့လိုက်သော မုန့်ဖိုးတောင်းလွှာ အချက်အလက်များကို စစ်ဆေးခြင်း
-  loadCardFromHash();
-});
+  // လင့်ခ်ထဲမှ ID ကို စစ်ဆေး၍ ကတ်ကို တိုက်ရိုက် (Direct) ပြသခြင်း
+  const urlParams = new URLSearchParams(window.location.search);
+  const cardId = urlParams.get('id');
 
-function loadCardFromHash() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#c=')) {
+  if (cardId) {
     const loader = document.getElementById('stepLoader');
     if (loader) loader.classList.add('show');
+
     try {
-      const encodedData = hash.substring(3);
-      const jsonString = decodeURIComponent(encodedData);
-      const data = JSON.parse(jsonString);
-      renderCardData(data);
-      if (loader) loader.classList.remove('show');
-      goToStep(4);
+      const res = await fetch(`https://jsonblob.com/api/jsonBlob/${cardId}`);
+      if (res.ok) {
+        const data = await res.json();
+        renderCardData(data);
+        if (loader) loader.classList.remove('show');
+        showStep(4); // ကတ်ပြားဆီ သို့ တိုက်ရိုက်ရောက်ရှိမည်
+      } else {
+        if (loader) loader.classList.remove('show');
+        alert('ကတ်အချက်အလက် ရှာမတွေ့ပါ။');
+      }
     } catch (err) {
-      console.error('Link parse error:', err);
+      console.error(err);
       if (loader) loader.classList.remove('show');
+      alert('အချက်အလက် ရယူရာတွင် အမှားအယွင်းရှိပါသည်။');
     }
   }
-}
+});
 
 function renderCardData(data) {
   document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
@@ -510,15 +514,21 @@ function goToStep(stepNumber) {
   loader.classList.add('show');
   setTimeout(() => {
     loader.classList.remove('show');
-    const steps = document.querySelectorAll('.step');
-    steps.forEach(s => {
-      s.classList.remove('active');
-      s.style.display = 'none';
-    });
-    const target = document.getElementById(`step${stepNumber}`);
+    showStep(stepNumber);
+  }, 800);
+}
+
+function showStep(stepNumber) {
+  const steps = document.querySelectorAll('.step');
+  steps.forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const target = document.getElementById(`step${stepNumber}`);
+  if (target) {
     target.style.display = 'block';
     setTimeout(() => target.classList.add('active'), 50);
-  }, 800);
+  }
 }
 
 function toggleCustomReason() {
@@ -548,7 +558,7 @@ function populateReasonDropdown(lang) {
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
     document.getElementById('bgImgLabel').innerText = `✅ ${input.files[0].name}`;
-    compressImage(input.files[0], 280, 0.4, (compressedBase64) => {
+    compressImage(input.files[0], 400, 0.6, (compressedBase64) => {
       savedBgImage = compressedBase64;
     });
   }
@@ -557,13 +567,13 @@ function handleBgImage(input) {
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
     document.getElementById('qrImgLabel').innerText = `✅ ${input.files[0].name}`;
-    compressImage(input.files[0], 200, 0.5, (compressedBase64) => {
+    compressImage(input.files[0], 300, 0.7, (compressedBase64) => {
       savedQrImage = compressedBase64;
     });
   }
 }
 
-function generateAndSaveCard() {
+async function generateAndSaveCard() {
   const reasonDropdown = document.getElementById('reasonDropdown').value;
   const customReason = document.getElementById('customReason').value.trim();
   const customNote = document.getElementById('customNote').value.trim();
@@ -587,25 +597,52 @@ function generateAndSaveCard() {
   const loader = document.getElementById('stepLoader');
   loader.classList.add('show');
 
-  setTimeout(() => {
-    const payload = {
-      sender: currentUser ? currentUser.name : 'Aung',
-      reason: finalReason,
-      note: customNote,
-      bgImage: savedBgImage,
-      qrImage: savedQrImage
-    };
+  const payload = {
+    sender: currentUser ? currentUser.name : 'Aung',
+    reason: finalReason,
+    note: customNote,
+    bgImage: savedBgImage,
+    qrImage: savedQrImage
+  };
 
-    renderCardData(payload);
+  try {
+    const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-    // အချက်အလက်များနှင့် ပုံများကို လင့်ခ် (URL) ထဲတွင် ထည့်သွင်းပေးခြင်း
-    const jsonString = JSON.stringify(payload);
-    const encodedData = encodeURIComponent(jsonString);
-    currentShareableLink = `${window.location.origin}${window.location.pathname}#c=${encodedData}`;
+    if (res.ok) {
+      const locationUrl = res.headers.get('Location') || res.headers.get('location');
+      let blobId = '';
+      if (locationUrl) {
+        blobId = locationUrl.substring(locationUrl.lastIndexOf('/') + 1);
+      }
 
+      if (!blobId) {
+        const resData = await res.json();
+        blobId = resData.id || '';
+      }
+
+      if (blobId) {
+        currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${blobId}`;
+        renderCardData(payload);
+        loader.classList.remove('show');
+        showStep(4);
+      } else {
+        throw new Error('No blob ID returned');
+      }
+    } else {
+      throw new Error('Server returned ' + res.status);
+    }
+  } catch (err) {
+    console.error('Save card error:', err);
     loader.classList.remove('show');
-    goToStep(4);
-  }, 1000);
+    alert('ကတ်ဖန်တီးရာတွင် အမှားအယွင်းရှိပါသည်။ အင်တာနက်လိုင်း စစ်ဆေးပြီး ပြန်စမ်းပေးပါ။');
+  }
 }
 
 function downloadSingleQr() {
