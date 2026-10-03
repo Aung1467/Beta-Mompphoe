@@ -14,9 +14,8 @@
       --primary: #ff4757;
       --primary-hover: #ff6b81;
       --accent: #00d2d3;
-      --bg-glass: rgba(20, 24, 38, 0.9);
+      --bg-glass: rgba(20, 24, 38, 0.92);
       --radius-custom: 24px;
-      --transition-speed: 1s;
       --text-color: #f1f2f6;
     }
 
@@ -27,16 +26,25 @@
       font-family: 'Padauk', 'Poppins', sans-serif;
     }
 
+    /* UI နောက်ခံ Animated Gradient Wave */
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      background: linear-gradient(-45deg, #1a1c29, #283e51, #485563, #29283e);
+      background-size: 400% 400%;
+      animation: gradientWave 12s ease infinite;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 15px;
       position: relative;
       overflow-x: hidden;
       color: var(--text-color);
+    }
+
+    @keyframes gradientWave {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     #introSplash {
@@ -57,23 +65,6 @@
       pointer-events: none;
     }
 
-    .avatar-wrapper {
-      animation: bounce 2s ease infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .welcome-msg {
-      font-size: 17px;
-      font-weight: bold;
-      color: #00d2d3;
-      margin-bottom: 18px;
-    }
-
     .top-lang-switcher {
       position: absolute;
       top: 15px;
@@ -90,45 +81,6 @@
       color: #fff;
       outline: none;
       cursor: pointer;
-    }
-
-    .ocean {
-      height: 220px;
-      width: 100%;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      overflow: hidden;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .wave {
-      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(0, 210, 211, 0.25)"/></svg>');
-      position: absolute;
-      bottom: 0;
-      width: 200%;
-      height: 100%;
-      animation: wave 10s linear infinite;
-      transform: translate3d(0, 0, 0);
-    }
-
-    .wave:nth-of-type(2) {
-      bottom: -15px;
-      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(255, 71, 87, 0.25)"/></svg>');
-      animation: wave 7s cubic-bezier(0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 6s ease -1.25s infinite;
-      opacity: 0.8;
-    }
-
-    @keyframes wave {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-
-    @keyframes swell {
-      0%, 100% { transform: translateY(-8px); }
-      50% { transform: translateY(18px); }
     }
 
     #stepLoader {
@@ -167,14 +119,13 @@
 
     .app-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 400px;
       background: var(--bg-glass);
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       border-radius: var(--radius-custom);
       border: 1px solid rgba(255, 255, 255, 0.15);
       box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
-      padding: 25px 20px;
+      padding: 20px;
       position: relative;
       z-index: 10;
     }
@@ -183,7 +134,7 @@
       display: none;
       opacity: 0;
       transform: translateY(15px);
-      transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
 
     .step.active {
@@ -195,43 +146,37 @@
     h2 {
       color: #00d2d3;
       text-align: center;
-      font-size: 20px;
-      margin-bottom: 15px;
+      font-size: 18px;
+      margin-bottom: 12px;
       font-weight: 700;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       font-weight: bold;
       color: #dfe4ea;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     input[type="text"], input[type="password"], select, textarea {
       width: 100%;
-      padding: 11px 15px;
-      border-radius: 14px;
+      padding: 10px 14px;
+      border-radius: 12px;
       border: 2px solid rgba(255, 255, 255, 0.1);
       background: rgba(255, 255, 255, 0.08);
       color: #ffffff;
       outline: none;
-      font-size: 14px;
-      transition: all 0.3s ease;
+      font-size: 13px;
     }
 
     select option {
       background: #1e272e;
       color: #ffffff;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 10px rgba(0, 210, 211, 0.3);
     }
 
     .file-input-wrapper {
@@ -254,39 +199,33 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 9px;
       background: rgba(255, 255, 255, 0.05);
       border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: 14px;
+      border-radius: 12px;
       color: #a4b0be;
       cursor: pointer;
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .btn-group {
       display: flex;
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 12px;
     }
 
     .btn {
       flex: 1;
-      padding: 13px;
+      padding: 11px;
       border: none;
-      border-radius: 16px;
+      border-radius: 14px;
       background: linear-gradient(135deg, var(--primary), var(--primary-hover));
       color: white;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 6px 12px rgba(255, 71, 87, 0.3);
-      transition: all 0.3s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 18px rgba(255, 71, 87, 0.4);
+      box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
     }
 
     .btn-secondary {
@@ -295,63 +234,41 @@
       box-shadow: none;
     }
 
-    .profile-container {
-      text-align: center;
-    }
-
+    /* Profile Section */
+    .profile-container { text-align: center; }
     .profile-avatar-box {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      margin: 0 auto 12px;
-      border: 3px solid var(--accent);
-      overflow: hidden;
-      background: rgba(255,255,255,0.1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 20px rgba(0, 210, 211, 0.4);
-      position: relative;
+      width: 80px; height: 80px; border-radius: 50%;
+      margin: 0 auto 10px; border: 3px solid var(--accent);
+      overflow: hidden; background: rgba(255,255,255,0.1);
+      display: flex; justify-content: center; align-items: center;
     }
+    .profile-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-size: 16px; font-weight: bold; color: #ffeaa7; margin-bottom: 4px; }
+    .profile-id { font-size: 11px; color: #a4b0be; margin-bottom: 15px; }
+    .dashboard-actions { display: flex; flex-direction: column; gap: 10px; }
 
-    .profile-avatar-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .profile-name {
-      font-size: 18px;
-      font-weight: bold;
-      color: #ffeaa7;
-      margin-bottom: 5px;
-    }
-
-    .profile-id {
-      font-size: 12px;
-      color: #a4b0be;
-      margin-bottom: 20px;
-    }
-
-    .dashboard-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    /* 3:4 Ratio Export Card & Border Animation */
     #exportCard {
       width: 100%;
+      max-width: 300px;
       aspect-ratio: 3 / 4;
-      border-radius: 24px;
+      margin: 0 auto 12px auto;
+      border-radius: 20px;
       position: relative;
       overflow: hidden;
-      border: 2.5px solid var(--accent);
-      box-shadow: 0 0 30px rgba(0, 210, 211, 0.5), 0 15px 35px rgba(0, 0, 0, 0.6);
-      margin-bottom: 15px;
+      border: 3px solid rgba(0, 210, 211, 0.8);
+      box-shadow: 0 0 25px rgba(0, 210, 211, 0.4), 0 10px 25px rgba(0, 0, 0, 0.6);
+      background: #1e272e;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      padding: 12px;
+      animation: borderGlow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes borderGlow {
+      0% { border-color: rgba(0, 210, 211, 0.6); box-shadow: 0 0 15px rgba(0, 210, 211, 0.3); }
+      100% { border-color: rgba(255, 71, 87, 0.6); box-shadow: 0 0 25px rgba(255, 71, 87, 0.5); }
     }
 
     .card-full-bg {
@@ -360,7 +277,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(1.06) contrast(1.06) saturate(1.05);
       z-index: 1;
       display: none;
     }
@@ -368,83 +284,83 @@
     .card-header-content {
       position: relative;
       z-index: 2;
-      margin: auto;
-      padding: 15px;
-      width: 90%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 8px;
+      border-radius: 10px;
       text-align: center;
     }
 
     .sender-tag {
       display: inline-block;
-      font-size: 12px;
+      font-size: 10px;
       background: var(--primary);
       color: #ffffff;
-      padding: 3px 14px;
-      border-radius: 10px;
-      margin-bottom: 6px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 3px;
       font-weight: 700;
-      box-shadow: 0 4px 10px rgba(255, 71, 87, 0.6);
     }
 
     .card-header-content h3 {
-      font-size: 19px;
+      font-size: 15px;
       color: #ffeaa7;
-      margin-bottom: 5px;
+      margin-bottom: 2px;
       font-weight: 700;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
     .card-header-content p {
-      font-size: 13px;
-      line-height: 1.4;
+      font-size: 11px;
+      line-height: 1.25;
       color: #ffffff;
       font-weight: 600;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
     .card-qr-overlay {
       position: relative;
       z-index: 2;
-      padding: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      padding: 6px;
+      border-radius: 10px;
       text-align: center;
     }
 
     .card-qr-overlay p {
-      font-size: 10px;
+      font-size: 9px;
       color: #00d2d3;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       font-weight: bold;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
     }
 
+    /* QR Image Wrapper with Floating Animation */
     .qr-img-wrapper {
-      width: 100%;
-      max-width: 105px;
-      aspect-ratio: 1 / 1;
+      width: 75px;
+      height: 75px;
       margin: 0 auto;
-      border-radius: 12px;
+      border-radius: 8px;
       overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      background: #ffffff;
       display: none;
     }
 
     .qr-img-wrapper img {
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: cover;
+      animation: floatImage 3s ease-in-out infinite;
     }
 
-    .save-btn {
-      background: linear-gradient(135deg, #2ed573, #26af5f);
-      box-shadow: 0 6px 12px rgba(46, 213, 115, 0.3);
+    @keyframes floatImage {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
     }
 
-    .share-btn {
-      background: linear-gradient(135deg, #3742fa, #2f3542);
-      box-shadow: 0 6px 12px rgba(55, 66, 250, 0.3);
-    }
+    .save-btn { background: linear-gradient(135deg, #2ed573, #26af5f); }
+    .share-btn { background: linear-gradient(135deg, #3742fa, #2f3542); }
 
     #shareModal {
       display: none;
@@ -460,111 +376,32 @@
 
     .modal-content {
       background: #1e272e;
-      padding: 25px 20px;
-      border-radius: 22px;
+      padding: 20px;
+      border-radius: 18px;
       width: 100%;
-      max-width: 360px;
+      max-width: 320px;
       text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
-        /* ၁။ UI တစ်ခုလုံး၏ နောက်ခံကို Smooth ဖြစ်သော Animated Gradient Wave ဖြစ်စေရန် */
-    body {
-      background: linear-gradient(-45deg, #1a1c29, #283e51, #485563, #29283e);
-      background-size: 400% 400%;
-      animation: gradientWave 12s ease infinite;
-      min-height: 100vh;
-      margin: 0;
-      font-family: 'Pyidaungsu', sans-serif;
-      color: #fff;
-    }
-
-    @keyframes gradientWave {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* ၂။ နောက်ခံပုံနှင့် Card ကို 3:4 Ratio နှင့် Border Animation */
-    .card-preview-box, #step4 .card-box, #exportCard {
-      aspect-ratio: 3 / 4;
-      position: relative;
-      overflow: hidden;
-      border-radius: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      border: 3px solid rgba(255, 255, 255, 0.2);
-      animation: borderGlow 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes borderGlow {
-      0% { border-color: rgba(255, 105, 180, 0.6); box-shadow: 0 0 15px rgba(255, 105, 180, 0.4); }
-      50% { border-color: rgba(0, 242, 254, 0.6); box-shadow: 0 0 25px rgba(0, 242, 254, 0.6); }
-      100% { border-color: rgba(147, 51, 234, 0.6); box-shadow: 0 0 15px rgba(147, 51, 234, 0.4); }
-    }
-
-    /* ၃။ QR ပုံနေရာကို သပ်ရပ်သော အချိုးအစားနှင့် Floating Animation ထည့်သွင်းခြင်း */
-    .qr-img-wrapper, #qrWrapper {
-      width: 100%;
-      max-width: 110px;
-      aspect-ratio: 1 / 1;
-      margin: 0 auto;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-      background: rgba(255, 255, 255, 0.95);
-      display: block !important; /* ပုံမပေါ်သည့်ပြဿနာကို ဖြေရှင်းရန် */
-    }
-
-    #cardQrImg {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      animation: floatImage 3.5s ease-in-out infinite;
-    }
-
-    @keyframes floatImage {
-      0%, 100% {
-        transform: translateY(0px) scale(1);
-      }
-      50% {
-        transform: translateY(-4px) scale(1.02);
-      }
-    }
-
-    /* ၄။ နောက်ခံပုံ (Background Image) ပုံမှန်ပေါ်လာစေရန် */
-    .card-full-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(1.05) contrast(1.05);
-      z-index: 1;
-      display: block !important; /* ပုံပေါ်လာစေရန် */
-    }
-
   </style>
 </head>
 <body>
 
   <!-- Intro Splash Screen -->
   <div id="introSplash">
-    <div class="avatar-wrapper">
+    <div style="margin-bottom: 15px;">
       <svg width="45" height="45" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="45" fill="#FFD93D" stroke="#333" stroke-width="3"/>
         <path d="M 32 38 Q 38 28 44 38" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
         <path d="M 56 38 Q 62 28 68 38" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="28" cy="48" r="6" fill="#FF6B6B" opacity="0.6"/>
-        <circle cx="72" cy="48" r="6" fill="#FF6B6B" opacity="0.6"/>
         <path d="M 32 55 Q 50 78 68 55 Z" fill="#333"/>
-        <path d="M 40 63 Q 50 72 60 63" fill="#FF6B6B"/>
       </svg>
     </div>
-    <div class="welcome-msg" id="introMsg">မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...</div>
+    <div id="introMsg" style="font-size: 16px; font-weight: bold; color: #00d2d3; margin-bottom: 15px;">မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...</div>
     <div class="circle-spinner"></div>
   </div>
 
-  <!-- ဘာသာစကား ရွေးချယ်စရာ -->
+  <!-- Language Switcher -->
   <div class="top-lang-switcher">
     <select id="userLang" onchange="changeLanguage(this.value)">
       <option value="my" selected>🇲🇲 မြန်မာ</option>
@@ -578,43 +415,36 @@
 
   <div id="stepLoader">
     <div class="circle-spinner"></div>
-    <p id="lbl_loaderMsg" style="margin-top: 12px; color: #00d2d3; font-weight: bold; font-size: 13px;">ခဏစောင့်ပါ...</p>
+    <p id="lbl_loaderMsg" style="margin-top: 10px; color: #00d2d3; font-weight: bold; font-size: 12px;">ခဏစောင့်ပါ...</p>
   </div>
 
   <div id="shareModal">
     <div class="modal-content">
-      <h3 id="lbl_modalTitle">📤 မျှဝေရန် (Share)</h3>
-      <p id="lbl_modalSub">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -</p>
-      <button class="btn" id="btn_copyLink" style="margin-bottom: 10px; background: linear-gradient(135deg, #3742fa, #2f3542); font-size: 14px;" onclick="copyShareLink()">📋 လင့်ခ် ကူးယူရန်</button>
-      <button class="btn" id="btn_dlQrModal" style="margin-bottom: 10px; background: linear-gradient(135deg, #2ed573, #26af5f); font-size: 14px;" onclick="downloadSingleQrFromModal()">📥 1:1 ပုံ သိမ်းရန်</button>
-      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 14px;" onclick="closeShareModal()">ပိတ်မည်</button>
+      <h3 id="lbl_modalTitle" style="color:#00d2d3; margin-bottom:10px;">📤 မျှဝေရန်</h3>
+      <p id="lbl_modalSub" style="font-size:12px; margin-bottom:15px; color:#a4b0be;">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -</p>
+      <button class="btn" id="btn_copyLink" style="margin-bottom: 8px; background: linear-gradient(135deg, #3742fa, #2f3542); font-size: 13px;" onclick="copyShareLink()">📋 လင့်ခ် ကူးယူရန်</button>
+      <button class="btn" id="btn_dlQrModal" style="margin-bottom: 8px; background: linear-gradient(135deg, #2ed573, #26af5f); font-size: 13px;" onclick="downloadSingleQrFromModal()">📥 QR ပုံ သိမ်းရန်</button>
+      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px;" onclick="closeShareModal()">ပိတ်မည်</button>
     </div>
-  </div>
-
-  <div class="ocean">
-    <div class="wave"></div>
-    <div class="wave"></div>
   </div>
 
   <div class="app-card">
 
-    <!-- STEP 1: LOGIN / SIGNUP -->
+    <!-- STEP 1 -->
     <div class="step active" id="step1">
       <h2 id="lbl_authTitle">အကောင့်ဝင်ရန်</h2>
-      
       <div class="form-group">
         <label id="lbl_modeSelect">အမျိုးအစား ရွေးချယ်ရန်</label>
         <select id="authModeSelect" onchange="switchAuthMode(this.value)">
-          <option value="login" selected>အကောင့်ရှိပြီးသား (Login ဝင်ရန်)</option>
+          <option value="login" selected>အကောင့်ရှိပြီးသား (Login)</option>
           <option value="signup">အကောင့်သစ်ဖွင့်ရန် (Sign Up)</option>
         </select>
       </div>
 
-      <!-- LOGIN FORM -->
       <div id="loginFormSection">
         <div class="form-group">
           <label id="lbl_loginName">သင်၏ နာမည်</label>
-          <input type="text" id="loginName" placeholder="နာမည်ရိုက်ပါ Code မလို">
+          <input type="text" id="loginName" placeholder="နာမည်ရိုက်ပါ">
         </div>
         <div class="form-group">
           <label id="lbl_loginPass">Password</label>
@@ -623,7 +453,6 @@
         <button class="btn" id="btn_login" onclick="handleLogin()">အကောင့်ဝင်မည် 🔓</button>
       </div>
 
-      <!-- SIGNUP FORM -->
       <div id="signupFormSection" style="display: none;">
         <div class="form-group">
           <label id="lbl_signupName">သင်၏ နာမည်</label>
@@ -638,90 +467,80 @@
           <input type="password" id="signupPass1" placeholder="Password အသစ်ပေးရန်">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass2">Password ထပ်မံရိုက်ပါ (Confirm)</label>
-          <input type="password" id="signupPass2" placeholder="Password ကို ထပ်ရိုက်ပါ">
+          <label id="lbl_signupPass2">Password ထပ်မံရိုက်ပါ</label>
+          <input type="password" id="signupPass2" placeholder="Password ထပ်ရိုက်ပါ">
         </div>
         <button class="btn" id="btn_signup" onclick="handleSignup()">အကောင့်အသစ်ဖွင့်မည် ✨</button>
       </div>
     </div>
 
-    <!-- STEP 2: PROFILE DASHBOARD -->
+    <!-- STEP 2 -->
     <div class="step" id="step2">
-      <h2 id="lbl_profileTitle">👤 ကိုယ်ရေးအချက်အလက် (Profile)</h2>
-      
+      <h2 id="lbl_profileTitle">👤 ကိုယ်ရေးအချက်အလက်</h2>
       <div class="profile-container">
         <div class="profile-avatar-box" id="profileAvatarBox">
-          <svg width="45" height="45" viewBox="0 0 24 24" fill="#a4b0be">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="#a4b0be">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
         </div>
-        <div class="file-input-wrapper" style="margin-bottom: 15px;">
+        <div class="file-input-wrapper" style="margin-bottom: 12px;">
           <div class="file-btn" id="lbl_changeAvatar">📷 Profile ပုံပြောင်းရန်</div>
           <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
         </div>
-
         <div class="profile-name" id="displayProfileName">အမည်</div>
         <div class="profile-id" id="displayProfileNum">ဂဏန်း: -</div>
-
         <div class="dashboard-actions">
           <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)">🧧 မုန့်ဖိုးတောင်းရန်</button>
-          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()">📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ</button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()">📜 မှတ်တမ်းများ</button>
         </div>
       </div>
     </div>
 
-    <!-- STEP 3: REQUEST REASON & MESSAGE -->
+    <!-- STEP 3 -->
     <div class="step" id="step3">
-      <h2 id="lbl_step3Title"> မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ </h2>
-
+      <h2 id="lbl_step3Title">မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ</h2>
       <div class="form-group">
         <label for="reasonDropdown" id="lbl_dropdown">အကြောင်းအရာ ရွေးချယ်ရန်</label>
-        <select id="reasonDropdown" onchange="toggleCustomReason()">
-        </select>
+        <select id="reasonDropdown" onchange="toggleCustomReason()"></select>
       </div>
-
       <div class="form-group" id="customReasonGroup" style="display: none;">
         <label for="customReason" id="lbl_customReason">ကိုယ်တိုင်စာရေးရန်</label>
         <input type="text" id="customReason" placeholder="အကြောင်းအရာ ရေးပါ">
       </div>
-
       <div class="form-group">
         <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းဖို့ စာစီရန်</label>
         <textarea id="customNote" rows="2" placeholder="စာစီပါ"></textarea>
       </div>
-
       <div class="form-group">
-        <label id="lbl_bgLabel">နောက်ခံပုံ</label>
+        <label id="lbl_bgLabel">နောက်ခံပုံ (3:4 Ratio)</label>
         <div class="file-input-wrapper">
-          <div class="file-btn" id="bgImgLabel">ကြိုက်နှစ်သက်ရာ</div>
+          <div class="file-btn" id="bgImgLabel">📸 နောက်ခံပုံ ရွေးရန်</div>
           <input type="file" accept="image/*" onchange="handleBgImage(this)">
         </div>
       </div>
-
       <div class="form-group">
         <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ</label>
         <div class="file-input-wrapper">
-          <div class="file-btn" id="qrImgLabel">ငွေလက်ခံရယူမည့် QR</div>
+          <div class="file-btn" id="qrImgLabel">💳 QR ပုံ ရွေးရန်</div>
           <input type="file" accept="image/*" onchange="handleQrImage(this)">
         </div>
       </div>
-
       <div class="btn-group">
         <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)">⬅ နောက်သို့</button>
         <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()">ကတ်ဖန်တီးမည် ✨</button>
       </div>
     </div>
 
-    <!-- STEP 4: RESULT CARD -->
+    <!-- STEP 4 -->
     <div class="step" id="step4">
       <h2 id="lbl_step4Title">🎉 မုန့်ဖိုးတောင်းလွှာ 🎉</h2>
 
       <div id="exportCard">
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
         <div class="card-header-content">
-          <span class="sender-tag" id="outSender"></span>
-          <h3 id="outReason"></h3>
-          <p id="outNote"></p>
+          <span class="sender-tag" id="outSender">From: Aung</span>
+          <h3 id="outReason">Reason</h3>
+          <p id="outNote">Note text</p>
         </div>
         <div class="card-qr-overlay">
           <p id="lbl_qrHint">Scan or Pay to Send Pocket Money 👇</p>
@@ -735,8 +554,7 @@
         <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">Save QR</button>
         <button class="btn share-btn" id="btn_share" onclick="openShareModal()">Share</button>
       </div>
-      
-      <div class="btn-group" style="margin-top: 10px;">
+      <div class="btn-group" style="margin-top: 8px;">
         <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)">🏠 Profile သို့ပြန်ရန်</button>
       </div>
     </div>
