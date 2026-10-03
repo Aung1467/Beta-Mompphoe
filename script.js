@@ -8,10 +8,10 @@ const i18n = {
   my: {
     introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
-    authTitle: "အကောင့်ဝင်ရန်",
+    authTitle: "✨ အကောင့်ဝင်ရန် (Login / Signup) ✨",
     modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
-    optLogin: "အကောင့်ရှိပြီးသား",
-    optSignup: "အကောင့်သစ်ဖွင့်ရန်",
+    optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
+    optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
     nameLabel: "သင်၏ နာမည်",
     namePlaceholder: "နာမည်ရိုက်ပါ",
     numLabel: "ဂဏန်း (ကုဒ်နံပါတ်)",
@@ -20,13 +20,13 @@ const i18n = {
     passPlaceholder: "Password ရိုက်ပါ",
     pass2Label: "Password ထပ်မံရိုက်ပါ (Confirm)",
     pass2Placeholder: "Password ကို ထပ်ရိုက်ပါ",
-    loginBtn: "အကောင့်ဝင်မည်",
-    signupBtn: "အကောင့်အသစ်ဖွင့်မည်",
+    loginBtn: "အကောင့်ဝင်မည် 🔓",
+    signupBtn: "အကောင့်အသစ်ဖွင့်မည် ✨",
     profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
     changeAvatar: "📷 Profile ပုံပြောင်းရန်",
     reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
     historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
-    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
+    step3Title: "🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈",
     dropdownLabel: "အကြောင်းအရာ ရွေးချယ်ရန်",
     customReasonLabel: "ကိုယ်တိုင်စာရေးရန်",
     customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
@@ -40,8 +40,8 @@ const i18n = {
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: "🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉",
     qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "Save QR",
-    shareBtn: "Share",
+    saveBtn: "💾 Save QR",
+    shareBtn: "📤 Share",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
     modalTitle: "📤 မျှဝေရန် (Share)",
     modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
@@ -256,7 +256,7 @@ const i18n = {
     genCardBtn: "カードを作成 ✨",
     step4Title: "🎉 おねだりカード完成 🎉",
     qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 QRを保存",
+    saveBtn: "💾 QRကို保存",
     shareBtn: "📤 共有する",
     profileReturnBtn: "🏠 プロフィールへ戻る",
     modalTitle: "📤 カードを共有",
@@ -331,6 +331,30 @@ const i18n = {
   }
 };
 
+// ပုံအရွယ်အစားနှင့် ဖိုင်ဆိုဒ်ကို သေးငယ်အောင် ချုံ့ပေးသည့် Helper Function
+function compressImage(file, maxWidth, quality, callback) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      callback(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   populateReasonDropdown(currentLang);
 
@@ -339,40 +363,48 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (splash) splash.classList.add('fade-out');
   }, 2000);
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const cardId = urlParams.get('id');
+  // လင့်ခ်ထဲတွင် ပေးပို့လိုက်သော မုန့်ဖိုးတောင်းလွှာ အချက်အလက်များကို စစ်ဆေးခြင်း
+  loadCardFromHash();
+});
 
-  if (cardId) {
+function loadCardFromHash() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#c=')) {
     const loader = document.getElementById('stepLoader');
-    loader.classList.add('show');
-    
-    // LocalStorage မှ ကတ်အချက်အလက်ကို ပြန်ယူခြင်း
-    const localData = localStorage.getItem(cardId);
-    if (localData) {
-      const data = JSON.parse(localData);
-      document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
-      document.getElementById('outReason').innerText = data.reason;
-      document.getElementById('outNote').innerText = data.note;
-
-      if (data.bgImage) {
-        const bgEl = document.getElementById('cardBgImg');
-        bgEl.src = data.bgImage;
-        bgEl.style.display = 'block';
-      }
-      if (data.qrImage) {
-        savedQrImage = data.qrImage;
-        const qrEl = document.getElementById('cardQrImg');
-        const qrWr = document.getElementById('qrWrapper');
-        qrEl.src = data.qrImage;
-        qrWr.style.display = 'block';
-      }
-      loader.classList.remove('show');
+    if (loader) loader.classList.add('show');
+    try {
+      const encodedData = hash.substring(3);
+      const jsonString = decodeURIComponent(encodedData);
+      const data = JSON.parse(jsonString);
+      renderCardData(data);
+      if (loader) loader.classList.remove('show');
       goToStep(4);
-    } else {
-      loader.classList.remove('show');
+    } catch (err) {
+      console.error('Link parse error:', err);
+      if (loader) loader.classList.remove('show');
     }
   }
-});
+}
+
+function renderCardData(data) {
+  document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
+  document.getElementById('outReason').innerText = data.reason || '';
+  document.getElementById('outNote').innerText = data.note || '';
+
+  if (data.bgImage) {
+    savedBgImage = data.bgImage;
+    const bgEl = document.getElementById('cardBgImg');
+    bgEl.src = data.bgImage;
+    bgEl.style.display = 'block';
+  }
+  if (data.qrImage) {
+    savedQrImage = data.qrImage;
+    const qrEl = document.getElementById('cardQrImg');
+    const qrWr = document.getElementById('qrWrapper');
+    qrEl.src = data.qrImage;
+    qrWr.style.display = 'block';
+  }
+}
 
 function switchAuthMode(mode) {
   const loginSec = document.getElementById('loginFormSection');
@@ -516,22 +548,21 @@ function populateReasonDropdown(lang) {
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
     document.getElementById('bgImgLabel').innerText = `✅ ${input.files[0].name}`;
-    const reader = new FileReader();
-    reader.onload = (e) => { savedBgImage = e.target.result; };
-    reader.readAsDataURL(input.files[0]);
+    compressImage(input.files[0], 280, 0.4, (compressedBase64) => {
+      savedBgImage = compressedBase64;
+    });
   }
 }
 
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
     document.getElementById('qrImgLabel').innerText = `✅ ${input.files[0].name}`;
-    const reader = new FileReader();
-    reader.onload = (e) => { savedQrImage = e.target.result; };
-    reader.readAsDataURL(input.files[0]);
+    compressImage(input.files[0], 200, 0.5, (compressedBase64) => {
+      savedQrImage = compressedBase64;
+    });
   }
 }
 
-// Client-side တွင် တိုက်ရိုက် ကတ်ဖန်တီးပေးသည့် ဖန်ရှင်
 function generateAndSaveCard() {
   const reasonDropdown = document.getElementById('reasonDropdown').value;
   const customReason = document.getElementById('customReason').value.trim();
@@ -557,7 +588,6 @@ function generateAndSaveCard() {
   loader.classList.add('show');
 
   setTimeout(() => {
-    const cardId = 'card_' + Date.now();
     const payload = {
       sender: currentUser ? currentUser.name : 'Aung',
       reason: finalReason,
@@ -566,30 +596,12 @@ function generateAndSaveCard() {
       qrImage: savedQrImage
     };
 
-    try {
-      localStorage.setItem(cardId, JSON.stringify(payload));
-    } catch (e) {
-      console.log('LocalStorage save:', e);
-    }
+    renderCardData(payload);
 
-    currentShareableLink = `${window.location.origin}/?id=${cardId}`;
-
-    document.getElementById('outSender').innerText = `From: ${payload.sender}`;
-    document.getElementById('outReason').innerText = finalReason;
-    document.getElementById('outNote').innerText = customNote;
-
-    const bgEl = document.getElementById('cardBgImg');
-    if (savedBgImage) {
-      bgEl.src = savedBgImage;
-      bgEl.style.display = 'block';
-    }
-
-    const qrEl = document.getElementById('cardQrImg');
-    const qrWr = document.getElementById('qrWrapper');
-    if (savedQrImage) {
-      qrEl.src = savedQrImage;
-      qrWr.style.display = 'block';
-    }
+    // အချက်အလက်များနှင့် ပုံများကို လင့်ခ် (URL) ထဲတွင် ထည့်သွင်းပေးခြင်း
+    const jsonString = JSON.stringify(payload);
+    const encodedData = encodeURIComponent(jsonString);
+    currentShareableLink = `${window.location.origin}${window.location.pathname}#c=${encodedData}`;
 
     loader.classList.remove('show');
     goToStep(4);
