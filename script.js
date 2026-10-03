@@ -1,3 +1,16 @@
+// 🔑 သင်၏ Supabase URL နှင့် API Key များကို တိုက်ရိုက် ထည့်သွင်းထားပါသည်။
+const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
+
+let supabaseClient = null;
+
+function getSupabase() {
+  if (!supabaseClient && window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return supabaseClient;
+}
+
 let currentUser = null;
 let savedBgImage = '';
 let savedQrImage = '';
@@ -373,6 +386,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (splash) splash.classList.add('fade-out');
   }, 1500);
 
+  // Supabase မှ ကတ်အချက်အလက်ကို ID ဖြင့် တိုက်ရိုက် ရယူခြင်း
   const urlParams = new URLSearchParams(window.location.search);
   const cardId = urlParams.get('id');
 
@@ -381,32 +395,31 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (loader) loader.classList.add('show');
 
     try {
-      const res = await fetch(`https://api.restful-api.dev/objects/${cardId}`);
-      if (res.ok) {
-        const resData = await res.json();
-        const cardData = resData.data || resData;
-        renderCardData(cardData);
-        if (loader) loader.classList.remove('show');
-        showStep(4);
-        return;
+      const sb = getSupabase();
+      if (sb) {
+        const { data, error } = await sb
+          .from('cards')
+          .select('*')
+          .eq('id', cardId)
+          .single();
+
+        if (data && !error) {
+          renderCardData({
+            sender: data.sender,
+            reason: data.reason,
+            note: data.note,
+            bgImage: data.bg_image,
+            qrImage: data.qr_image
+          });
+          if (loader) loader.classList.remove('show');
+          showStep(4); // ကတ်ပြားသို့ တိုက်ရိုက်ရောက်ရှိမည်
+          return;
+        }
       }
     } catch (err) {
-      console.error('Fetch card error:', err);
+      console.error('Supabase load error:', err);
     }
     if (loader) loader.classList.remove('show');
-  }
-
-  // Fallback for Hash links (#c=)
-  if (window.location.hash.startsWith('#c=')) {
-    try {
-      const encodedData = window.location.hash.substring(3);
-      const jsonString = decodeURIComponent(encodedData);
-      const data = JSON.parse(jsonString);
-      renderCardData(data);
-      showStep(4);
-    } catch (err) {
-      console.error('Hash parse error:', err);
-    }
   }
 });
 
@@ -589,6 +602,7 @@ function handleQrImage(input) {
   }
 }
 
+// Supabase Database ထဲသို့ ကတ်အချက်အလက် သိမ်းဆည်းခြင်း
 async function generateAndSaveCard() {
   const reasonDropdown = document.getElementById('reasonDropdown').value;
   const customReason = document.getElementById('customReason').value.trim();
@@ -615,49 +629,53 @@ async function generateAndSaveCard() {
 
   try {
     if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 350, 0.5);
+      savedBgImage = await compressFileToDataUrl(selectedBgFile, 400, 0.6);
     }
     if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 250, 0.6);
+      savedQrImage = await compressFileToDataUrl(selectedQrFile, 300, 0.7);
     }
 
     const payload = {
       sender: currentUser ? currentUser.name : 'Aung',
       reason: finalReason,
       note: customNote,
-      bgImage: savedBgImage,
-      qrImage: savedQrImage
+      bg_image: savedBgImage,
+      qr_image: savedQrImage
     };
 
-    let cardId = null;
-    try {
-      const res = await fetch('https://api.restful-api.dev/objects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: "PocketMoneyCard", data: payload })
+    const sb = getSupabase();
+    if (!sb) {
+      throw new Error('Supabase client failed to load');
+    }
+
+    const { data, error } = await sb
+      .from('cards')
+      .insert([payload])
+      .select();
+
+    if (error) {
+      throw error;
+    }
+
+    if (data && data.length > 0) {
+      const generatedId = data[0].id;
+      currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
+      
+      renderCardData({
+        sender: payload.sender,
+        reason: payload.reason,
+        note: payload.note,
+        bgImage: payload.bg_image,
+        qrImage: payload.qr_image
       });
-      if (res.ok) {
-        const resData = await res.json();
-        cardId = resData.id;
-      }
-    } catch (e) {
-      console.warn('API save failed, fallback used:', e);
-    }
 
-    if (cardId) {
-      currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${cardId}`;
-    } else {
-      const encoded = encodeURIComponent(JSON.stringify(payload));
-      currentShareableLink = `${window.location.origin}${window.location.pathname}#c=${encoded}`;
+      if (loader) loader.classList.remove('show');
+      showStep(4);
     }
-
-    renderCardData(payload);
-    if (loader) loader.classList.remove('show');
-    showStep(4);
   } catch (err) {
-    console.error('Save card error:', err);
+    console.error('Supabase Save Error:', err);
     if (loader) loader.classList.remove('show');
-    alert('ကတ်ဖန်တီးရာတွင် အမှားအယွင်းရှိပါသည်။ ပြန်စမ်းပေးပါ။');
+    alert('ကတ်ဖန်တီးရာတွင် အမှားအယွင်းရှိပါသည်။ အင်တာနက်လိုင်း စစ်ဆေးပြီး ပြန်စမ်းပေးပါ။');
   }
 }
 
