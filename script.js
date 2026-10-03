@@ -247,6 +247,20 @@ async function generateAndSaveCard() {
   const customNote = document.getElementById('customNote').value.trim();
   const finalReason = (reasonDropdown === 'အခြား' && customReason) ? customReason : reasonDropdown;
 
+  // အချက်အလက် သို့မဟုတ် ပုံများ မပြည့်စုံပါက ရှေ့ဆက်မသွားရန် စစ်ဆေးခြင်း
+  if (!customNote) {
+    alert('❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။');
+    return;
+  }
+  if (!savedBgImage) {
+    alert('❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။');
+    return;
+  }
+  if (!savedQrImage) {
+    alert('❌ ကျေးဇူးပြု၍ QR Code / အချက်အလက်ပုံ ထည့်ပါ။');
+    return;
+  }
+
   const payload = {
     sender: currentUser ? currentUser.name : 'Aung',
     reason: finalReason,
@@ -277,8 +291,6 @@ async function generateAndSaveCard() {
       if (savedBgImage) {
         bgEl.src = savedBgImage;
         bgEl.style.display = 'block';
-      } else {
-        bgEl.style.display = 'none';
       }
 
       const qrEl = document.getElementById('cardQrImg');
@@ -286,8 +298,6 @@ async function generateAndSaveCard() {
       if (savedQrImage) {
         qrEl.src = savedQrImage;
         qrWr.style.display = 'block';
-      } else {
-        qrWr.style.display = 'none';
       }
 
       loader.classList.remove('show');
