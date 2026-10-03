@@ -8,10 +8,10 @@ const i18n = {
   my: {
     introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
-    authTitle: "✨ အကောင့်ဝင်ရန် (Login / Signup) ✨",
+    authTitle: "အကောင့်ဝင်ရန်",
     modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
-    optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
-    optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
+    optLogin: "အကောင့်ရှိပြီးသား",
+    optSignup: "အကောင့်သစ်ဖွင့်ရန်",
     nameLabel: "သင်၏ နာမည်",
     namePlaceholder: "နာမည်ရိုက်ပါ",
     numLabel: "ဂဏန်း (ကုဒ်နံပါတ်)",
@@ -20,13 +20,13 @@ const i18n = {
     passPlaceholder: "Password ရိုက်ပါ",
     pass2Label: "Password ထပ်မံရိုက်ပါ (Confirm)",
     pass2Placeholder: "Password ကို ထပ်ရိုက်ပါ",
-    loginBtn: "အကောင့်ဝင်မည် 🔓",
-    signupBtn: "အကောင့်အသစ်ဖွင့်မည် ✨",
+    loginBtn: "အကောင့်ဝင်မည်",
+    signupBtn: "အကောင့်အသစ်ဖွင့်မည်",
     profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
     changeAvatar: "📷 Profile ပုံပြောင်းရန်",
     reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
     historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
-    step3Title: "🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈",
+    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
     dropdownLabel: "အကြောင်းအရာ ရွေးချယ်ရန်",
     customReasonLabel: "ကိုယ်တိုင်စာရေးရန်",
     customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
@@ -40,8 +40,8 @@ const i18n = {
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: "🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉",
     qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 Save QR",
-    shareBtn: "📤 Share",
+    saveBtn: "Save QR",
+    shareBtn: "Share",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
     modalTitle: "📤 မျှဝေရန် (Share)",
     modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
@@ -345,33 +345,30 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (cardId) {
     const loader = document.getElementById('stepLoader');
     loader.classList.add('show');
-    try {
-      const res = await fetch(`/api/card?id=${cardId}`);
-      if (res.ok) {
-        const data = await res.json();
-        document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
-        document.getElementById('outReason').innerText = data.reason;
-        document.getElementById('outNote').innerText = data.note;
+    
+    // LocalStorage မှ ကတ်အချက်အလက်ကို ပြန်ယူခြင်း
+    const localData = localStorage.getItem(cardId);
+    if (localData) {
+      const data = JSON.parse(localData);
+      document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
+      document.getElementById('outReason').innerText = data.reason;
+      document.getElementById('outNote').innerText = data.note;
 
-        if (data.bgImage) {
-          const bgEl = document.getElementById('cardBgImg');
-          bgEl.src = data.bgImage;
-          bgEl.style.display = 'block';
-        }
-        if (data.qrImage) {
-          savedQrImage = data.qrImage;
-          const qrEl = document.getElementById('cardQrImg');
-          const qrWr = document.getElementById('qrWrapper');
-          qrEl.src = data.qrImage;
-          qrWr.style.display = 'block';
-        }
-        loader.classList.remove('show');
-        goToStep(4);
-      } else {
-        alert('ကတ်ကို ရှာမတွေ့ပါ။');
-        loader.classList.remove('show');
+      if (data.bgImage) {
+        const bgEl = document.getElementById('cardBgImg');
+        bgEl.src = data.bgImage;
+        bgEl.style.display = 'block';
       }
-    } catch (err) {
+      if (data.qrImage) {
+        savedQrImage = data.qrImage;
+        const qrEl = document.getElementById('cardQrImg');
+        const qrWr = document.getElementById('qrWrapper');
+        qrEl.src = data.qrImage;
+        qrWr.style.display = 'block';
+      }
+      loader.classList.remove('show');
+      goToStep(4);
+    } else {
       loader.classList.remove('show');
     }
   }
@@ -534,7 +531,8 @@ function handleQrImage(input) {
   }
 }
 
-async function generateAndSaveCard() {
+// Client-side တွင် တိုက်ရိုက် ကတ်ဖန်တီးပေးသည့် ဖန်ရှင်
+function generateAndSaveCard() {
   const reasonDropdown = document.getElementById('reasonDropdown').value;
   const customReason = document.getElementById('customReason').value.trim();
   const customNote = document.getElementById('customNote').value.trim();
@@ -555,56 +553,47 @@ async function generateAndSaveCard() {
     return;
   }
 
-  const payload = {
-    sender: currentUser ? currentUser.name : 'Aung',
-    reason: finalReason,
-    note: customNote,
-    bgImage: savedBgImage,
-    qrImage: savedQrImage
-  };
-
   const loader = document.getElementById('stepLoader');
   loader.classList.add('show');
 
-  try {
-    const response = await fetch('/api/card', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json();
+  setTimeout(() => {
+    const cardId = 'card_' + Date.now();
+    const payload = {
+      sender: currentUser ? currentUser.name : 'Aung',
+      reason: finalReason,
+      note: customNote,
+      bgImage: savedBgImage,
+      qrImage: savedQrImage
+    };
 
-    if (result.success) {
-      currentShareableLink = `${window.location.origin}/?id=${result.id}`;
-
-      document.getElementById('outSender').innerText = `From: ${payload.sender}`;
-      document.getElementById('outReason').innerText = finalReason;
-      document.getElementById('outNote').innerText = customNote;
-
-      const bgEl = document.getElementById('cardBgImg');
-      if (savedBgImage) {
-        bgEl.src = savedBgImage;
-        bgEl.style.display = 'block';
-      }
-
-      const qrEl = document.getElementById('cardQrImg');
-      const qrWr = document.getElementById('qrWrapper');
-      if (savedQrImage) {
-        qrEl.src = savedQrImage;
-        qrWr.style.display = 'block';
-      }
-
-      loader.classList.remove('show');
-      goToStep(4);
-      navigator.clipboard.writeText(currentShareableLink);
-    } else {
-      loader.classList.remove('show');
-      alert('ကတ်သိမ်းဆည်းရာတွင် အမှားအယွင်းရှိသည်။');
+    try {
+      localStorage.setItem(cardId, JSON.stringify(payload));
+    } catch (e) {
+      console.log('LocalStorage save:', e);
     }
-  } catch (err) {
+
+    currentShareableLink = `${window.location.origin}/?id=${cardId}`;
+
+    document.getElementById('outSender').innerText = `From: ${payload.sender}`;
+    document.getElementById('outReason').innerText = finalReason;
+    document.getElementById('outNote').innerText = customNote;
+
+    const bgEl = document.getElementById('cardBgImg');
+    if (savedBgImage) {
+      bgEl.src = savedBgImage;
+      bgEl.style.display = 'block';
+    }
+
+    const qrEl = document.getElementById('cardQrImg');
+    const qrWr = document.getElementById('qrWrapper');
+    if (savedQrImage) {
+      qrEl.src = savedQrImage;
+      qrWr.style.display = 'block';
+    }
+
     loader.classList.remove('show');
-    alert('ဆာဗာသို့ ချိတ်ဆက်၍မရပါ။ Netlify တွင် တင်ပြီးမှ စမ်းသပ်ပါ။');
-  }
+    goToStep(4);
+  }, 1000);
 }
 
 function downloadSingleQr() {
@@ -642,11 +631,9 @@ function changeLanguage(lang) {
   currentLang = lang;
   const d = i18n[lang] || i18n['my'];
 
-  // Splash & Loader
   if (document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
   if (document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
 
-  // Step 1 Auth
   if (document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
   if (document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = d.modeSelectLabel;
   
@@ -678,13 +665,11 @@ function changeLanguage(lang) {
 
   if (document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = d.signupBtn;
 
-  // Step 2 Profile
   if (document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if (document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
   if (document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if (document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
 
-  // Step 3 Reason
   if (document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
   if (document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
   if (document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
@@ -698,17 +683,14 @@ function changeLanguage(lang) {
   if (document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = d.backBtn;
   if (document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
 
-  // Populate Reason Dropdown options
   populateReasonDropdown(lang);
 
-  // Step 4 Result
   if (document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
   if (document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = d.qrHint;
   if (document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
   if (document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
   if (document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
 
-  // Modal
   if (document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = d.modalTitle;
   if (document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = d.modalSub;
   if (document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = d.copyLinkBtn;

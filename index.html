@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>သတင်းကျွတ် မုန့်ဖိုးတောင်းလွှာ Web App</title>
+  <title> မုန့်ဖိုးတောင်းလွှာ Web App</title>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -599,7 +599,7 @@
 
     <!-- STEP 3: REQUEST REASON & MESSAGE -->
     <div class="step" id="step3">
-      <h2 id="lbl_step3Title">🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈</h2>
+      <h2 id="lbl_step3Title"> မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ </h2>
 
       <div class="form-group">
         <label for="reasonDropdown" id="lbl_dropdown">အကြောင်းအရာ ရွေးချယ်ရန်</label>
@@ -619,17 +619,17 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl_bgLabel">နောက်ခံပုံ (3:4 Ratio)</label>
+        <label id="lbl_bgLabel">နောက်ခံပုံ</label>
         <div class="file-input-wrapper">
-          <div class="file-btn" id="bgImgLabel">📸 နောက်ခံပုံ ရွေးရန်</div>
+          <div class="file-btn" id="bgImgLabel">ကြိုက်နှစ်သက်ရာ</div>
           <input type="file" accept="image/*" onchange="handleBgImage(this)">
         </div>
       </div>
 
       <div class="form-group">
-        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ (1:1 Ratio)</label>
+        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ</label>
         <div class="file-input-wrapper">
-          <div class="file-btn" id="qrImgLabel">💳 QR Code ပုံ ရွေးရန်</div>
+          <div class="file-btn" id="qrImgLabel">ငွေလက်ခံရယူမည့် QR</div>
           <input type="file" accept="image/*" onchange="handleQrImage(this)">
         </div>
       </div>
@@ -642,7 +642,7 @@
 
     <!-- STEP 4: RESULT CARD -->
     <div class="step" id="step4">
-      <h2 id="lbl_step4Title">🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉</h2>
+      <h2 id="lbl_step4Title">🎉 မုန့်ဖိုးတောင်းလွှာ 🎉</h2>
 
       <div id="exportCard">
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
@@ -660,8 +660,8 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">💾 Save QR</button>
-        <button class="btn share-btn" id="btn_share" onclick="openShareModal()">📤 Share</button>
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">Save QR</button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()">Share</button>
       </div>
       
       <div class="btn-group" style="margin-top: 10px;">
