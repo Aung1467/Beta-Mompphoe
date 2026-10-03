@@ -1,7 +1,0 @@
-{
-  "name": "thadingyut-pocket-money",
-  "version": "1.0.0",
-  "dependencies": {
-    "@netlify/blobs": "latest"
-  }
-}
