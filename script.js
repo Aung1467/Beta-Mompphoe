@@ -181,7 +181,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// TikTok API မှတဆင့် သီချင်းလင့်ခ်ဆွဲထုတ်ခြင်း နှင့် Preview လုပ်ခြင်း
+// TikTok API မှတဆင့် သီချင်းလင့်ခ်ဆွဲထုတ်ခြင်း နှင့် Preview လုပ်ခြင်း (တိုးမြှင့်ပြင်ဆင်ထားသည်)
 async function handleMusicPreview(url) {
   if (!url || !url.trim().includes('tiktok.com')) return;
   
@@ -201,13 +201,17 @@ async function handleMusicPreview(url) {
 
     const response = await fetch(TIKTOK_API_URL, options);
     const result = await response.json();
+    
+    // API မှ အချက်အလက် ဘာတွေပြန်လာသလဲ Console တွင် စစ်ဆေးရန်
+    console.log("TikTok API Response Data:", result);
+
     if (loader) loader.classList.remove('show');
 
     let audioSrc = '';
-    if (result && result.data) {
-      audioSrc = result.data.music || result.data.audio || result.data.play || '';
-    } else if (result) {
-      audioSrc = result.music || result.audio || result.play || '';
+    if (result) {
+      const dataObj = result.data || result;
+      // Key အမျိုးမျိုးကို လိုက်လံစစ်ဆေးပေးခြင်းဖြင့် အမှားနည်းစေရန်
+      audioSrc = dataObj.music || dataObj.music_url || dataObj.audio || dataObj.sound || dataObj.play || dataObj.musicUrl || '';
     }
 
     if (audioSrc) {
@@ -220,7 +224,7 @@ async function handleMusicPreview(url) {
       }
       alert('✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
     } else {
-      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။');
+      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Console တွင် Response ကို စစ်ဆေးပါ)');
     }
   } catch (err) {
     if (loader) loader.classList.remove('show');
@@ -553,7 +557,7 @@ function downloadSingleQrFromModal() {
   closeShareModal();
 }
 
-function openShareModal() {
+openShareModal = function() {
   document.getElementById('shareModal').style.display = 'flex';
 }
 
