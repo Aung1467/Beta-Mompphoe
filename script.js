@@ -1,465 +1,660 @@
-// -----------------------------------------------------------
-// SUPABASE CONFIG (Project URL & Publishable Key)
-// -----------------------------------------------------------
+// Supabase Credentials
 const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let supabaseClient = null;
+
+function getSupabase() {
+  if (!supabaseClient && window.supabase && window.supabase.createClient) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return supabaseClient;
+}
 
 let currentUser = null;
-let currentAvatarUrl = "";
-let currentBgUrl = "";
-let currentQrUrl = "";
+let savedBgImage = '';
+let savedQrImage = '';
+let selectedBgFile = null;
+let selectedQrFile = null;
+let currentShareableLink = '';
 let currentLang = 'my';
-let createdCardId = null;
 
-const translations = {
+const i18n = {
   my: {
-    introMsg: "ခဏစောင့်ပေးပါ",
-    loaderMsg: "ဒေတာချိတ်ဆက်နေသည်...",
+    introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
+    loaderMsg: "ခဏစောင့်ပါ...",
     authTitle: "အကောင့်ဝင်ရန်",
     modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
-    optLogin: "အကောင့်ရှိပြီးသား (Login)",
+    optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
     optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
     loginName: "သင်၏ နာမည်",
-    loginPass: "လျှို့ဝှက်နံပါတ်",
-    btnLogin: "အကောင့်ဝင်မည်",
+    loginPass: "Password",
+    btnLogin: "အကောင့်ဝင်မည် 🔓",
     signupName: "သင်၏ နာမည်",
-    signupNum: "ကုဒ်နံပါတ်",
-    signupPass1: "လျှို့ဝှက်နံပါတ်အသစ်",
-    signupPass2: "လျှို့ဝှက်နံပါတ်ကို ထပ်မံရိုက်ပါ",
-    btnSignup: "အကောင့်အသစ်ဖွင့်မည်",
-    profileTitle: "ကိုယ်ရေးအချက်အလက်",
-    changeAvatar: "ပရိုဖိုင်ပုံပြောင်းရန်",
-    reqPocketBtn: "မုန့်ဖိုးတောင်းရန်",
-    historyBtn: "မှတ်တမ်းများ",
-    step3Title: "မုန့်ဖိုးတောင်းမည့်အကြောင်းအရာ",
-    dropdown: "အကြောင်းအရာရွေးချယ်ရန်",
-    customReason: "ကိုယ်တိုင်ရေးသားရန်",
-    customNote: "မုန့်ဖိုးတောင်းစာစီရန်",
-    bgLabel: "နောက်ခံပုံ (4:3)",
-    qrLabel: "ကျူအာလ်ပုံ / ငွေပေးချေမှုအချက်အလက်",
-    bgImgLabelText: "နောက်ခံပုံရွေးရန်",
-    qrImgLabelText: "ကျူအာလ်ပုံရွေးရန်",
-    btnBack: "နောက်သို့",
-    btnGen: "ကတ်ဖန်တီးမည် (DB သိမ်းမည်)",
-    step4Title: "မုန့်ဖိုးတောင်းလွှာ",
-    qrHint: "ငွေပေးချေရန် ကျူအာလ်ကိုစကန်ဖတ်ပါ",
-    saveQr: "ကျူအာလ်သိမ်းရန်",
-    share: "မျှဝေမည်",
-    profileReturn: "ပရိုဖိုင်သို့ပြန်ရန်",
-    modalTitle: "မျှဝေရန်",
-    modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန်",
-    copyLink: "လင့်ခ် ကူးယူရန်",
-    dlQrModal: "QR ပုံ သိမ်းရန်",
+    signupNum: "ဂဏန်း (ကုဒ်နံပါတ်)",
+    signupPass1: "Password",
+    signupPass2: "Password ထပ်မံရိုက်ပါ (Confirm)",
+    btnSignup: "အကောင့်အသစ်ဖွင့်မည် ✨",
+    profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
+    changeAvatar: "📷 Profile ပုံပြောင်းရန်",
+    reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
+    historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
+    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
+    dropdown: "အကြောင်းအရာ ရွေးချယ်ရန်",
+    customReason: "ကိုယ်တိုင်စာရေးရန်",
+    customNote: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
+    bgLabel: "နောက်ခံပုံ",
+    qrLabel: "QR Code / အချက်အလက်ပုံ",
+    backStep3: "⬅ နောက်သို့",
+    genCard: "ကတ်ဖန်တီးမည် ✨",
+    step4Title: "🎉 မုန့်ဖိုးတောင်းလွှာ 🎉",
+    qrHint: "Scan or Pay to Send Pocket Money 👇",
+    saveQr: "Save QR",
+    share: "Share",
+    profileReturn: "🏠 Profile သို့ပြန်ရန်",
+    modalTitle: "📤 မျှဝေရန် (Share)",
+    modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
+    copyLink: "📋 လင့်ခ် ကူးယူရန်",
+    dlQrModal: "📥 1:1 ပုံ သိမ်းရန်",
     closeModal: "ပိတ်မည်",
+    alertNote: "❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။",
+    alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။",
+    alertQr: "❌ ကျေးဇူးပြု၍ QR Code / အချက်အလက်ပုံ ထည့်ပါ။",
     reasons: [
-      { val: 'snack', text: 'မုန့်ဖိုးဝယ်စားဖို့ပါ' },
-      { val: 'game', text: 'ဂိမ်းငွေဖြည့်ဖို့ပါ' },
-      { val: 'date', text: 'ချစ်သူနဲ့ချိန်းတွေ့ဖို့ပါ' },
-      { val: 'shopping', text: 'ပစ္စည်းဝယ်ယူဖို့ပါ' },
-      { val: 'custom', text: 'အခြားအကြောင်းအရာ (ကိုယ်တိုင်ရေးရန်)' }
+      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "သတင်းကျွတ်မုန့်ဖိုး" },
+      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "ရည်းစားနဲ့လျှောက်လည်ရန်" },
+      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်" },
+      { val: "သုံးစရာမရှိတော့လို့", text: "သုံးစရာမရှိတော့လို့" },
+      { val: "အခြား", text: "အခြား (ကိုယ်တိုင်ရေးမည်)" }
     ]
   },
   en: {
-    introMsg: "Please wait",
-    loaderMsg: "Connecting data...",
-    authTitle: "Sign In",
-    modeSelect: "Select Mode",
+    introMsg: "Welcome 👋 Please wait...",
+    loaderMsg: "Please wait...",
+    authTitle: "Login / Signup",
+    modeSelect: "Select Option",
     optLogin: "Login (Existing Account)",
     optSignup: "Sign Up (New Account)",
     loginName: "Your Name",
     loginPass: "Password",
-    btnLogin: "Login",
+    btnLogin: "Login 🔓",
     signupName: "Your Name",
-    signupNum: "Number Code",
-    signupPass1: "New Password",
+    signupNum: "Number / Code",
+    signupPass1: "Password",
     signupPass2: "Confirm Password",
-    btnSignup: "Sign Up",
-    profileTitle: "Profile",
-    changeAvatar: "Change Profile Picture",
-    reqPocketBtn: "Request Pocket Money",
-    historyBtn: "History",
-    step3Title: "Reason for Request",
-    dropdown: "Select Reason",
+    btnSignup: "Create Account ✨",
+    profileTitle: "👤 Profile Dashboard",
+    changeAvatar: "📷 Change Profile Picture",
+    reqPocketBtn: "🧧 Request Pocket Money",
+    historyBtn: "📜 Request History",
+    step3Title: "Select Request Reason",
+    dropdown: "Choose Reason",
     customReason: "Custom Reason",
-    customNote: "Custom Note",
-    bgLabel: "Background (4:3 Ratio)",
-    qrLabel: "QR Code / Payment Info",
-    bgImgLabelText: "Select Background",
-    qrImgLabelText: "Select QR Code",
-    btnBack: "Back",
-    btnGen: "Generate Card (Save to DB)",
-    step4Title: "Pocket Money Card",
-    qrHint: "Scan or Pay to Send Pocket Money",
+    customNote: "Write Request Note",
+    bgLabel: "Background Image",
+    qrLabel: "Payment QR Code",
+    backStep3: "⬅ Back",
+    genCard: "Create Card ✨",
+    step4Title: "🎉 Your Request Card 🎉",
+    qrHint: "Scan or Pay to Send Pocket Money 👇",
     saveQr: "Save QR",
     share: "Share",
-    profileReturn: "Return to Profile",
-    modalTitle: "Share",
-    modalSub: "Send card and link",
-    copyLink: "Copy Link",
-    dlQrModal: "Save QR",
+    profileReturn: "🏠 Back to Profile",
+    modalTitle: "📤 Share Request",
+    modalSub: "Send card and link via:",
+    copyLink: "📋 Copy Link",
+    dlQrModal: "📥 Download QR",
     closeModal: "Close",
+    alertNote: "❌ Please write a request note.",
+    alertBg: "❌ Please upload a background image.",
+    alertQr: "❌ Please upload a QR code image.",
     reasons: [
-      { val: 'snack', text: 'For Snacks' },
-      { val: 'game', text: 'For Gaming' },
-      { val: 'date', text: 'For Dating' },
-      { val: 'shopping', text: 'For Shopping' },
-      { val: 'custom', text: 'Custom Reason' }
+      { val: "Pocket Money Request", text: "Pocket Money Request" },
+      { val: "Date with Lover", text: "Date with Lover" },
+      { val: "Hangout with Friends", text: "Hangout with Friends" },
+      { val: "Out of Money", text: "Out of Money" },
+      { val: "အခြား", text: "Other (Custom Write)" }
+    ]
+  },
+  th: {
+    introMsg: "ยินดีต้อนรับ 👋 กรุณารอสักครู่...",
+    loaderMsg: "กรุณารอสักครู่...",
+    authTitle: "เข้าสู่ระบบ / สมัครสมาชิก",
+    modeSelect: "เลือกตัวเลือก",
+    optLogin: "เข้าสู่ระบบ (บัญชีที่มีอยู่)",
+    optSignup: "สมัครสมาชิก (บัญชีใหม่)",
+    loginName: "ชื่อของคุณ",
+    loginPass: "รหัสผ่าน",
+    btnLogin: "เข้าสู่ระบบ 🔓",
+    signupName: "ชื่อของคุณ",
+    signupNum: "หมายเลข / รหัส",
+    signupPass1: "รหัสผ่าน",
+    signupPass2: "ยืนยันรหัสผ่าน",
+    btnSignup: "สร้างบัญชี ✨",
+    profileTitle: "👤 หน้าโปรไฟล์",
+    changeAvatar: "📷 เปลี่ยนรูปโปรไฟล์",
+    reqPocketBtn: "🧧 ขอค่าขนม",
+    historyBtn: "📜 ประวัติการขอ",
+    step3Title: "เลือกเหตุผลในการขอค่าขนม",
+    dropdown: "เลือกเหตุผล",
+    customReason: "เหตุผลอื่นๆ",
+    customNote: "เขียนข้อความขอค่าขนม",
+    bgLabel: "รูปภาพพื้นหลัง",
+    qrLabel: "รูปคิวอาร์โค้ดชำระเงิน",
+    backStep3: "⬅ ย้อนกลับ",
+    genCard: "สร้างการ์ด ✨",
+    step4Title: "🎉 การ์ดขอค่าขนมของคุณ 🎉",
+    qrHint: "สแกนหรือจ่ายเพื่อส่งค่าขนม 👇",
+    saveQr: "บันทึก QR",
+    share: "แชร์",
+    profileReturn: "🏠 กลับสู่โปรไฟล์",
+    modalTitle: "📤 แชร์คำขอ",
+    modalSub: "ส่งการ์ดและลิงก์ผ่าน:",
+    copyLink: "📋 คัดลอกลิงก์",
+    dlQrModal: "📥 บันทึกรูป QR",
+    closeModal: "ปิด",
+    alertNote: "❌ กรุณากรอกข้อความขอค่าขนม",
+    alertBg: "❌ กรุณาอัปโหลดรูปภาพพื้นหลัง",
+    alertQr: "❌ กรุณาอัปโหลดรูป QR Code",
+    reasons: [
+      { val: "ขอค่าขนม", text: "ขอค่าขนม" },
+      { val: "ไปเดทกับแฟน", text: "ไปเดทกับแฟน" },
+      { val: "ไปเที่ยวกับเพื่อน", text: "ไปเที่ยวกับเพื่อน" },
+      { val: "เงินหมดแล้ว", text: "เงินหมดแล้ว" },
+      { val: "အခြား", text: "อื่นๆ (เขียนเอง)" }
+    ]
+  },
+  zh: {
+    introMsg: "欢迎 👋 请稍候...",
+    loaderMsg: "请稍候...",
+    authTitle: "登录 / 注册",
+    modeSelect: "选择选项",
+    optLogin: "登录（已有账号）",
+    optSignup: "注册（新账号）",
+    loginName: "您的姓名",
+    loginPass: "密码",
+    btnLogin: "登录 🔓",
+    signupName: "您的姓名",
+    signupNum: "编号",
+    signupPass1: "密码",
+    signupPass2: "确认密码",
+    btnSignup: "创建账号 ✨",
+    profileTitle: "👤 个人中心",
+    changeAvatar: "📷 更换头像",
+    reqPocketBtn: "🧧 索要零花钱",
+    historyBtn: "📜 历史记录",
+    step3Title: "选择索要原因",
+    dropdown: "选择原因",
+    customReason: "自定义原因",
+    customNote: "填写留言",
+    bgLabel: "背景图片",
+    qrLabel: "收款二维码",
+    backStep3: "⬅ 返回",
+    genCard: "生成卡片 ✨",
+    step4Title: "🎉 您的零花钱申请卡 🎉",
+    qrHint: "扫码或转账零花钱 👇",
+    saveQr: "保存二维码",
+    share: "分享",
+    profileReturn: "🏠 返回个人中心",
+    modalTitle: "📤 分享申请",
+    modalSub: "通过以下方式发送卡片和链接：",
+    copyLink: "📋 复制链接",
+    dlQrModal: "📥 下载二维码",
+    closeModal: "关闭",
+    alertNote: "❌ 请填写留言内容。",
+    alertBg: "❌ 请上传背景图片。",
+    alertQr: "❌ 请上传二维码图片。",
+    reasons: [
+      { val: "零花钱申请", text: "零花钱申请" },
+      { val: "约会", text: "约会" },
+      { val: "和朋友聚会", text: "和朋友聚会" },
+      { val: "没钱了", text: "没钱了" },
+      { val: "အခြား", text: "其他 (自定义)" }
+    ]
+  },
+  ja: {
+    introMsg: "ようこそ 👋 少々お待ちください...",
+    loaderMsg: "お待ちください...",
+    authTitle: "ログイン / 登録",
+    modeSelect: "オプション選択",
+    optLogin: "ログイン (既存アカウント)",
+    optSignup: "新規登録 (アカウント作成)",
+    loginName: "お名前",
+    loginPass: "パスワード",
+    btnLogin: "ログイン 🔓",
+    signupName: "お名前",
+    signupNum: "番号 / コード",
+    signupPass1: "パスワード",
+    signupPass2: "パスワード確認",
+    btnSignup: "アカウント作成 ✨",
+    profileTitle: "👤 プロフィール",
+    changeAvatar: "📷 アバター変更",
+    reqPocketBtn: "🧧 お小遣いを請求する",
+    historyBtn: "📜 履歴",
+    step3Title: "請求理由の選択",
+    dropdown: "理由を選択",
+    customReason: "カスタム理由",
+    customNote: "メッセージを入力",
+    bgLabel: "背景画像",
+    qrLabel: "QRコード画像",
+    backStep3: "⬅ 戻る",
+    genCard: "カード作成 ✨",
+    step4Title: "🎉 あなたのお小遣い請求カード 🎉",
+    qrHint: "スキャンして送金 👇",
+    saveQr: "QR保存",
+    share: "シェア",
+    profileReturn: "🏠 プロフィールに戻る",
+    modalTitle: "📤 シェア",
+    modalSub: "カードとリンクを送信:",
+    copyLink: "📋 リンクコピー",
+    dlQrModal: "📥 QR保存",
+    closeModal: "閉じる",
+    alertNote: "❌ メッセージを入力してください。",
+    alertBg: "❌ 背景画像をアップロードしてください。",
+    alertQr: "❌ QRコード画像をアップロードしてください。",
+    reasons: [
+      { val: "お小遣い請求", text: "お小遣い請求" },
+      { val: "デート", text: "デート" },
+      { val: "友達とお出かけ", text: "友達とお出かけ" },
+      { val: "お金がない", text: "お金がない" },
+      { val: "အခြား", text: "その他 (自由入力)" }
+    ]
+  },
+  ko: {
+    introMsg: "환영합니다 👋 잠시만 기다려주세요...",
+    loaderMsg: "잠시만 기다려주세요...",
+    authTitle: "로그인 / 회원가입",
+    modeSelect: "옵션 선택",
+    optLogin: "로그인 (기존 계정)",
+    optSignup: "회원가입 (새 계정)",
+    loginName: "이름",
+    loginPass: "비밀번호",
+    btnLogin: "로그인 🔓",
+    signupName: "이름",
+    signupNum: "번호 / 코드",
+    signupPass1: "비밀번호",
+    signupPass2: "비밀번호 확인",
+    btnSignup: "계정 생성 ✨",
+    profileTitle: "👤 프로필 대시보드",
+    changeAvatar: "📷 아바타 변경",
+    reqPocketBtn: "🧧 용돈 요청하기",
+    historyBtn: "📜 요청 내역",
+    step3Title: "용돈 요청 사유 선택",
+    dropdown: "사유 선택",
+    customReason: "직접 입력",
+    customNote: "요청 메시지 작성",
+    bgLabel: "배경 이미지",
+    qrLabel: "결제 QR 코드",
+    backStep3: "⬅ 뒤로",
+    genCard: "카드 만들기 ✨",
+    step4Title: "🎉 용돈 요청 카드 🎉",
+    qrHint: "스캔하여 송금하세요 👇",
+    saveQr: "QR 저장",
+    share: "공유",
+    profileReturn: "🏠 프로필로 돌아가기",
+    modalTitle: "📤 공유하기",
+    modalSub: "카드 및 링크 공유:",
+    copyLink: "📋 링크 복사",
+    dlQrModal: "📥 QR 다운로드",
+    closeModal: "닫기",
+    alertNote: "❌ 요청 메시지를 작성해주세요.",
+    alertBg: "❌ 배경 이미지를 업로드해주세요.",
+    alertQr: "❌ QR 코드 이미지를 업로드해주세요.",
+    reasons: [
+      { val: "용돈 요청", text: "용돈 요청" },
+      { val: "데이트 비용", text: "데이트 비용" },
+      { val: "친구들과 놀기", text: "친구들과 놀기" },
+      { val: "잔고 부족", text: "잔고 부족" },
+      { val: "အခြား", text: "기타 (직접 작성)" }
     ]
   }
 };
 
-function changeLanguage(lang) {
-  currentLang = lang;
-  const t = translations[lang] || translations['my'];
-  
-  if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = t.introMsg;
-  if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = t.loaderMsg;
-  if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = t.authTitle;
-  if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = t.modeSelect;
-  if(document.getElementById('opt_login')) document.getElementById('opt_login').innerText = t.optLogin;
-  if(document.getElementById('opt_signup')) document.getElementById('opt_signup').innerText = t.optSignup;
-  
-  const authModeVal = document.getElementById('authModeSelect').value;
-  document.getElementById('authModeTriggerText').innerText = authModeVal === 'login' ? t.optLogin : t.optSignup;
-
-  if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = t.loginName;
-  if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = t.loginPass;
-  if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = t.btnLogin;
-  if(document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = t.signupName;
-  if(document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = t.signupNum;
-  if(document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = t.signupPass1;
-  if(document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = t.signupPass2;
-  if(document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = t.btnSignup;
-  if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = t.profileTitle;
-  if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = t.changeAvatar;
-  if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = t.reqPocketBtn;
-  if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = t.historyBtn;
-  if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = t.step3Title;
-  if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = t.dropdown;
-  if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = t.customReason;
-  if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = t.customNote;
-  if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = t.bgLabel;
-  if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = t.qrLabel;
-  if(document.getElementById('bgImgLabel') && !currentBgUrl) document.getElementById('bgImgLabel').innerText = t.bgImgLabelText;
-  if(document.getElementById('qrImgLabel') && !currentQrUrl) document.getElementById('qrImgLabel').innerText = t.qrImgLabelText;
-  if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = t.btnBack;
-  if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = t.btnGen;
-  if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = t.step4Title;
-  if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = t.qrHint;
-  if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = t.saveQr;
-  if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = t.share;
-  if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = t.profileReturn;
-  if(document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = t.modalTitle;
-  if(document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = t.modalSub;
-  if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = t.copyLink;
-  if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = t.dlQrModal;
-  if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = t.closeModal;
-
-  populateReasons();
+function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
+  return new Promise((resolve) => {
+    if (!file) return resolve('');
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } catch (err) {
+          resolve(e.target.result);
+        }
+      };
+      img.onerror = () => resolve(e.target.result);
+      img.src = e.target.result;
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  changeLanguage(currentLang);
+
   setTimeout(() => {
     const splash = document.getElementById('introSplash');
-    if(splash) splash.classList.add('fade-out');
-    populateReasons();
-    checkUrlParams();
-  }, 400);
+    if (splash) splash.classList.add('fade-out');
+  }, 1500);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const cardId = urlParams.get('id');
+
+  if (cardId) {
+    const loader = document.getElementById('stepLoader');
+    if (loader) loader.classList.add('show');
+
+    try {
+      const sb = getSupabase();
+      if (sb) {
+        const { data, error } = await sb
+          .from('cards')
+          .select('*')
+          .eq('id', cardId)
+          .single();
+
+        if (data && !error) {
+          renderCardData({
+            sender: data.sender,
+            reason: data.reason,
+            note: data.note,
+            bgImage: data.bg_image,
+            qrImage: data.qr_image
+          });
+          if (loader) loader.classList.remove('show');
+          showStep(4);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error('Supabase load error:', err);
+    }
+    if (loader) loader.classList.remove('show');
+  }
 });
 
-function showLoader(show, text) {
-  const loader = document.getElementById('stepLoader');
-  if(text) document.getElementById('lbl_loaderMsg').innerText = text;
-  if(loader) {
-    if(show) loader.classList.add('show');
-    else loader.classList.remove('show');
-  }
-}
+function renderCardData(data) {
+  document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
+  document.getElementById('outReason').innerText = data.reason || '';
+  document.getElementById('outNote').innerText = data.note || '';
 
-function goToStep(stepNum) {
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById('step' + stepNum);
-  if(target) target.classList.add('active');
+  if (data.bgImage) {
+    savedBgImage = data.bgImage;
+    const bgEl = document.getElementById('cardBgImg');
+    bgEl.src = data.bgImage;
+    bgEl.style.display = 'block';
+  }
+  if (data.qrImage) {
+    savedQrImage = data.qrImage;
+    const qrEl = document.getElementById('cardQrImg');
+    const qrWr = document.getElementById('qrWrapper');
+    qrEl.src = data.qrImage;
+    qrWr.style.display = 'block';
+  }
 }
 
 function switchAuthMode(mode) {
   const loginSec = document.getElementById('loginFormSection');
   const signupSec = document.getElementById('signupFormSection');
-  if(mode === 'login') {
-    if(loginSec) loginSec.style.display = 'block';
-    if(signupSec) signupSec.style.display = 'none';
+
+  if (mode === 'login') {
+    loginSec.style.display = 'block';
+    signupSec.style.display = 'none';
   } else {
-    if(loginSec) loginSec.style.display = 'none';
-    if(signupSec) signupSec.style.display = 'block';
+    loginSec.style.display = 'none';
+    signupSec.style.display = 'block';
   }
 }
 
-function selectAuthModeOption(val, text) {
-  document.getElementById('authModeTriggerText').innerText = text;
-  document.getElementById('authModeSelect').value = val;
-  document.getElementById('authModeCustomSelect').classList.remove('open');
-  switchAuthMode(val);
-}
-
-function populateReasons() {
-  const t = translations[currentLang] || translations['my'];
-  const reasons = t.reasons;
-  const container = document.getElementById('reasonCustomOptions');
-  if(!container) return;
-
-  const currentVal = document.getElementById('reasonDropdown').value;
-  container.innerHTML = '';
-
-  let found = false;
-  reasons.forEach(r => {
-    const div = document.createElement('div');
-    div.className = 'custom-option';
-    div.innerText = r.text;
-    div.onclick = () => selectReasonOption(r.val, r.text);
-    container.appendChild(div);
-    if(r.val === currentVal) {
-      document.getElementById('reasonTriggerText').innerText = r.text;
-      found = true;
-    }
-  });
-
-  if(!found && reasons.length > 0) {
-    document.getElementById('reasonTriggerText').innerText = reasons[0].text;
-    document.getElementById('reasonDropdown').value = reasons[0].val;
-  }
-  toggleCustomReason();
-}
-
-function selectReasonOption(val, text) {
-  document.getElementById('reasonTriggerText').innerText = text;
-  document.getElementById('reasonDropdown').value = val;
-  document.getElementById('reasonCustomSelect').classList.remove('open');
-  toggleCustomReason();
-}
-
-function toggleCustomDropdown(wrapperId) {
-  document.querySelectorAll('.custom-select-wrapper').forEach(el => {
-    if(el.id !== wrapperId) el.classList.remove('open');
-  });
-  document.getElementById(wrapperId).classList.toggle('open');
-}
-
-window.addEventListener('click', function(e) {
-  if (!e.target.closest('.custom-select-wrapper')) {
-    document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
-  }
-});
-
-function toggleCustomReason() {
-  const val = document.getElementById('reasonDropdown').value;
-  const customGroup = document.getElementById('customReasonGroup');
-  if(customGroup) {
-    customGroup.style.display = (val === 'custom') ? 'block' : 'none';
-  }
-}
-
-// -----------------------------------------------------------
-// LOGIN WITH SUPABASE
-// -----------------------------------------------------------
-async function handleLogin() {
-  const name = document.getElementById('loginName').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
-  if(!name || !pass) {
-    alert(currentLang === 'en' ? 'Please enter name and password.' : 'ကျေးဇူးပြု၍ နာမည်နှင့် လျှို့ဝှက်နံပါတ် ဖြည့်ပါ။');
-    return;
-  }
-  showLoader(true, currentLang === 'en' ? 'Checking account...' : 'အကောင့် စစ်ဆေးနေသည်...');
-  try {
-    const { data, error } = await supabaseClient
-      .from('users')
-      .select('*')
-      .eq('name', name)
-      .eq('password', pass)
-      .single();
-
-    if (error || !data) {
-      alert(currentLang === 'en' ? 'Invalid account or password.' : 'အကောင့်မရှိပါ သို့မဟုတ် လျှို့ဝှက်နံပါတ် မှားယွင်းနေပါသည်။');
-      showLoader(false);
-      return;
-    }
-
-    currentUser = data;
-    document.getElementById('displayProfileName').innerText = data.name;
-    document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + (data.code || 'VIP-001');
-    showLoader(false);
-    goToStep(2);
-  } catch (err) {
-    console.error(err);
-    currentUser = { name: name, num: 'VIP-001' };
-    document.getElementById('displayProfileName').innerText = name;
-    document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + 'VIP-001';
-    showLoader(false);
-    goToStep(2);
-  }
-}
-
-// -----------------------------------------------------------
-// SIGNUP WITH SUPABASE
-// -----------------------------------------------------------
-async function handleSignup() {
+function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
-  const p1 = document.getElementById('signupPass1').value.trim();
-  const p2 = document.getElementById('signupPass2').value.trim();
+  const p1 = document.getElementById('signupPass1').value;
+  const p2 = document.getElementById('signupPass2').value;
 
-  if(!name || !num || !p1 || !p2) {
-    alert(currentLang === 'en' ? 'Please fill all fields.' : 'အချက်အလက်အားလုံး ဖြည့်ပါ။');
+  if (!name || !num || !p1 || !p2) {
+    alert('အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
     return;
   }
-  if(p1 !== p2) {
-    alert(currentLang === 'en' ? 'Passwords do not match.' : 'လျှို့ဝှက်နံပါတ် နှစ်ခု မတူပါ။');
+  if (p1 !== p2) {
+    alert('Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
     return;
   }
-  showLoader(true, currentLang === 'en' ? 'Creating account...' : 'အကောင့်ဖန်တီးနေသည်...');
-  try {
-    const { error } = await supabaseClient
-      .from('users')
-      .insert([{ name: name, code: num, password: p1 }]);
 
-    if (error) throw error;
+  const userData = { name, num, pass: p1, avatar: '' };
+  localStorage.setItem(`user_${num}`, JSON.stringify(userData));
+  
+  alert('✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
+  currentUser = userData;
+  setupProfileView();
+  goToStep(2);
+}
 
-    alert(currentLang === 'en' ? 'Signup successful! Please login.' : 'အကောင့်ဖွင့်ခြင်း ပြီးမြောက်ပါပြီ။ ကျေးဇူးပြု၍ အကောင့်ဝင်ပါ။');
-    showLoader(false);
-    selectAuthModeOption('login', currentLang === 'en' ? 'Login (Existing Account)' : 'အကောင့်ရှိပြီးသား (Login)');
-  } catch (err) {
-    console.error(err);
-    currentUser = { name: name, num: num };
-    document.getElementById('displayProfileName').innerText = name;
-    document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + num;
-    showLoader(false);
-    goToStep(2);
+function handleLogin() {
+  const name = document.getElementById('loginName').value.trim();
+  const pass = document.getElementById('loginPass').value;
+
+  if (!name || !pass) {
+    alert('နာမည်နှင့် Password ဖြည့်ပါ။');
+    return;
+  }
+
+  let foundUser = null;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('user_')) {
+      const u = JSON.parse(localStorage.getItem(key));
+      if (u.name === name) {
+        foundUser = u;
+        break;
+      }
+    }
+  }
+
+  if (!foundUser) {
+    alert('ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။ အကောင့်သစ်ဖွင့်ပါ။');
+    return;
+  }
+
+  if (foundUser.pass !== pass) {
+    alert('Password မှားယွင်းနေပါသည်။');
+    return;
+  }
+
+  currentUser = foundUser;
+  setupProfileView();
+  goToStep(2);
+}
+
+function setupProfileView() {
+  if (!currentUser) return;
+  document.getElementById('displayProfileName').innerText = currentUser.name;
+  document.getElementById('displayProfileNum').innerText = `ဂဏန်း: ${currentUser.num}`;
+  
+  if (currentUser.avatar) {
+    document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
   }
 }
 
 function updateProfileAvatar(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      currentAvatarUrl = e.target.result;
-      const box = document.getElementById('profileAvatarBox');
-      box.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
-    }
+    reader.onload = (e) => {
+      currentUser.avatar = e.target.result;
+      localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+      document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
+    };
     reader.readAsDataURL(input.files[0]);
   }
 }
 
+function viewHistory() {
+  alert('📜 သင် တောင်းဆိုခဲ့ဖူးသော မှတ်တမ်းများ မရှိသေးပါ။');
+}
+
+function goToStep(stepNumber) {
+  const loader = document.getElementById('stepLoader');
+  loader.classList.add('show');
+  setTimeout(() => {
+    loader.classList.remove('show');
+    showStep(stepNumber);
+  }, 800);
+}
+
+function showStep(stepNumber) {
+  const steps = document.querySelectorAll('.step');
+  steps.forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const target = document.getElementById(`step${stepNumber}`);
+  if (target) {
+    target.style.display = 'block';
+    setTimeout(() => target.classList.add('active'), 50);
+  }
+}
+
+function toggleCustomReason() {
+  const dropdown = document.getElementById('reasonDropdown');
+  const customGroup = document.getElementById('customReasonGroup');
+  customGroup.style.display = (dropdown.value === 'အခြား') ? 'block' : 'none';
+}
+
+function populateReasonDropdown(lang) {
+  const dropdown = document.getElementById('reasonDropdown');
+  if (!dropdown) return;
+  const currentVal = dropdown.value;
+  dropdown.innerHTML = '';
+  
+  const reasonsList = i18n[lang] ? i18n[lang].reasons : i18n['my'].reasons;
+  reasonsList.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item.val;
+    opt.innerText = item.text;
+    dropdown.appendChild(opt);
+  });
+
+  if (currentVal) dropdown.value = currentVal;
+  toggleCustomReason();
+}
+
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      currentBgUrl = e.target.result;
-      document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? "Background selected" : "နောက်ခံပုံ ရွေးပြီးပါပြီ";
-    }
-    reader.readAsDataURL(input.files[0]);
+    selectedBgFile = input.files[0];
+    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ`;
   }
 }
 
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      currentQrUrl = e.target.result;
-      document.getElementById('qrImgLabel').innerText = currentLang === 'en' ? "QR selected" : "ကျူအာလ်ပုံ ရွေးပြီးပါပြီ";
-    }
-    reader.readAsDataURL(input.files[0]);
+    selectedQrFile = input.files[0];
+    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ`;
   }
 }
 
-// -----------------------------------------------------------
-// CARDS TABLE သို့ ဒေတာသိမ်းဆည်းခြင်း
-// -----------------------------------------------------------
 async function generateAndSaveCard() {
-  const reasonVal = document.getElementById('reasonDropdown').value;
-  let reasonText = "";
-  
-  if(reasonVal === 'custom') {
-    reasonText = document.getElementById('customReason').value.trim() || (currentLang === 'en' ? 'Pocket Money Request' : 'မုန့်ဖိုးတောင်းခြင်း');
-  } else {
-    const triggerEl = document.getElementById('reasonTriggerText');
-    reasonText = triggerEl ? triggerEl.innerText : "မုန့်ဖိုးတောင်းခြင်း";
+  const reasonDropdown = document.getElementById('reasonDropdown').value;
+  const customReason = document.getElementById('customReason').value.trim();
+  const customNote = document.getElementById('customNote').value.trim();
+  const finalReason = (reasonDropdown === 'အခြား' && customReason) ? customReason : reasonDropdown;
+
+  const d = i18n[currentLang] || i18n['my'];
+
+  if (!customNote) {
+    alert(d.alertNote);
+    return;
+  }
+  if (!selectedBgFile && !savedBgImage) {
+    alert(d.alertBg);
+    return;
+  }
+  if (!selectedQrFile && !savedQrImage) {
+    alert(d.alertQr);
+    return;
   }
 
-  const noteText = document.getElementById('customNote').value.trim() || (currentLang === 'en' ? 'Please send me some pocket money' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးထည့်ပေးပါရှင့်');
-  const senderName = currentUser ? currentUser.name : "Guest";
-  const bg = currentBgUrl || "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop";
-  const qr = currentQrUrl || "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SAMPLE_QR";
-
-  showLoader(true, currentLang === 'en' ? 'Saving to Database...' : 'Database ထဲ သိမ်းဆည်းနေသည်...');
+  const loader = document.getElementById('stepLoader');
+  if (loader) loader.classList.add('show');
 
   try {
-    const { data, error } = await supabaseClient
+    if (selectedBgFile) {
+      savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
+    }
+    if (selectedQrFile) {
+      savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
+    }
+
+    const payload = {
+      sender: currentUser ? currentUser.name : 'Aung',
+      reason: finalReason,
+      note: customNote,
+      bg_image: savedBgImage,
+      qr_image: savedQrImage
+    };
+
+    const sb = getSupabase();
+    if (!sb) {
+      throw new Error('Supabase SDK error.');
+    }
+
+    const { data, error } = await sb
       .from('cards')
-      .insert([
-        {
-          sender: senderName,
-          reason: reasonText,
-          note: noteText,
-          bg_image: bg,
-          qr_image: qr
-        }
-      ])
+      .insert([payload])
       .select();
 
     if (error) throw error;
 
     if (data && data.length > 0) {
-      createdCardId = data[0].id;
-    }
+      const generatedId = data[0].id;
+      currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
+      
+      renderCardData({
+        sender: payload.sender,
+        reason: payload.reason,
+        note: payload.note,
+        bgImage: payload.bg_image,
+        qrImage: payload.qr_image
+      });
 
-    renderCardUI(senderName, reasonText, noteText, bg, qr);
-    showLoader(false);
-    goToStep(4);
+      if (loader) loader.classList.remove('show');
+      showStep(4);
+    }
   } catch (err) {
-    console.error("Supabase Save Error:", err);
-    renderCardUI(senderName, reasonText, noteText, bg, qr);
-    showLoader(false);
-    goToStep(4);
+    console.error('Supabase Save Error:', err);
+    if (loader) loader.classList.remove('show');
+    alert('Error: ' + (err.message || JSON.stringify(err)));
   }
 }
 
-function renderCardUI(sender, reason, note, bg, qr) {
-  document.getElementById('outSender').innerText = "From: " + sender;
-  document.getElementById('outReason').innerText = reason;
-  document.getElementById('outNote').innerText = note;
-
-  const bgImgEl = document.getElementById('cardBgImg');
-  bgImgEl.src = bg;
-  bgImgEl.style.display = 'block';
-
-  const qrImgEl = document.getElementById('cardQrImg');
-  qrImgEl.src = qr;
-  document.getElementById('qrWrapper').style.display = 'block';
+function downloadSingleQr() {
+  if (!savedQrImage) {
+    alert('QR ပုံ မထည့်ရသေးပါ။');
+    return;
+  }
+  const link = document.createElement('a');
+  link.download = 'Payment_QR_HD.png';
+  link.href = savedQrImage;
+  link.click();
 }
 
-async function checkUrlParams() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const cardId = urlParams.get('id');
-
-  if (cardId) {
-    showLoader(true, currentLang === 'en' ? 'Loading card data...' : 'ကတ်အချက်အလက်များကို ဆွဲထုတ်နေသည်...');
-    try {
-      const { data, error } = await supabaseClient
-        .from('cards')
-        .select('*')
-        .eq('id', cardId)
-        .single();
-
-      if (data && !error) {
-        renderCardUI(data.sender, data.reason, data.note, data.bg_image, data.qr_image);
-        goToStep(4);
-      }
-    } catch (err) {
-      console.error("Fetch Error:", err);
-    } finally {
-      showLoader(false);
-    }
-  }
+function downloadSingleQrFromModal() {
+  downloadSingleQr();
+  closeShareModal();
 }
 
 function openShareModal() {
@@ -471,33 +666,65 @@ function closeShareModal() {
 }
 
 function copyShareLink() {
-  let shareUrl = window.location.origin + window.location.pathname;
-  if (createdCardId) {
-    shareUrl += "?id=" + createdCardId;
-  } else {
-    shareUrl = window.location.href;
+  navigator.clipboard.writeText(currentShareableLink).then(() => {
+    alert('✅ လင့်ခ်ကူးယူပြီးပါပြီ!');
+    closeShareModal();
+  });
+}
+
+function changeLanguage(lang) {
+  currentLang = lang;
+  const t = i18n[lang] || i18n['my'];
+  
+  // Update UI texts safely
+  const setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+  
+  setTxt('introMsg', t.introMsg);
+  setTxt('lbl_loaderMsg', t.loaderMsg);
+  setTxt('lbl_authTitle', t.authTitle);
+  setTxt('lbl_modeSelect', t.modeSelect);
+  
+  const authModeSelect = document.getElementById('authModeSelect');
+  if(authModeSelect && authModeSelect.options.length >= 2) {
+    authModeSelect.options[0].text = t.optLogin;
+    authModeSelect.options[1].text = t.optSignup;
   }
-  navigator.clipboard.writeText(shareUrl);
-  alert(currentLang === 'en' ? 'Link copied!' : 'လင့်ခ်ကို ကူးယူပြီးပါပြီ');
-  closeShareModal();
-}
-
-function downloadSingleQr() {
-  if(!currentQrUrl) {
-    alert(currentLang === 'en' ? 'No QR image available.' : 'ကျူအာလ်ပုံ မရှိသေးပါ။');
-    return;
-  }
-  const a = document.createElement('a');
-  a.href = currentQrUrl;
-  a.download = 'PocketMoney_QR.png';
-  a.click();
-}
-
-function downloadSingleQrFromModal() {
-  downloadSingleQr();
-  closeShareModal();
-}
-
-function viewHistory() {
-  alert(currentLang === 'en' ? 'No history found.' : 'မှတ်တမ်းများ မရှိသေးပါ။');
+  
+  setTxt('lbl_loginName', t.loginName);
+  setTxt('lbl_loginPass', t.loginPass);
+  setTxt('btn_login', t.btnLogin);
+  
+  setTxt('lbl_signupName', t.signupName);
+  setTxt('lbl_signupNum', t.signupNum);
+  setTxt('lbl_signupPass1', t.signupPass1);
+  setTxt('lbl_signupPass2', t.signupPass2);
+  setTxt('btn_signup', t.btnSignup);
+  
+  setTxt('lbl_profileTitle', t.profileTitle);
+  setTxt('lbl_changeAvatar', t.changeAvatar);
+  setTxt('lbl_reqPocketBtn', t.reqPocketBtn);
+  setTxt('lbl_historyBtn', t.historyBtn);
+  
+  setTxt('lbl_step3Title', t.step3Title);
+  setTxt('lbl_dropdown', t.dropdown);
+  setTxt('lbl_customReason', t.customReason);
+  setTxt('lbl_customNote', t.customNote);
+  setTxt('lbl_bgLabel', t.bgLabel);
+  setTxt('lbl_qrLabel', t.qrLabel);
+  setTxt('btn_backStep3', t.backStep3);
+  setTxt('btn_genCard', t.genCard);
+  
+  setTxt('lbl_step4Title', t.step4Title);
+  setTxt('lbl_qrHint', t.qrHint);
+  setTxt('btn_saveQr', t.saveQr);
+  setTxt('btn_share', t.share);
+  setTxt('btn_profileReturn', t.profileReturn);
+  
+  setTxt('lbl_modalTitle', t.modalTitle);
+  setTxt('lbl_modalSub', t.modalSub);
+  setTxt('btn_copyLink', t.copyLink);
+  setTxt('btn_dlQrModal', t.dlQrModal);
+  setTxt('btn_closeModal', t.closeModal);
+  
+  populateReasonDropdown(lang);
 }
