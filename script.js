@@ -297,7 +297,6 @@ function renderCardData(data) {
   }
   if (data.musicUrl) {
     savedMusicUrl = data.musicUrl;
-    // လိုအပ်ပါက Result Card ပေါ်တွင် Audio Player ထည့်သွင်း အလုပ်လုပ်စေနိုင်ပါသည်။
   }
 }
 
