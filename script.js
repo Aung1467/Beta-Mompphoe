@@ -181,7 +181,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// TikTok API မှတဆင့် သီချင်းလင့်ခ်ဆွဲထုတ်ခြင်း နှင့် Preview လုပ်ခြင်း (တိုးမြှင့်ပြင်ဆင်ထားသည်)
+// TikTok API မှတဆင့် သီချင်းလင့်ခ်ဆွဲထုတ်ခြင်း နှင့် Preview လုပ်ခြင်း (Array နှင့် Object နှစ်မျိုးလုံးကို Support လုပ်ပေးသည်)
 async function handleMusicPreview(url) {
   if (!url || !url.trim().includes('tiktok.com')) return;
   
@@ -207,11 +207,20 @@ async function handleMusicPreview(url) {
 
     if (loader) loader.classList.remove('show');
 
+    // Array ဖြစ်နေလျှင် ပထမ Index ကိုယူရန်၊ မဟုတ်လျှင် Result ကို တိုက်ရိုက်ယူရန်
+    const resData = Array.isArray(result) ? result[0] : result;
     let audioSrc = '';
-    if (result) {
-      const dataObj = result.data || result;
-      // Key အမျိုးမျိုးကို လိုက်လံစစ်ဆေးပေးခြင်းဖြင့် အမှားနည်းစေရန်
-      audioSrc = dataObj.music || dataObj.music_url || dataObj.audio || dataObj.sound || dataObj.play || dataObj.musicUrl || '';
+
+    if (resData) {
+      audioSrc = resData.music || 
+                 resData.audio || 
+                 resData.play || 
+                 resData.url || 
+                 resData.nowm || 
+                 resData.musicUrl || 
+                 resData.sound || 
+                 (resData.data && (resData.data.music || resData.data.audio || resData.data.play || resData.data.url)) ||
+                 (resData.music_info && resData.music_info.url) || '';
     }
 
     if (audioSrc) {
@@ -557,7 +566,7 @@ function downloadSingleQrFromModal() {
   closeShareModal();
 }
 
-openShareModal = function() {
+let openShareModal = function() {
   document.getElementById('shareModal').style.display = 'flex';
 }
 
