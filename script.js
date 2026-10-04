@@ -234,7 +234,7 @@
       text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
     }
 
-    /* ✨ Smooth Custom Drawdown with Delay & Push Effect ✨ */
+    /* Smooth Custom Drawdown with Delay & Push Effect */
     .custom-select-wrapper {
       position: relative;
       width: 100%;
@@ -277,7 +277,6 @@
     .custom-options {
       max-height: 0;
       overflow: hidden;
-      /* Smooth delay and easing for opening/closing */
       transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease 0.05s, margin-top 0.35s ease;
       opacity: 0;
       background: #0e1124;
@@ -973,21 +972,28 @@
       const reasons = t.reasons;
       const container = document.getElementById('reasonCustomOptions');
       if(!container) return;
+
+      const currentVal = document.getElementById('reasonDropdown').value;
       container.innerHTML = '';
 
+      let found = false;
       reasons.forEach(r => {
         const div = document.createElement('div');
         div.className = 'custom-option';
         div.innerText = r.text;
         div.onclick = () => selectReasonOption(r.val, r.text);
         container.appendChild(div);
+        if(r.val === currentVal) {
+          document.getElementById('reasonTriggerText').innerText = r.text;
+          found = true;
+        }
       });
 
-      if(reasons.length > 0) {
+      if(!found && reasons.length > 0) {
         document.getElementById('reasonTriggerText').innerText = reasons[0].text;
         document.getElementById('reasonDropdown').value = reasons[0].val;
-        toggleCustomReason();
       }
+      toggleCustomReason();
     }
 
     function selectReasonOption(val, text) {
