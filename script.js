@@ -20,9 +20,12 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 
-// Music Folder ထဲရှိ သီချင်းစာရင်း (ယခု song1.mp3 တစ်ပုד်တည်းကို ထည့်ထားပါသည်)
+// Music Folder ထဲရှိ သီချင်းစာရင်း (လိုအပ်ပါက ဤနေရာတွင် အလွယ်တကူ ထပ်ထည့်နိုင်ပါသည်)
 const localMusicList = [
-  { name: '🎵 song1.mp3', url: 'music/song1.mp3' }
+  { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
+  { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
+  { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
+  { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
 ];
 
 const i18n = {
@@ -313,12 +316,23 @@ function renderCardData(data) {
   }
   if (data.musicUrl) {
     savedMusicUrl = data.musicUrl;
+    
+    // Step 3 preview player
     const player = document.getElementById('audioPreviewPlayer');
     const previewGroup = document.getElementById('audioPreviewGroup');
     if (player && previewGroup) {
       player.src = data.musicUrl;
       player.load();
       previewGroup.style.display = 'block';
+    }
+
+    // Step 4 card player (Share လင့်ခ်ဖြင့် ပြန်ဝင်လာသည့်အခါ သီချင်းပါလာစေရန်)
+    const cardPlayer = document.getElementById('cardAudioPlayer');
+    const cardAudioGroup = document.getElementById('cardAudioGroup');
+    if (cardPlayer && cardAudioGroup) {
+      cardPlayer.src = data.musicUrl;
+      cardPlayer.load();
+      cardAudioGroup.style.display = 'block';
     }
   }
 }

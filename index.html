@@ -849,6 +849,12 @@
         </div>
       </div>
 
+      <!-- Music Player for Result Card & Share Link View -->
+      <div class="form-group" id="cardAudioGroup" style="display: none; margin-bottom: 12px;">
+        <label id="lbl_cardAudio" style="font-size: 11px; margin-bottom: 4px; color: var(--accent);">🎵 သီချင်း နားဆင်ရန်</label>
+        <audio id="cardAudioPlayer" controls style="width: 100%; border-radius: 12px; height: 36px; outline: none;"></audio>
+      </div>
+
       <div class="btn-group">
         <button class="btn save-btn" id="btn_saveQr" onclick="downloadCardImage()" style="padding: 10px; font-size: 13px;">📥 ကတ်ပုံသိမ်းရန်</button>
         <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;">📤 မျှဝေမည်</button>
@@ -1295,6 +1301,13 @@
               }
               if (data.music_url) {
                 currentMusicUrl = data.music_url;
+                const cardPlayer = document.getElementById('cardAudioPlayer');
+                const cardAudioGroup = document.getElementById('cardAudioGroup');
+                if (cardPlayer && cardAudioGroup) {
+                  cardPlayer.src = data.music_url;
+                  cardPlayer.load();
+                  cardAudioGroup.style.display = 'block';
+                }
               }
               showLoader(false);
               goToStep(4);
@@ -1617,6 +1630,16 @@
         qrWrapper.style.display = 'block';
       } else {
         qrWrapper.style.display = 'none';
+      }
+
+      if(currentMusicUrl) {
+        const cardPlayer = document.getElementById('cardAudioPlayer');
+        const cardAudioGroup = document.getElementById('cardAudioGroup');
+        if(cardPlayer && cardAudioGroup) {
+          cardPlayer.src = currentMusicUrl;
+          cardPlayer.load();
+          cardAudioGroup.style.display = 'block';
+        }
       }
 
       showLoader(true);
