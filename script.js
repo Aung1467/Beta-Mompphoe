@@ -181,7 +181,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// TikTok API မှ urls Array ထဲမှ လင့်ခ်များကို အဓိကထား ဆွဲထုတ်ပေးမည့် လုပ်ဆောင်ချက်
+// TikTok API မှ urls Array နှင့် အခြားသော Keys များမှ လင့်ခ်များကို အလိုအလျောက် ရှာဖွေပေးမည့် လုပ်ဆောင်ချက်
 async function handleMusicPreview(url) {
   if (!url || !url.trim().includes('tiktok.com')) return;
   
@@ -202,7 +202,8 @@ async function handleMusicPreview(url) {
     const response = await fetch(TIKTOK_API_URL, options);
     const result = await response.json();
     
-    console.log("TikTok API Response Data:", result);
+    // Console တွင် Object ကြီးကို ဖွင့်ကြည့်စရာမလိုဘဲ အချက်အလက်အပြည့်အစုံကို စာသားအဖြစ် ဖော်ပြပေးမည်
+    console.log("Full TikTok API Response:", JSON.stringify(result, null, 2));
 
     if (loader) loader.classList.remove('show');
 
@@ -224,11 +225,17 @@ async function handleMusicPreview(url) {
 
       // ၂။ urls Array ထဲမှ လင့်ခ်များကို စစ်ဆေးခြင်း
       if (!audioSrc && Array.isArray(resData.urls) && resData.urls.length > 0) {
-        const firstUrl = resData.urls[0];
-        if (typeof firstUrl === 'string') {
-          audioSrc = firstUrl;
-        } else if (typeof firstUrl === 'object' && firstUrl !== null) {
-          audioSrc = firstUrl.url || firstUrl.link || firstUrl.play || Object.values(firstUrl).find(v => typeof v === 'string' && v.startsWith('http')) || '';
+        for (let item of resData.urls) {
+          if (typeof item === 'string' && item.startsWith('http')) {
+            audioSrc = item;
+            break;
+          } else if (typeof item === 'object' && item !== null) {
+            const found = item.url || item.link || item.play || Object.values(item).find(v => typeof v === 'string' && v.startsWith('http'));
+            if (found) {
+              audioSrc = found;
+              break;
+            }
+          }
         }
       }
 
@@ -251,9 +258,9 @@ async function handleMusicPreview(url) {
         previewGroup.style.display = 'block';
         player.src = audioSrc;
       }
-      alert('✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
+      alert('✅ TikTok သီချင်းလင့်ခ်ကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
     } else {
-      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။');
+      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Console တွင် JSON စာသားကို စစ်ဆေးပါ)');
     }
   } catch (err) {
     if (loader) loader.classList.remove('show');
