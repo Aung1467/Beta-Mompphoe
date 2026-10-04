@@ -1439,7 +1439,7 @@
       }
     }
 
-    // TikTok Music RapidAPI Backend Handler
+    // TikTok Music RapidAPI Backend Handler (With Console Logging Added)
     async function handleMusicPreview(url) {
       if (!url || !url.trim().includes('tiktok.com')) {
         alert(currentLang === 'en' ? 'Please enter a valid TikTok link.' : 'ကျေးဇူးပြု၍ မှန်ကန်သော TikTok လင့်ခ် ထည့်ပါ။');
@@ -1460,6 +1460,10 @@
 
         const response = await fetch(TIKTOK_API_URL, options);
         const result = await response.json();
+        
+        // Eruda Console ထဲတွင် API Result ကို ချက်ချင်းစစ်ဆေးရန်
+        console.log("TikTok API Response Data:", result);
+
         showLoader(false);
 
         let audioSrc = '';
@@ -1479,7 +1483,7 @@
           }
           alert(currentLang === 'en' ? '✅ TikTok music retrieved successfully!' : '✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
         } else {
-          alert(currentLang === 'en' ? '❌ Audio not found from this link.' : '❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။');
+          alert(currentLang === 'en' ? '❌ Audio not found from this link.' : '❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Eruda Console တွင် Response ကို စစ်ဆေးပါ)');
         }
       } catch (err) {
         showLoader(false);
@@ -1698,5 +1702,9 @@
       alert(currentLang === 'en' ? 'No history found.' : 'မှတ်တမ်းများ မရှိသေးပါ။');
     }
   </script>
+
+  <!-- Eruda Console for Mobile Debugging (ဖုန်းပေါ်တွင် Console ကြည့်ရန် ထည့်သွင်းထားသည်) -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
 </body>
 </html>
