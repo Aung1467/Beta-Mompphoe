@@ -135,30 +135,14 @@ function changeLanguage(lang) {
   if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = t.closeModal;
 }
 
-// Robust Splash Screen & Initialization Handler (အဝိုင်းလည်တာ မပိတ်ဘဲ က้างနေခြင်းမရှိစေရန်)
-function initApp() {
-  const splash = document.getElementById('introSplash');
-  if(splash) {
-    splash.classList.add('fade-out');
-  }
+// Intro Splash fade out on load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const splash = document.getElementById('introSplash');
+    if(splash) splash.classList.add('fade-out');
+  }, 1200);
   populateReasons();
-}
-
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  setTimeout(initApp, 800);
-} else {
-  window.addEventListener('DOMContentLoaded', () => { setTimeout(initApp, 800); });
-  window.addEventListener('load', () => { setTimeout(initApp, 400); });
-}
-
-// Safety fallback timer (မည်သည့်အကြောင်းကြောင့်မျှ အဝိုင်းဆက်မလည်တော့ဘဲ အလိုအလျောက် ပွင့်သွားစေရန်)
-setTimeout(() => {
-  const splash = document.getElementById('introSplash');
-  if(splash && !splash.classList.contains('fade-out')) {
-    splash.classList.add('fade-out');
-    populateReasons();
-  }
-}, 2000);
+});
 
 function showLoader(show) {
   const loader = document.getElementById('stepLoader');
@@ -174,6 +158,7 @@ function goToStep(stepNum) {
   if(target) target.classList.add('active');
 }
 
+// Switch Login / Signup Forms
 function switchAuthMode(mode) {
   const loginSec = document.getElementById('loginFormSection');
   const signupSec = document.getElementById('signupFormSection');
@@ -186,6 +171,7 @@ function switchAuthMode(mode) {
   }
 }
 
+// Populate Reasons for Custom Dropdown
 function populateReasons() {
   const reasons = [
     { val: 'snack', text: '☕ မုန့်ဖိုးဝယ်စားဖို့ပါ' },
@@ -207,6 +193,7 @@ function populateReasons() {
     container.appendChild(div);
   });
 
+  // Set default first
   if(reasons.length > 0) {
     document.getElementById('reasonTriggerText').innerText = reasons[0].text;
     document.getElementById('reasonDropdown').value = reasons[0].val;
@@ -233,6 +220,7 @@ function toggleCustomReason() {
   }
 }
 
+// Handle Login
 function handleLogin() {
   const name = document.getElementById('loginName').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
@@ -250,6 +238,7 @@ function handleLogin() {
   }, 800);
 }
 
+// Handle Signup
 function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
@@ -274,6 +263,7 @@ function handleSignup() {
   }, 800);
 }
 
+// Profile Avatar Update
 function updateProfileAvatar(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
@@ -286,6 +276,7 @@ function updateProfileAvatar(input) {
   }
 }
 
+// Background Image Handler
 function handleBgImage(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
@@ -297,6 +288,7 @@ function handleBgImage(input) {
   }
 }
 
+// QR Image Handler
 function handleQrImage(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
@@ -308,6 +300,7 @@ function handleQrImage(input) {
   }
 }
 
+// Generate Card
 function generateAndSaveCard() {
   const reasonVal = document.getElementById('reasonDropdown').value;
   let reasonText = "";
@@ -349,6 +342,7 @@ function generateAndSaveCard() {
   }, 600);
 }
 
+// Share Modal Functions
 function openShareModal() {
   document.getElementById('shareModal').style.display = 'flex';
 }
