@@ -14,7 +14,7 @@
       --primary: #ff0055;
       --primary-hover: #ff3377;
       --accent: #00f2fe;
-      --accent-glow: rgba(0, 242, 254, 0.4); /* Glow အရောင်ကို သက်သာအောင် လျှော့ထားသည် */
+      --accent-glow: rgba(0, 242, 254, 0.4);
       --bg-glass: rgba(10, 12, 28, 0.96);
       --radius-custom: 26px;
       --text-color: #ffffff;
@@ -277,8 +277,11 @@
       border: 1.5px solid transparent;
       border-radius: 12px;
       margin-top: 0;
-      position: relative;
-      z-index: 9;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 99;
     }
 
     .custom-select-wrapper.open .custom-options {
@@ -334,7 +337,6 @@
       color: #ffffff;
     }
 
-    /* Uniform & Symmetrical Profile Buttons (Both matched perfectly) */
     .file-input-wrapper {
       position: relative;
       overflow: hidden;
@@ -472,7 +474,12 @@
       gap: 8px;
     }
 
-    /* Export Card Preview */
+    /* Export Card Preview (3:4 Ratio HD) with Floating Animation */
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(0.4deg); }
+    }
+
     #exportCard {
       width: 100%;
       max-width: 320px;
@@ -488,6 +495,7 @@
       flex-direction: column;
       justify-content: space-between;
       padding: 12px;
+      animation: cardFloat 4s ease-in-out infinite, cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .card-full-bg {
@@ -501,6 +509,21 @@
       display: none;
     }
 
+    /* Sender Tag Positioned at Top Right Corner */
+    .sender-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 11px;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(255, 71, 87, 0.5);
+      z-index: 5;
+    }
+
     .card-header-content {
       position: relative;
       z-index: 2;
@@ -508,18 +531,6 @@
       padding: 12px;
       width: 90%;
       text-align: center;
-    }
-
-    .sender-tag {
-      display: inline-block;
-      font-size: 11px;
-      background: var(--primary);
-      color: #ffffff;
-      padding: 2px 12px;
-      border-radius: 8px;
-      margin-bottom: 5px;
-      font-weight: 700;
-      box-shadow: 0 3px 8px rgba(255, 71, 87, 0.5);
     }
 
     .card-header-content h3 {
@@ -570,6 +581,29 @@
       width: 100%;
       height: 100%;
       object-fit: fill;
+    }
+
+    /* Random Floating Emojis Overlay inside exportCard */
+    .emoji-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      bottom: -20px;
+      animation: floatUpEmoji 3.5s linear infinite;
+      opacity: 0.85;
+      user-select: none;
+    }
+
+    @keyframes floatUpEmoji {
+      0% { transform: translateY(0px) scale(0.7) rotate(0deg); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-380px) scale(1.3) rotate(360deg); opacity: 0; }
     }
 
     .save-btn { background: linear-gradient(135deg, #2ed573, #26af5f); box-shadow: 0 4px 10px rgba(46, 213, 115, 0.25); }
@@ -638,7 +672,7 @@
       <h3 id="lbl_modalTitle" style="color:var(--accent); font-size: 17px; margin-bottom:8px; text-shadow: 0 0 6px var(--accent-glow);">📤 မျှဝေရန် (Share)</h3>
       <p id="lbl_modalSub" style="font-size:12px; font-weight:600; margin-bottom:14px; color:#cbd5e1;">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -</p>
       <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()">📋 လင့်ခ် ကူးယူရန်</button>
-      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadSingleQrFromModal()">📥 1:1 ပုံ သိမ်းရန်</button>
+      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadCardImage()">📥 ကတ်ပုံရိပ် သိမ်းရန်</button>
       <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()">ပိတ်မည်</button>
     </div>
   </div>
@@ -685,10 +719,10 @@
         </div>
         <div class="form-group">
           <label id="lbl_signupNum">ဂဏန်း (ကုဒ်နံပါတ်)</label>
-          <input type="text" id="signupNum" placeholder="ဂဏန်းရိုက်ပါ">
+          <input type="text" id="signupNum" placeholder="ဂဏန်းရိုက်ပါ (ဥပမာ - 1234)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass1">Password</label>
+          <label id="lbl_signupPass1">Password (အနည်းဆုံး ၄ လုံး)</label>
           <input type="password" id="signupPass1" placeholder="Password အသစ်ပေးရန်">
         </div>
         <div class="form-group">
@@ -710,7 +744,6 @@
           </svg>
         </div>
 
-        <!-- Uniform & Symmetrical Action Row -->
         <div class="profile-action-row">
           <div class="file-input-wrapper profile-small-btn">
             <span>📷 ပုံပြောင်းရန်</span>
@@ -757,6 +790,20 @@
         <textarea id="customNote" rows="2" placeholder="စာစီပါ"></textarea>
       </div>
 
+      <!-- TikTok Music Section with RapidAPI Integration -->
+      <div class="form-group">
+        <label id="lbl_musicLabel">သီချင်းထည့်ရန် (TikTok Link)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="tiktokMusicLink" placeholder="tiktok video link ထည့်ရန်" style="flex: 1;">
+          <button type="button" class="btn" style="width: auto; padding: 10px 14px; margin-top: 0; font-size: 12px;" onclick="handleMusicPreview(document.getElementById('tiktokMusicLink').value)">ဆွဲမည်</button>
+        </div>
+      </div>
+
+      <div class="form-group" id="audioPreviewGroup" style="display: none;">
+        <label id="lbl_audioPreview">သီချင်း နားဆောင်ရန် (Preview)</label>
+        <audio id="audioPreviewPlayer" controls style="width: 100%; border-radius: 12px; height: 36px; outline: none;"></audio>
+      </div>
+
       <div class="form-group">
         <label id="lbl_bgLabel">နောက်ခံပုံ (3:4 Ratio HD)</label>
         <div class="file-input-wrapper">
@@ -766,7 +813,7 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ (HD)</label>
+        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ (1:1 HD)</label>
         <div class="file-input-wrapper">
           <div class="file-btn" id="qrImgLabel">💳 QR Code ပုံ ရွေးရန်</div>
           <input type="file" accept="image/*" onchange="handleQrImage(this)">
@@ -783,10 +830,12 @@
     <div class="step" id="step4">
       <h2 id="lbl_step4Title">🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉</h2>
 
+      <!-- Card Container with Floating Animation & Random Emoji Overlay -->
       <div id="exportCard">
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
+        <span class="sender-tag" id="outSender"></span>
+        <div class="emoji-overlay" id="emojiOverlay"></div>
         <div class="card-header-content">
-          <span class="sender-tag" id="outSender"></span>
           <h3 id="outReason"></h3>
           <p id="outNote"></p>
         </div>
@@ -799,8 +848,8 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;">Save QR</button>
-        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;">Share</button>
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadCardImage()" style="padding: 10px; font-size: 13px;">📥 ကတ်ပုံသိမ်းရန်</button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;">📤 မျှဝေမည်</button>
       </div>
       
       <div class="btn-group" style="margin-top: 8px;">
@@ -811,6 +860,560 @@
   </div>
 
   <script>
+    // Supabase Credentials
+    const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
+
+    // RapidAPI TikTok Downloader Credentials
+    const TIKTOK_API_HOST = 'tiktok-video-downloader-api1.p.rapidapi.com';
+    const TIKTOK_API_KEY = '70859b2b0dmsh50bef4b29850745p174506jsnde824fc2401a';
+    const TIKTOK_API_URL = 'https://tiktok-video-downloader-api1.p.rapidapi.com/api/tiktok/links';
+
+    let supabaseClient = null;
+
+    function getSupabase() {
+      if (!supabaseClient && window.supabase && window.supabase.createClient) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+      return supabaseClient;
+    }
+
+    let currentUser = null;
+    let currentAvatarUrl = "";
+    let currentBgUrl = "";
+    let currentQrUrl = "";
+    let currentMusicUrl = "";
+    let currentLang = 'my';
+    let emojiInterval = null;
+    let currentShareableLink = '';
+
+    const translations = {
+      my: {
+        introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
+        loaderMsg: "ခဏစောင့်ပါ...",
+        authTitle: "အကောင့်ဝင်ရန်",
+        modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
+        optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
+        optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
+        loginName: "သင်၏ နာမည်",
+        loginPass: "Password",
+        btnLogin: "အကောင့်ဝင်မည် 🔓",
+        signupName: "သင်၏ နာမည်",
+        signupNum: "ဂဏန်း (ကုဒ်နံပါတ်)",
+        signupPass1: "Password",
+        signupPass2: "Password ထပ်မံရိုက်ပါ (Confirm)",
+        btnSignup: "အကောင့်အသစ်ဖွင့်မည် ✨",
+        profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
+        changeAvatar: "📷 ပုံပြောင်းရန်",
+        changeNick: "✏ နာမည်ပြောင်း",
+        reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
+        historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
+        step3Title: "🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈",
+        dropdown: "အကြောင်းအရာ ရွေးချယ်ရန်",
+        customReason: "ကိုယ်တိုင်စာရေးရန်",
+        customNote: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
+        musicLabel: "သီချင်းထည့်ရန် (TikTok Link)",
+        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        audioPreview: "သီချင်း နားဆောင်ရန် (Preview)",
+        bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
+        qrLabel: "QR Code / အချက်အလက်ပုံ (1:1 HD)",
+        bgImgLabelText: "📸 နောက်ခံပုံ ရွေးရန် (အကြည်)",
+        qrImgLabelText: "💳 QR Code ပုံ ရွေးရန်",
+        btnBack: "⬅ နောက်သို့",
+        btnGen: "ကတ်ဖန်တီးမည် ✨",
+        step4Title: "🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉",
+        qrHint: "Scan or Pay to Send Pocket Money 👇",
+        saveQr: "📥 ကတ်ပုံသိမ်းရန်",
+        share: "📤 မျှဝေမည်",
+        profileReturn: "🏠 Profile သို့ပြန်ရန်",
+        modalTitle: "📤 မျှဝေရန် (Share)",
+        modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
+        copyLink: "📋 လင့်ခ် ကူးယူရန်",
+        dlQrModal: "📥 ကတ်ပုံရိပ် သိမ်းရန်",
+        closeModal: "ပိတ်မည်",
+        reasons: [
+          { val: 'food', text: 'မုန့်ဖိုးဝယ်စားဖို့ပါ' },
+          { val: 'game', text: 'ဂိမ်းငွေဖြည့်ဖို့ပါ' },
+          { val: 'date', text: 'ချစ်သူနဲ့ချိန်းတွေ့ဖို့ပါ' },
+          { val: 'shopping', text: 'ပစ္စည်းဝယ်ယူဖို့ပါ' },
+          { val: 'custom', text: 'အခြားအကြောင်းအရာ (ကိုယ်တိုင်ရေးရန်)' }
+        ]
+      },
+      en: {
+        introMsg: "Welcome 👋 Please wait...",
+        loaderMsg: "Please wait...",
+        authTitle: "Sign In",
+        modeSelect: "Select Mode",
+        optLogin: "Login (Existing Account)",
+        optSignup: "Sign Up (New Account)",
+        loginName: "Your Name",
+        loginPass: "Password",
+        btnLogin: "Login 🔓",
+        signupName: "Your Name",
+        signupNum: "Number Code",
+        signupPass1: "Password",
+        signupPass2: "Confirm Password",
+        btnSignup: "Sign Up ✨",
+        profileTitle: "👤 Profile",
+        changeAvatar: "📷 Change Avatar",
+        changeNick: "✏ Edit Name",
+        reqPocketBtn: "🧧 Request Pocket Money",
+        historyBtn: "📜 History",
+        step3Title: "🎈 Reason for Request 🎈",
+        dropdown: "Select Reason",
+        customReason: "Custom Reason",
+        customNote: "Custom Note",
+        musicLabel: "Add Music (TikTok Link)",
+        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        audioPreview: "Preview Audio",
+        bgLabel: "Background (3:4 HD)",
+        qrLabel: "QR Code / Payment Info (1:1 HD)",
+        bgImgLabelText: "📸 Select Background",
+        qrImgLabelText: "💳 Select QR Code",
+        btnBack: "⬅ Back",
+        btnGen: "Generate Card ✨",
+        step4Title: "🎉 Pocket Money Card 🎉",
+        qrHint: "Scan or Pay to Send Pocket Money 👇",
+        saveQr: "📥 Save Card",
+        share: "📤 Share",
+        profileReturn: "🏠 Return to Profile",
+        modalTitle: "📤 Share",
+        modalSub: "Send card and link -",
+        copyLink: "📋 Copy Link",
+        dlQrModal: "📥 Save Card Image",
+        closeModal: "Close",
+        reasons: [
+          { val: 'food', text: 'For Snacks' },
+          { val: 'game', text: 'For Gaming' },
+          { val: 'date', text: 'For Dating' },
+          { val: 'shopping', text: 'For Shopping' },
+          { val: 'custom', text: 'Custom Reason' }
+        ]
+      },
+      th: {
+        introMsg: "ยินดีต้อนรับ 👋 กรุณารอสักครู่...",
+        loaderMsg: "กรุณารอสักครู่...",
+        authTitle: "เข้าสู่ระบบ",
+        modeSelect: "เลือกโหมด",
+        optLogin: "เข้าสู่ระบบ (บัญชีที่มีอยู่)",
+        optSignup: "สมัครสมาชิกใหม่ (Sign Up)",
+        loginName: "ชื่อของคุณ",
+        loginPass: "รหัสผ่าน",
+        btnLogin: "เข้าสู่ระบบ 🔓",
+        signupName: "ชื่อของคุณ",
+        signupNum: "รหัสตัวเลข",
+        signupPass1: "รหัสผ่าน",
+        signupPass2: "ยืนยันรหัสผ่าน",
+        btnSignup: "สมัครสมาชิก ✨",
+        profileTitle: "👤 โปรไฟล์",
+        changeAvatar: "📷 เปลี่ยนรูปภาพ",
+        changeNick: "✏ เปลี่ยนชื่อ",
+        reqPocketBtn: "🧧 ขอค่าขนม",
+        historyBtn: "📜 ประวัติ",
+        step3Title: "🎈 เหตุผลในการขอ 🎈",
+        dropdown: "เลือกเหตุผล",
+        customReason: "เหตุผลอื่นๆ",
+        customNote: "ข้อความเพิ่มเติม",
+        musicLabel: "เพิ่มเพลง (TikTok Link)",
+        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        audioPreview: "ฟังเสียงตัวอย่าง (Preview)",
+        bgLabel: "ภาพพื้นหลัง (3:4 HD)",
+        qrLabel: "QR Code / ข้อมูลการชำระเงิน",
+        bgImgLabelText: "📸 เลือกภาพพื้นหลัง",
+        qrImgLabelText: "💳 เลือก QR Code",
+        btnBack: "⬅ ย้อนกลับ",
+        btnGen: "สร้างการ์ด ✨",
+        step4Title: "🎉 การ์ดขอค่าขนมของคุณ 🎉",
+        qrHint: "สแกนหรือจ่ายเพื่อส่งค่าขนม 👇",
+        saveQr: "📥 บันทึกการ์ด",
+        share: "📤 แชร์",
+        profileReturn: "🏠 กลับสู่โปรไฟล์",
+        modalTitle: "📤 แชร์",
+        modalSub: "ส่งการ์ดและลิงก์ -",
+        copyLink: "📋 คัดลอกลิงก์",
+        dlQrModal: "📥 บันทึกภาพการ์ด",
+        closeModal: "ปิด",
+        reasons: [
+          { val: 'food', text: 'สำหรับซื้อขนม' },
+          { val: 'game', text: 'สำหรับเติมเกม' },
+          { val: 'date', text: 'สำหรับเดตกับแฟน' },
+          { val: 'shopping', text: 'สำหรับซื้อของ' },
+          { val: 'custom', text: 'เหตุผลอื่นๆ (พิมพ์เอง)' }
+        ]
+      },
+      zh: {
+        introMsg: "欢迎 👋 请稍候...",
+        loaderMsg: "请稍候...",
+        authTitle: "登录",
+        modeSelect: "选择模式",
+        optLogin: "登录 (已有账号)",
+        optSignup: "注册 (新账号)",
+        loginName: "您的姓名",
+        loginPass: "密码",
+        btnLogin: "登录 🔓",
+        signupName: "您的姓名",
+        signupNum: "编号",
+        signupPass1: "密码",
+        signupPass2: "确认密码",
+        btnSignup: "注册 ✨",
+        profileTitle: "👤 个人资料",
+        changeAvatar: "📷 更换头像",
+        changeNick: "✏ 修改昵称",
+        reqPocketBtn: "🧧 索要零花钱",
+        historyBtn: "📜 历史记录",
+        step3Title: "🎈 索要原因 🎈",
+        dropdown: "选择原因",
+        customReason: "自定义原因",
+        customNote: "留言备注",
+        musicLabel: "添加音乐 (TikTok Link)",
+        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        audioPreview: "预览试听",
+        bgLabel: "背景图 (3:4 HD)",
+        qrLabel: "二维码 / 支付信息",
+        bgImgLabelText: "📸 选择背景图",
+        qrImgLabelText: "💳 选择二维码",
+        btnBack: "⬅ 返回",
+        btnGen: "生成卡片 ✨",
+        step4Title: "🎉 您的零花钱卡片 🎉",
+        qrHint: "扫描或付款发送零花钱 👇",
+        saveQr: "📥 保存卡片",
+        share: "📤 分享",
+        profileReturn: "🏠 返回个人资料",
+        modalTitle: "📤 分享",
+        modalSub: "发送卡片和链接 -",
+        copyLink: "📋 复制链接",
+        dlQrModal: "📥 保存卡片图片",
+        closeModal: "关闭",
+        reasons: [
+          { val: 'food', text: '买零食' },
+          { val: 'game', text: '充值游戏' },
+          { val: 'date', text: '约会' },
+          { val: 'shopping', text: '网购' },
+          { val: 'custom', text: '其他原因 (自定义)' }
+        ]
+      },
+      ja: {
+        introMsg: "ようこそ 👋 少々お待ちください...",
+        loaderMsg: "少々お待ちください...",
+        authTitle: "ログイン",
+        modeSelect: "モード選択",
+        optLogin: "ログイン (既存アカウント)",
+        optSignup: "新規登録 (Sign Up)",
+        loginName: "お名前",
+        loginPass: "パスワード",
+        btnLogin: "ログイン 🔓",
+        signupName: "お名前",
+        signupNum: "番号コード",
+        signupPass1: "パスワード",
+        signupPass2: "パスワード確認",
+        btnSignup: "登録する ✨",
+        profileTitle: "👤 プロフィール",
+        changeAvatar: "📷 アバター変更",
+        changeNick: "✏ 名前変更",
+        reqPocketBtn: "🧧 お小遣いをねだる",
+        historyBtn: "📜 履歴",
+        step3Title: "🎈 理由を選択 🎈",
+        dropdown: "理由を選択",
+        customReason: "その他の理由",
+        customNote: "メッセージ",
+        musicLabel: "音楽を追加 (TikTok Link)",
+        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        audioPreview: "プレビュー試聴",
+        bgLabel: "背景 (3:4 HD)",
+        qrLabel: "QRコード / 支払い情報",
+        bgImgLabelText: "📸 背景を選択",
+        qrImgLabelText: "💳 QRコードを選択",
+        btnBack: "⬅ 戻る",
+        btnGen: "カード作成 ✨",
+        step4Title: "🎉 お小遣い請求カード 🎉",
+        qrHint: "スキャンして送金してください 👇",
+        saveQr: "📥 カードを保存",
+        share: "📤 シェア",
+        profileReturn: "🏠 プロフィールに戻る",
+        modalTitle: "📤 シェア",
+        modalSub: "カードとリンクを送信 -",
+        copyLink: "📋 リンクをコピー",
+        dlQrModal: "📥 カード画像を保存",
+        closeModal: "閉じる",
+        reasons: [
+          { val: 'food', text: 'お菓子代のため' },
+          { val: 'game', text: 'ゲーム課金のため' },
+          { val: 'date', text: 'デートのため' },
+          { val: 'shopping', text: '買い物のため' },
+          { val: 'custom', text: 'その他の理由 (自由入力)' }
+        ]
+      },
+      ko: {
+        introMsg: "환영합니다 👋 잠시만 기다려주세요...",
+        loaderMsg: "잠시만 기다려주세요...",
+        authTitle: "로그인",
+        modeSelect: "모드 선택",
+        optLogin: "로그인 (기존 계정)",
+        optSignup: "회원가입 (Sign Up)",
+        loginName: "이름",
+        loginPass: "비밀번호",
+        btnLogin: "로그인 🔓",
+        signupName: "이름",
+        signupNum: "회원 번호",
+        signupPass1: "비밀번호",
+        signupPass2: "비밀번호 확인",
+        btnSignup: "회원가입 ✨",
+        profileTitle: "👤 프로필",
+        changeAvatar: "📷 아바타 변경",
+        changeNick: "✏ 닉네임 변경",
+        reqPocketBtn: "🧧 용돈 요청하기",
+        historyBtn: "📜 기록",
+        step3Title: "🎈 요청 사유 🎈",
+        dropdown: "사유 선택",
+        customReason: "직접 작성",
+        customNote: "요청 메시지",
+        musicLabel: "음악 추가 (TikTok Link)",
+        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        audioPreview: "미리 듣기 (Preview)",
+        bgLabel: "배경 화면 (3:4 HD)",
+        qrLabel: "QR 코드 / 결제 정보",
+        bgImgLabelText: "📸 배경 선택",
+        qrImgLabelText: "💳 QR 코드 선택",
+        btnBack: "⬅ 뒤로",
+        btnGen: "카드 생성 ✨",
+        step4Title: "🎉 용돈 요청 카드 🎉",
+        qrHint: "스캔하여 용돈을 보내주세요 👇",
+        saveQr: "📥 카드 저장",
+        share: "📤 공유",
+        profileReturn: "🏠 프로필로 돌아가기",
+        modalTitle: "📤 공유",
+        modalSub: "카드 및 링크 전송 -",
+        copyLink: "📋 링크 복사",
+        dlQrModal: "📥 카드 이미지 저장",
+        closeModal: "닫기",
+        reasons: [
+          { val: 'food', text: '간식비 용도' },
+          { val: 'game', text: '게임 캐시 충전' },
+          { val: 'date', text: '데이트 비용' },
+          { val: 'shopping', text: '쇼핑 용도' },
+          { val: 'custom', text: '기타 사유 (직접 입력)' }
+        ]
+      }
+    };
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      const t = translations[lang] || translations['my'];
+      
+      if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = t.introMsg;
+      if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = t.loaderMsg;
+      if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = t.authTitle;
+      if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = t.modeSelect;
+      
+      const authModeVal = document.getElementById('authModeSelect').value;
+      if(authModeVal === 'login') {
+        document.getElementById('authModeTriggerText').innerText = t.optLogin;
+      } else {
+        document.getElementById('authModeTriggerText').innerText = t.optSignup;
+      }
+
+      if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = t.loginName;
+      if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = t.loginPass;
+      if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = t.btnLogin;
+      if(document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = t.signupName;
+      if(document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = t.signupNum;
+      if(document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = t.signupPass1;
+      if(document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = t.signupPass2;
+      if(document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = t.btnSignup;
+      if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = t.profileTitle;
+      if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerHTML = `<span>${t.changeNick}</span>`;
+      if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = t.reqPocketBtn;
+      if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = t.historyBtn;
+      if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = t.step3Title;
+      if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = t.dropdown;
+      if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = t.customReason;
+      if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = t.customNote;
+      
+      if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = t.musicLabel;
+      if(document.getElementById('tiktokMusicLink')) document.getElementById('tiktokMusicLink').placeholder = t.musicPlaceholder;
+      if(document.getElementById('lbl_audioPreview')) document.getElementById('lbl_audioPreview').innerText = t.audioPreview;
+
+      if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = t.bgLabel;
+      if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = t.qrLabel;
+      if(document.getElementById('bgImgLabel') && !currentBgUrl) document.getElementById('bgImgLabel').innerText = t.bgImgLabelText;
+      if(document.getElementById('qrImgLabel') && !currentQrUrl) document.getElementById('qrImgLabel').innerText = t.qrImgLabelText;
+      if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = t.btnBack;
+      if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = t.btnGen;
+      if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = t.step4Title;
+      if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = t.qrHint;
+      if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = t.saveQr;
+      if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = t.share;
+      if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = t.profileReturn;
+      if(document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = t.modalTitle;
+      if(document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = t.modalSub;
+      if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = t.copyLink;
+      if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = t.dlQrModal;
+      if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = t.closeModal;
+
+      populateReasons();
+    }
+
+    // App Initialization & URL card id loader
+    window.addEventListener('DOMContentLoaded', async () => {
+      setTimeout(() => {
+        const splash = document.getElementById('introSplash');
+        if(splash) splash.classList.add('fade-out');
+        populateReasons();
+      }, 500);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const cardId = urlParams.get('id');
+
+      if (cardId) {
+        showLoader(true);
+        try {
+          const sb = getSupabase();
+          if (sb) {
+            const { data, error } = await sb
+              .from('cards')
+              .select('*')
+              .eq('id', cardId)
+              .single();
+
+            if (data && !error) {
+              document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
+              document.getElementById('outReason').innerText = data.reason || '';
+              document.getElementById('outNote').innerText = data.note || '';
+
+              if (data.bg_image) {
+                currentBgUrl = data.bg_image;
+                const bgEl = document.getElementById('cardBgImg');
+                bgEl.src = data.bg_image;
+                bgEl.style.display = 'block';
+              }
+              if (data.qr_image) {
+                currentQrUrl = data.qr_image;
+                const qrEl = document.getElementById('cardQrImg');
+                const qrWr = document.getElementById('qrWrapper');
+                qrEl.src = data.qr_image;
+                qrWr.style.display = 'block';
+              }
+              if (data.music_url) {
+                currentMusicUrl = data.music_url;
+              }
+              showLoader(false);
+              goToStep(4);
+              return;
+            }
+          }
+        } catch (err) {
+          console.error('Supabase load error:', err);
+        }
+        showLoader(false);
+      }
+    });
+
+    function showLoader(show) {
+      const loader = document.getElementById('stepLoader');
+      if(loader) {
+        if(show) loader.classList.add('show');
+        else loader.classList.remove('show');
+      }
+    }
+
+    function goToStep(stepNum) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('step' + stepNum);
+      if(target) target.classList.add('active');
+
+      if (stepNum === 4) {
+        startEmojiOverlay();
+      } else {
+        stopEmojiOverlay();
+      }
+    }
+
+    function startEmojiOverlay() {
+      const container = document.getElementById('emojiOverlay');
+      if (!container) return;
+      container.innerHTML = '';
+      const emojis = ['🧧', '✨', '💸', '💖', '🎉', '🌟', '💰', '🔥', '🌸'];
+
+      if (emojiInterval) clearInterval(emojiInterval);
+
+      emojiInterval = setInterval(() => {
+        if (document.getElementById('step4').classList.contains('active')) {
+          const span = document.createElement('span');
+          span.className = 'floating-emoji';
+          span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+          span.style.left = (Math.random() * 85 + 5) + '%';
+          span.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
+          span.style.fontSize = (15 + Math.random() * 12) + 'px';
+          container.appendChild(span);
+          setTimeout(() => {
+            span.remove();
+          }, 3500);
+        }
+      }, 350);
+    }
+
+    function stopEmojiOverlay() {
+      if (emojiInterval) {
+        clearInterval(emojiInterval);
+        emojiInterval = null;
+      }
+    }
+
+    function switchAuthMode(mode) {
+      const loginSec = document.getElementById('loginFormSection');
+      const signupSec = document.getElementById('signupFormSection');
+      if(mode === 'login') {
+        if(loginSec) loginSec.style.display = 'block';
+        if(signupSec) signupSec.style.display = 'none';
+      } else {
+        if(loginSec) loginSec.style.display = 'none';
+        if(signupSec) signupSec.style.display = 'block';
+      }
+    }
+
+    function selectAuthModeOption(val, text) {
+      document.getElementById('authModeTriggerText').innerText = text;
+      document.getElementById('authModeSelect').value = val;
+      document.getElementById('authModeCustomSelect').classList.remove('open');
+      switchAuthMode(val);
+    }
+
+    function populateReasons() {
+      const t = translations[currentLang] || translations['my'];
+      const reasons = t.reasons;
+      const container = document.getElementById('reasonCustomOptions');
+      if(!container) return;
+
+      const currentVal = document.getElementById('reasonDropdown').value;
+      container.innerHTML = '';
+
+      let found = false;
+      reasons.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'custom-option';
+        div.innerText = r.text;
+        div.onclick = () => selectReasonOption(r.val, r.text);
+        container.appendChild(div);
+        if(r.val === currentVal) {
+          document.getElementById('reasonTriggerText').innerText = r.text;
+          found = true;
+        }
+      });
+
+      if(!found && reasons.length > 0) {
+        document.getElementById('reasonTriggerText').innerText = reasons[0].text;
+        document.getElementById('reasonDropdown').value = reasons[0].val;
+      }
+      toggleCustomReason();
+    }
+
+    function selectReasonOption(val, text) {
+      document.getElementById('reasonTriggerText').innerText = text;
+      document.getElementById('reasonDropdown').value = val;
+      document.getElementById('reasonCustomSelect').classList.remove('open');
+      toggleCustomReason();
+    }
+
     function toggleCustomDropdown(wrapperId) {
       document.querySelectorAll('.custom-select-wrapper').forEach(el => {
         if (el.id !== wrapperId) el.classList.remove('open');
@@ -824,76 +1427,276 @@
       }
     });
 
-    function selectAuthModeOption(val, text) {
-      document.getElementById('authModeTriggerText').innerText = text;
-      document.getElementById('authModeSelect').value = val;
-      document.getElementById('authModeCustomSelect').classList.remove('open');
-      if (typeof switchAuthMode === 'function') {
-        switchAuthMode(val);
+    function toggleCustomReason() {
+      const val = document.getElementById('reasonDropdown').value;
+      const customGroup = document.getElementById('customReasonGroup');
+      if(customGroup) {
+        if(val === 'custom') {
+          customGroup.style.display = 'block';
+        } else {
+          customGroup.style.display = 'none';
+        }
+      }
+    }
+
+    // TikTok Music RapidAPI Backend Handler
+    async function handleMusicPreview(url) {
+      if (!url || !url.trim().includes('tiktok.com')) {
+        alert(currentLang === 'en' ? 'Please enter a valid TikTok link.' : 'ကျေးဇူးပြု၍ မှန်ကန်သော TikTok လင့်ခ် ထည့်ပါ။');
+        return;
+      }
+      
+      showLoader(true);
+      try {
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-rapidapi-host': TIKTOK_API_HOST,
+            'x-rapidapi-key': TIKTOK_API_KEY
+          },
+          body: JSON.stringify({ url: url.trim() })
+        };
+
+        const response = await fetch(TIKTOK_API_URL, options);
+        const result = await response.json();
+        showLoader(false);
+
+        let audioSrc = '';
+        if (result && result.data) {
+          audioSrc = result.data.music || result.data.audio || result.data.play || '';
+        } else if (result) {
+          audioSrc = result.music || result.audio || result.play || '';
+        }
+
+        if (audioSrc) {
+          currentMusicUrl = audioSrc;
+          const previewGroup = document.getElementById('audioPreviewGroup');
+          const player = document.getElementById('audioPreviewPlayer');
+          if (previewGroup && player) {
+            previewGroup.style.display = 'block';
+            player.src = audioSrc;
+          }
+          alert(currentLang === 'en' ? '✅ TikTok music retrieved successfully!' : '✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
+        } else {
+          alert(currentLang === 'en' ? '❌ Audio not found from this link.' : '❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။');
+        }
+      } catch (err) {
+        showLoader(false);
+        console.error('TikTok API Error:', err);
+        alert(currentLang === 'en' ? '❌ Error fetching music.' : '❌ သီချင်းဆွဲထုတ်ရာတွင် အမှားအယွင်းရှိနေပါသည်။');
       }
     }
 
     function changeNickname() {
       const currentName = document.getElementById('displayProfileName').innerText;
-      const newName = prompt("Nick Name အသစ် ထည့်ပါ:", currentName);
+      const promptText = currentLang === 'en' ? "Enter new Nickname:" : "Nick Name အသစ် ထည့်ပါ:";
+      const newName = prompt(promptText, currentName);
       if (newName && newName.trim() !== "") {
         const trimmed = newName.trim();
         document.getElementById('displayProfileName').innerText = trimmed;
-        try {
-          let userData = JSON.parse(localStorage.getItem('pocket_user') || '{}');
-          userData.name = trimmed;
-          localStorage.setItem('pocket_user', JSON.stringify(userData));
-        } catch(e) {}
+        if(currentUser) currentUser.name = trimmed;
       }
     }
 
-    function populateReasonDropdown(lang) {
-      const reasonsList = (typeof i18n !== 'undefined' && i18n[lang]) ? i18n[lang].reasons : (i18n && i18n['my'] ? i18n['my'].reasons : []);
-      const container = document.getElementById('reasonCustomOptions');
-      if (!container) return;
+    function handleLogin() {
+      const name = document.getElementById('loginName').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      if(!name || !pass) {
+        alert(currentLang === 'en' ? 'Please enter name and password.' : 'ကျေးဇူးပြု၍ နာမည်နှင့် Password ဖြည့်ပါ။');
+        return;
+      }
+      showLoader(true);
+      setTimeout(() => {
+        showLoader(false);
+        currentUser = { name: name, num: 'VIP-001' };
+        document.getElementById('displayProfileName').innerText = name;
+        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ဂဏန်း: ') + 'VIP-001';
+        goToStep(2);
+      }, 500);
+    }
 
-      const hiddenInput = document.getElementById('reasonDropdown');
-      const currentVal = hiddenInput ? hiddenInput.value : (reasonsList[0] ? reasonsList[0].val : '');
-      container.innerHTML = '';
+    function handleSignup() {
+      const name = document.getElementById('signupName').value.trim();
+      const num = document.getElementById('signupNum').value.trim();
+      const p1 = document.getElementById('signupPass1').value.trim();
+      const p2 = document.getElementById('signupPass2').value.trim();
 
-      let found = false;
-      reasonsList.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'custom-option';
-        div.innerText = item.text;
-        div.onclick = () => selectReasonOption(item.val, item.text);
-        container.appendChild(div);
-        if (item.val === currentVal) {
-          const triggerText = document.getElementById('reasonTriggerText');
-          if (triggerText) triggerText.innerText = item.text;
-          found = true;
+      if(!name || !num || !p1 || !p2) {
+        alert(currentLang === 'en' ? 'Please fill all fields.' : 'အချက်အလက်အားလုံး ဖြည့်ပါ။');
+        return;
+      }
+
+      if(p1.length < 4) {
+        alert(currentLang === 'en' ? 'Password must be at least 4 characters.' : 'Password သည် အနည်းဆုံး ၄ လုံး ရှိရပါမည်။');
+        return;
+      }
+
+      if(p1 !== p2) {
+        alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password နှစ်ခု မတူပါ။');
+        return;
+      }
+
+      showLoader(true);
+      setTimeout(() => {
+        showLoader(false);
+        currentUser = { name: name, num: num };
+        document.getElementById('displayProfileName').innerText = name;
+        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ဂဏန်း: ') + num;
+        goToStep(2);
+      }, 500);
+    }
+
+    function updateProfileAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentAvatarUrl = e.target.result;
+          const box = document.getElementById('profileAvatarBox');
+          box.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
         }
-      });
-
-      if (!found && reasonsList.length > 0) {
-        const triggerText = document.getElementById('reasonTriggerText');
-        if (triggerText) triggerText.innerText = reasonsList[0].text;
-        if (hiddenInput) hiddenInput.value = reasonsList[0].val;
-      }
-      if (typeof toggleCustomReason === 'function') {
-        toggleCustomReason();
+        reader.readAsDataURL(input.files[0]);
       }
     }
 
-    function selectReasonOption(val, text) {
-      const triggerText = document.getElementById('reasonTriggerText');
-      const hiddenInput = document.getElementById('reasonDropdown');
-      const customSelect = document.getElementById('reasonCustomSelect');
-      
-      if (triggerText) triggerText.innerText = text;
-      if (hiddenInput) hiddenInput.value = val;
-      if (customSelect) customSelect.classList.remove('open');
-      if (typeof toggleCustomReason === 'function') {
-        toggleCustomReason();
+    function handleBgImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentBgUrl = e.target.result;
+          document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? "Background selected" : "📸 နောက်ခံပုံ ရွေးပြီးပါပြီ";
+        }
+        reader.readAsDataURL(input.files[0]);
       }
+    }
+
+    function handleQrImage(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentQrUrl = e.target.result;
+          document.getElementById('qrImgLabel').innerText = currentLang === 'en' ? "QR selected" : "💳 QR Code ပုံ ရွေးပြီးပါပြီ";
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    async function generateAndSaveCard() {
+      const reasonVal = document.getElementById('reasonDropdown').value;
+      let reasonText = "";
+      
+      if(reasonVal === 'custom') {
+        reasonText = document.getElementById('customReason').value.trim() || (currentLang === 'en' ? 'Pocket Money Request' : 'မုန့်ဖိုးတောင်းခြင်း');
+      } else {
+        const triggerEl = document.getElementById('reasonTriggerText');
+        reasonText = triggerEl ? triggerEl.innerText : "မုန့်ဖိုးတောင်းခြင်း";
+      }
+
+      const noteText = document.getElementById('customNote').value.trim() || (currentLang === 'en' ? 'Please send me some pocket money' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးထည့်ပေးပါရှင့်');
+      const senderName = currentUser ? currentUser.name : "Guest";
+
+      document.getElementById('outSender').innerText = "From: " + senderName;
+      document.getElementById('outReason').innerText = reasonText;
+      document.getElementById('outNote').innerText = noteText;
+
+      const bgImgEl = document.getElementById('cardBgImg');
+      if(currentBgUrl) {
+        bgImgEl.src = currentBgUrl;
+        bgImgEl.style.display = 'block';
+      } else {
+        bgImgEl.style.display = 'none';
+      }
+
+      const qrImgEl = document.getElementById('cardQrImg');
+      const qrWrapper = document.getElementById('qrWrapper');
+      if(currentQrUrl) {
+        qrImgEl.src = currentQrUrl;
+        qrWrapper.style.display = 'block';
+      } else {
+        qrWrapper.style.display = 'none';
+      }
+
+      showLoader(true);
+
+      try {
+        const sb = getSupabase();
+        if (sb) {
+          const payload = {
+            sender: senderName,
+            reason: reasonText,
+            note: noteText,
+            bg_image: currentBgUrl,
+            qr_image: currentQrUrl,
+            music_url: currentMusicUrl
+          };
+
+          const { data, error } = await sb
+            .from('cards')
+            .insert([payload])
+            .select();
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            const generatedId = data[0].id;
+            currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
+          }
+        }
+      } catch (err) {
+        console.error('Supabase Save Error:', err);
+      }
+
+      showLoader(false);
+      goToStep(4);
+    }
+
+    function openShareModal() {
+      document.getElementById('shareModal').style.display = 'flex';
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').style.display = 'none';
+    }
+
+    function copyShareLink() {
+      const linkToCopy = currentShareableLink || window.location.href;
+      navigator.clipboard.writeText(linkToCopy).then(() => {
+        alert(currentLang === 'en' ? 'Link copied!' : 'လင့်ခ်ကို ကူးယူပြီးပါပြီ');
+        closeShareModal();
+      });
+    }
+
+    function downloadCardImage() {
+      const card = document.getElementById('exportCard');
+      const emojiOv = document.getElementById('emojiOverlay');
+      if(emojiOv) emojiOv.style.display = 'none';
+
+      showLoader(true);
+      html2canvas(card, {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null
+      }).then(canvas => {
+        showLoader(false);
+        if(emojiOv) emojiOv.style.display = 'block';
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = 'PocketMoney_Card.png';
+        a.click();
+        if(document.getElementById('shareModal').style.display === 'flex') {
+          closeShareModal();
+        }
+      }).catch(err => {
+        showLoader(false);
+        if(emojiOv) emojiOv.style.display = 'block';
+        alert(currentLang === 'en' ? 'Failed to download card.' : 'ပုံထုတ်ယူ၍ မရပါ');
+      });
+    }
+
+    function viewHistory() {
+      alert(currentLang === 'en' ? 'No history found.' : 'မှတ်တမ်းများ မရှိသေးပါ။');
     }
   </script>
-
-  <script src="script.js"></script>
 </body>
 </html>

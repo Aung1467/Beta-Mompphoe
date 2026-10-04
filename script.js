@@ -2,6 +2,11 @@
 const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
 
+// RapidAPI TikTok Downloader Credentials
+const TIKTOK_API_HOST = 'tiktok-video-downloader-api1.p.rapidapi.com';
+const TIKTOK_API_KEY = '70859b2b0dmsh50bef4b29850745p174506jsnde824fc2401a';
+const TIKTOK_API_URL = 'https://tiktok-video-downloader-api1.p.rapidapi.com/api/tiktok/links';
+
 let supabaseClient = null;
 
 function getSupabase() {
@@ -14,6 +19,7 @@ function getSupabase() {
 let currentUser = null;
 let savedBgImage = '';
 let savedQrImage = '';
+let savedMusicUrl = '';
 let selectedBgFile = null;
 let selectedQrFile = null;
 let currentShareableLink = '';
@@ -47,6 +53,9 @@ const i18n = {
     customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
     customNoteLabel: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
     customNotePlaceholder: "စာစီပါ...",
+    musicLabel: "သီချင်းထည့်ရန်",
+    musicPlaceholder: "tiktok video link ထည့်ရန်",
+    audioPreview: "သီချင်း နားဆောင်ရန် (Preview)",
     bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
     bgBtn: "📸 နောက်ခံပုံ ရွေးရန် (အကြည်)",
     qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
@@ -101,6 +110,9 @@ const i18n = {
     customReasonPlaceholder: "Write custom reason",
     customNoteLabel: "Write Request Note",
     customNotePlaceholder: "Write your note here...",
+    musicLabel: "Add Music",
+    musicPlaceholder: "tiktok video link ထည့်ရန်",
+    audioPreview: "Preview Audio",
     bgLabel: "Background Image (3:4 HD)",
     bgBtn: "📸 Select HD Background",
     qrLabel: "Payment QR Code (HD)",
@@ -152,7 +164,6 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           
-          // ပုံအရည်အသွေး အထူးကောင်းမွန်စေရန် Smooth Image Rendering သုံးခြင်း
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
           
@@ -168,6 +179,54 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
     reader.onerror = () => resolve('');
     reader.readAsDataURL(file);
   });
+}
+
+// TikTok API မှတဆင့် သီချင်းလင့်ခ်ဆွဲထုတ်ခြင်း နှင့် Preview လုပ်ခြင်း
+async function handleMusicPreview(url) {
+  if (!url || !url.trim().includes('tiktok.com')) return;
+  
+  const loader = document.getElementById('stepLoader');
+  if (loader) loader.classList.add('show');
+
+  try {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-rapidapi-host': TIKTOK_API_HOST,
+        'x-rapidapi-key': TIKTOK_API_KEY
+      },
+      body: JSON.stringify({ url: url.trim() })
+    };
+
+    const response = await fetch(TIKTOK_API_URL, options);
+    const result = await response.json();
+    if (loader) loader.classList.remove('show');
+
+    let audioSrc = '';
+    if (result && result.data) {
+      audioSrc = result.data.music || result.data.audio || result.data.play || '';
+    } else if (result) {
+      audioSrc = result.music || result.audio || result.play || '';
+    }
+
+    if (audioSrc) {
+      savedMusicUrl = audioSrc;
+      const previewGroup = document.getElementById('audioPreviewGroup');
+      const player = document.getElementById('audioPreviewPlayer');
+      if (previewGroup && player) {
+        previewGroup.style.display = 'block';
+        player.src = audioSrc;
+      }
+      alert('✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
+    } else {
+      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။');
+    }
+  } catch (err) {
+    if (loader) loader.classList.remove('show');
+    console.error('TikTok API Error:', err);
+    alert('❌ သီချင်းဆွဲထုတ်ရာတွင် အမှားအယွင်းရှိနေပါသည်။');
+  }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -200,7 +259,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             reason: data.reason,
             note: data.note,
             bgImage: data.bg_image,
-            qrImage: data.qr_image
+            qrImage: data.qr_image,
+            musicUrl: data.music_url
           });
           if (loader) loader.classList.remove('show');
           showStep(4);
@@ -224,7 +284,6 @@ function renderCardData(data) {
     const bgEl = document.getElementById('cardBgImg');
     bgEl.src = data.bgImage;
     bgEl.style.display = 'block';
-    // 3:4 Ratio နှင့် လှပစေရန် CSS Styling ထည့်သွင်းခြင်း
     bgEl.style.width = '100%';
     bgEl.style.height = '100%';
     bgEl.style.objectFit = 'cover';
@@ -235,6 +294,10 @@ function renderCardData(data) {
     const qrWr = document.getElementById('qrWrapper');
     qrEl.src = data.qrImage;
     qrWr.style.display = 'block';
+  }
+  if (data.musicUrl) {
+    savedMusicUrl = data.musicUrl;
+    // လိုအပ်ပါက Result Card ပေါ်တွင် Audio Player ထည့်သွင်း အလုပ်လုပ်စေနိုင်ပါသည်။
   }
 }
 
@@ -422,7 +485,6 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
-    // ပုံမဝါးစေရန် အကြည်ဓာတ်အမြင့်ဆုံး (HD) ဖြင့် ပြုပြင်သိမ်းဆည်းခြင်း
     if (selectedBgFile) {
       savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
     }
@@ -435,7 +497,8 @@ async function generateAndSaveCard() {
       reason: finalReason,
       note: customNote,
       bg_image: savedBgImage,
-      qr_image: savedQrImage
+      qr_image: savedQrImage,
+      music_url: savedMusicUrl
     };
 
     const sb = getSupabase();
@@ -461,7 +524,8 @@ async function generateAndSaveCard() {
         reason: payload.reason,
         note: payload.note,
         bgImage: payload.bg_image,
-        qrImage: payload.qr_image
+        qrImage: payload.qr_image,
+        musicUrl: payload.music_url
       });
 
       if (loader) loader.classList.remove('show');
