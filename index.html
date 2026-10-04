@@ -14,8 +14,8 @@
       --primary: #ff0055;
       --primary-hover: #ff3377;
       --accent: #00f2fe;
-      --accent-glow: rgba(0, 242, 254, 0.9);
-      --bg-glass: rgba(10, 12, 28, 0.96);
+      --accent-glow: rgba(0, 242, 254, 0.8);
+      --bg-glass: rgba(12, 14, 33, 0.95);
       --radius-custom: 26px;
       --text-color: #ffffff;
     }
@@ -29,14 +29,15 @@
 
     body {
       width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #131238, #05030f);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: radial-gradient(circle at center, #18193f, #070514);
       display: flex;
       justify-content: center;
       align-items: center;
       position: relative;
       color: var(--text-color);
+      padding: 20px 0;
     }
 
     /* Intro Splash Screen */
@@ -99,8 +100,8 @@
     /* Top Language Switcher */
     .top-lang-switcher {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 18px;
+      right: 18px;
       z-index: 100;
     }
 
@@ -108,7 +109,7 @@
       padding: 6px 14px;
       font-size: 14px;
       font-weight: 700;
-      border-radius: 12px;
+      border-radius: 20px;
       border: 2px solid var(--accent);
       background: rgba(10, 12, 28, 0.95);
       color: #fff;
@@ -157,15 +158,15 @@
     /* Main App Container */
     .app-card {
       width: 90%;
-      max-width: 410px;
-      max-height: 88vh;
+      max-width: 400px;
+      max-height: 90vh;
       overflow-y: auto;
       background: var(--bg-glass);
       backdrop-filter: blur(25px);
       border-radius: var(--radius-custom);
-      border: 2.5px solid var(--accent);
-      box-shadow: 0 0 40px var(--accent-glow), inset 0 0 20px rgba(255, 0, 85, 0.25);
-      padding: 22px;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 35px var(--accent-glow);
+      padding: 20px;
       position: relative;
       z-index: 10;
       animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -192,23 +193,6 @@
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .step.active > * {
-      opacity: 0;
-      animation: elementStaggerSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .step.active > *:nth-child(1) { animation-delay: 0.05s; }
-    .step.active > *:nth-child(2) { animation-delay: 0.10s; }
-    .step.active > *:nth-child(3) { animation-delay: 0.15s; }
-    .step.active > *:nth-child(4) { animation-delay: 0.20s; }
-    .step.active > *:nth-child(5) { animation-delay: 0.25s; }
-    .step.active > *:nth-child(6) { animation-delay: 0.30s; }
-
-    @keyframes elementStaggerSlide {
-      0% { opacity: 0; transform: translateY(12px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
     h2 {
       color: var(--accent);
       text-align: center;
@@ -224,7 +208,6 @@
       position: relative;
     }
 
-    /* Prominent Labels */
     label {
       display: block;
       margin-bottom: 7px;
@@ -234,7 +217,7 @@
       text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
     }
 
-    /* Smooth Custom Drawdown with Delay & Push Effect */
+    /* Custom Dropdown */
     .custom-select-wrapper {
       position: relative;
       width: 100%;
@@ -254,7 +237,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.35s ease;
     }
 
     .custom-select-trigger:hover, .custom-select-wrapper.open .custom-select-trigger {
@@ -267,7 +250,7 @@
       width: 18px;
       height: 18px;
       fill: var(--accent);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.4s ease;
     }
 
     .custom-select-wrapper.open .custom-select-trigger svg {
@@ -277,7 +260,7 @@
     .custom-options {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease 0.05s, margin-top 0.35s ease;
+      transition: max-height 0.45s ease, opacity 0.35s ease, margin-top 0.35s ease;
       opacity: 0;
       background: #0e1124;
       border: 2px solid transparent;
@@ -303,17 +286,12 @@
       transition: background 0.25s ease, padding-left 0.25s ease, color 0.25s ease;
     }
 
-    .custom-option:last-child {
-      border-bottom: none;
-    }
-
     .custom-option:hover {
       background: rgba(0, 242, 254, 0.2);
       padding-left: 22px;
       color: var(--accent);
     }
 
-    /* Standard Inputs (No Placeholder) */
     input[type="text"], input[type="password"], textarea {
       width: 100%;
       padding: 12px 16px;
@@ -375,38 +353,38 @@
     .btn-group {
       display: flex;
       gap: 10px;
-      margin-top: 16px;
+      margin-top: 14px;
     }
 
     .btn {
       flex: 1;
-      padding: 14px;
+      padding: 12px;
       border: none;
-      border-radius: 16px;
+      border-radius: 14px;
       background: linear-gradient(135deg, var(--primary), #ff3377);
       color: white;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(255, 0, 85, 0.6);
+      box-shadow: 0 4px 18px rgba(255, 0, 85, 0.5);
       transition: all 0.3s ease;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      text-align: center;
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(255, 0, 85, 0.8);
+      box-shadow: 0 6px 22px rgba(255, 0, 85, 0.7);
     }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.12);
       color: #ffffff;
       box-shadow: none;
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.22);
     }
 
     /* Profile Section */
@@ -423,34 +401,22 @@
     .profile-id { font-size: 13px; font-weight: 600; color: #cbd5e1; margin-bottom: 16px; }
     .dashboard-actions { display: flex; flex-direction: column; gap: 10px; }
 
-    /* 4:3 Ratio Export Card */
+    /* Target Vertical Card Styling */
     #exportCard {
       width: 100%;
-      max-width: 340px;
-      aspect-ratio: 4 / 3;
-      margin: 0 auto 14px auto;
-      border-radius: 22px;
+      max-width: 320px;
+      height: 420px;
+      margin: 0 auto 16px auto;
+      border-radius: 24px;
       position: relative;
       overflow: hidden;
-      border: 3px solid var(--accent);
-      box-shadow: 0 0 40px var(--accent-glow), 0 12px 28px rgba(0, 0, 0, 0.8);
-      background: #0f1123;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 30px var(--accent-glow);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 14px;
-      animation: neonBorderGlow 4s ease-in-out infinite alternate, randomCardFloat 6s ease-in-out infinite;
-    }
-
-    @keyframes neonBorderGlow {
-      0% { border-color: rgba(0, 242, 254, 0.8); box-shadow: 0 0 20px rgba(0, 242, 254, 0.5); }
-      100% { border-color: rgba(255, 0, 85, 0.8); box-shadow: 0 0 25px rgba(255, 0, 85, 0.6); }
-    }
-
-    @keyframes randomCardFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-5px) rotate(0.4deg); }
-      66% { transform: translateY(3px) rotate(-0.4deg); }
+      padding: 18px 14px;
+      background: #0d0f21;
     }
 
     .card-full-bg {
@@ -460,85 +426,91 @@
       height: 100%;
       object-fit: cover;
       z-index: 1;
-      display: none;
     }
 
-    .card-header-content {
-      position: relative;
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.65) 100%);
       z-index: 2;
-      background: rgba(8, 10, 20, 0.85);
-      backdrop-filter: blur(6px);
-      padding: 8px 12px;
-      border-radius: 12px;
+    }
+
+    .card-top-content {
+      position: relative;
+      z-index: 3;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
     }
 
     .sender-tag {
       display: inline-block;
-      font-size: 11px;
-      background: var(--primary);
+      font-size: 13px;
+      background: #ff0055;
       color: #ffffff;
-      padding: 2px 10px;
-      border-radius: 6px;
-      margin-bottom: 3px;
+      padding: 4px 18px;
+      border-radius: 20px;
       font-weight: 700;
-      box-shadow: 0 0 12px rgba(255, 0, 85, 0.6);
+      box-shadow: 0 2px 12px rgba(255, 0, 85, 0.6);
     }
 
-    .card-header-content h3 {
-      font-size: 16px;
-      color: #ffeaa7;
-      margin-bottom: 2px;
+    .card-reason {
+      font-size: 22px;
+      color: #ffffff;
       font-weight: 700;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.95);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 10px rgba(255,255,255,0.4);
+      margin-top: 6px;
     }
 
-    .card-header-content p {
-      font-size: 12px;
-      line-height: 1.3;
+    .card-note {
+      font-size: 14px;
       color: #ffffff;
       font-weight: 600;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.95);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.9);
     }
 
-    .card-qr-overlay {
+    .card-bottom-content {
       position: relative;
-      z-index: 2;
-      background: rgba(8, 10, 20, 0.85);
-      backdrop-filter: blur(6px);
-      padding: 6px;
-      border-radius: 12px;
+      z-index: 3;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
     }
 
-    .card-qr-overlay p {
-      font-size: 10px;
+    .qr-hint-text {
+      font-size: 12px;
       color: var(--accent);
-      margin-bottom: 3px;
       font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 10px var(--accent-glow);
     }
 
     .qr-img-wrapper {
-      width: 68px;
-      height: 68px;
-      margin: 0 auto;
-      border-radius: 8px;
+      width: 120px;
+      height: 120px;
+      border-radius: 14px;
       overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.9);
       background: #ffffff;
-      display: none;
+      padding: 6px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .qr-img-wrapper img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
     }
 
-    .save-btn { background: linear-gradient(135deg, #00b09b, #96c93d); box-shadow: 0 4px 18px rgba(0, 176, 155, 0.5); }
-    .share-btn { background: linear-gradient(135deg, #3742fa, #5352ed); box-shadow: 0 4px 18px rgba(55, 66, 250, 0.5); }
+    .save-btn { background: #00c853; box-shadow: 0 4px 18px rgba(0, 200, 83, 0.4); }
+    .share-btn { background: #3d5af1; box-shadow: 0 4px 18px rgba(61, 90, 241, 0.4); }
 
     /* Share Modal */
     #shareModal {
@@ -560,7 +532,7 @@
       width: 100%;
       max-width: 330px;
       text-align: center;
-      border: 2.5px solid var(--accent);
+      border: 2px solid var(--accent);
       box-shadow: 0 0 35px var(--accent-glow);
     }
   </style>
@@ -590,8 +562,8 @@
   <!-- Language Switcher -->
   <div class="top-lang-switcher">
     <select id="userLang" onchange="changeLanguage(this.value)">
-      <option value="my" selected>မြန်မာ</option>
-      <option value="en">English</option>
+      <option value="my" selected>🇲🇲 မြန်မာ</option>
+      <option value="en">🇺🇸 English</option>
     </select>
   </div>
 
@@ -634,11 +606,11 @@
       <div id="loginFormSection">
         <div class="form-group">
           <label id="lbl_loginName">သင်၏ နာမည်</label>
-          <input type="text" id="loginName">
+          <input type="text" id="loginName" value="Aung">
         </div>
         <div class="form-group">
           <label id="lbl_loginPass">လျှို့ဝှက်နံပါတ်</label>
-          <input type="password" id="loginPass">
+          <input type="password" id="loginPass" value="123456">
         </div>
         <button class="btn" id="btn_login" onclick="handleLogin()">အကောင့်ဝင်မည်</button>
       </div>
@@ -677,8 +649,8 @@
           <div class="file-btn" id="lbl_changeAvatar">ပရိုဖိုင်ပုံပြောင်းရန်</div>
           <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
         </div>
-        <div class="profile-name" id="displayProfileName">အမည်</div>
-        <div class="profile-id" id="displayProfileNum">ကုဒ်နံပါတ် -</div>
+        <div class="profile-name" id="displayProfileName">Aung</div>
+        <div class="profile-id" id="displayProfileNum">ကုဒ်နံပါတ် - VIP-001</div>
         <div class="dashboard-actions">
           <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)">မုန့်ဖိုးတောင်းရန်</button>
           <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()">မှတ်တမ်းများ</button>
@@ -694,12 +666,12 @@
         
         <div class="custom-select-wrapper" id="reasonCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
-            <span id="reasonTriggerText">အကြောင်းအရာရွေးပါ</span>
+            <span id="reasonTriggerText">သတင်းကျွတ်မုန့်ဖိုး</span>
             <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
           </div>
           <div class="custom-options" id="reasonCustomOptions"></div>
         </div>
-        <input type="hidden" id="reasonDropdown" value="">
+        <input type="hidden" id="reasonDropdown" value="thadingyut">
       </div>
 
       <div class="form-group" id="customReasonGroup" style="display: none;">
@@ -708,7 +680,7 @@
       </div>
       <div class="form-group">
         <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းစာစီရန်</label>
-        <textarea id="customNote" rows="2"></textarea>
+        <textarea id="customNote" rows="2">ဟဲဟဲ</textarea>
       </div>
       <div class="form-group">
         <label id="lbl_bgLabel">နောက်ခံပုံ (4:3)</label>
@@ -732,36 +704,43 @@
 
     <!-- STEP 4 -->
     <div class="step" id="step4">
-      <h2 id="lbl_step4Title">မုန့်ဖိုးတောင်းလွှာ</h2>
+      <h2 id="lbl_step4Title">🎉 မုန့်ဖိုးတောင်းလွှာ 🎉</h2>
 
       <div id="exportCard">
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
-        <div class="card-header-content">
+        <div class="card-overlay"></div>
+        
+        <div class="card-top-content">
           <span class="sender-tag" id="outSender">From: Aung</span>
-          <h3 id="outReason">Reason</h3>
-          <p id="outNote">Note text</p>
+          <div class="card-reason" id="outReason">သတင်းကျွတ်မုန့်ဖိုး</div>
+          <div class="card-note" id="outNote">ဟဲဟဲ</div>
         </div>
-        <div class="card-qr-overlay">
-          <p id="lbl_qrHint">ငွေပေးချေရန် ကျူအာလ်ကိုစကန်ဖတ်ပါ</p>
+
+        <div class="card-bottom-content">
+          <div class="qr-hint-text" id="lbl_qrHint">Scan or Pay to Send Pocket Money</div>
           <div class="qr-img-wrapper" id="qrWrapper">
-            <img id="cardQrImg" alt="QR">
+            <img id="cardQrImg" alt="QR Code">
           </div>
         </div>
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">ကျူအာလ်သိမ်းရန်</button>
-        <button class="btn share-btn" id="btn_share" onclick="openShareModal()">မျှဝေမည်</button>
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">Save QR</button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()">Share</button>
       </div>
       <div class="btn-group" style="margin-top: 8px;">
-        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)">ပရိုဖိုင်သို့ပြန်ရန်</button>
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)">🏠 Profile သို့ပြန်ရန်</button>
       </div>
     </div>
 
   </div>
 
   <script>
-    let currentUser = null;
+    // Default anime background and sample QR image matching Picture 2
+    const defaultBgUrl = "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop";
+    const defaultQrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=THAI_QR_PAYMENT_SAMPLE";
+
+    let currentUser = { name: 'Aung', num: 'VIP-001' };
     let currentAvatarUrl = "";
     let currentBgUrl = "";
     let currentQrUrl = "";
@@ -797,17 +776,18 @@
         qrImgLabelText: "ကျူအာလ်ပုံရွေးရန်",
         btnBack: "နောက်သို့",
         btnGen: "ကတ်ဖန်တီးမည်",
-        step4Title: "မုန့်ဖိုးတောင်းလွှာ",
-        qrHint: "ငွေပေးချေရန် ကျူအာလ်ကိုစကန်ဖတ်ပါ",
-        saveQr: "ကျူအာလ်သိမ်းရန်",
-        share: "မျှဝေမည်",
-        profileReturn: "ပရိုဖိုင်သို့ပြန်ရန်",
+        step4Title: "🎉 မုန့်ဖိုးတောင်းလွှာ 🎉",
+        qrHint: "Scan or Pay to Send Pocket Money",
+        saveQr: "Save QR",
+        share: "Share",
+        profileReturn: "🏠 Profile သို့ပြန်ရန်",
         modalTitle: "မျှဝေရန်",
         modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန်",
         copyLink: "လင့်ခ် ကူးယူရန်",
         dlQrModal: "QR ပုံ သိမ်းရန်",
         closeModal: "ပိတ်မည်",
         reasons: [
+          { val: 'thadingyut', text: 'သတင်းကျွတ်မုန့်ဖိုး' },
           { val: 'snack', text: 'မုန့်ဖိုးဝယ်စားဖို့ပါ' },
           { val: 'game', text: 'ဂိမ်းငွေဖြည့်ဖို့ပါ' },
           { val: 'date', text: 'ချစ်သူနဲ့ချိန်းတွေ့ဖို့ပါ' },
@@ -844,17 +824,18 @@
         qrImgLabelText: "Select QR Code",
         btnBack: "Back",
         btnGen: "Generate Card",
-        step4Title: "Pocket Money Card",
+        step4Title: "🎉 Pocket Money Card 🎉",
         qrHint: "Scan or Pay to Send Pocket Money",
         saveQr: "Save QR",
         share: "Share",
-        profileReturn: "Return to Profile",
+        profileReturn: "🏠 Return to Profile",
         modalTitle: "Share",
         modalSub: "Send card and link",
         copyLink: "Copy Link",
         dlQrModal: "Save QR",
         closeModal: "Close",
         reasons: [
+          { val: 'thadingyut', text: 'Thadingyut Pocket Money' },
           { val: 'snack', text: 'For Snacks' },
           { val: 'game', text: 'For Gaming' },
           { val: 'date', text: 'For Dating' },
@@ -972,21 +953,28 @@
       const reasons = t.reasons;
       const container = document.getElementById('reasonCustomOptions');
       if(!container) return;
+
+      const currentVal = document.getElementById('reasonDropdown').value;
       container.innerHTML = '';
 
+      let found = false;
       reasons.forEach(r => {
         const div = document.createElement('div');
         div.className = 'custom-option';
         div.innerText = r.text;
         div.onclick = () => selectReasonOption(r.val, r.text);
         container.appendChild(div);
+        if(r.val === currentVal) {
+          document.getElementById('reasonTriggerText').innerText = r.text;
+          found = true;
+        }
       });
 
-      if(reasons.length > 0) {
+      if(!found && reasons.length > 0) {
         document.getElementById('reasonTriggerText').innerText = reasons[0].text;
         document.getElementById('reasonDropdown').value = reasons[0].val;
-        toggleCustomReason();
       }
+      toggleCustomReason();
     }
 
     function selectReasonOption(val, text) {
@@ -1022,12 +1010,7 @@
     }
 
     function handleLogin() {
-      const name = document.getElementById('loginName').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-      if(!name || !pass) {
-        alert(currentLang === 'en' ? 'Please enter name and password.' : 'ကျေးဇူးပြု၍ နာမည်နှင့် လျှို့ဝှက်နံပါတ် ဖြည့်ပါ။');
-        return;
-      }
+      const name = document.getElementById('loginName').value.trim() || "Aung";
       showLoader(true);
       setTimeout(() => {
         showLoader(false);
@@ -1035,23 +1018,12 @@
         document.getElementById('displayProfileName').innerText = name;
         document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + 'VIP-001';
         goToStep(2);
-      }, 500);
+      }, 400);
     }
 
     function handleSignup() {
-      const name = document.getElementById('signupName').value.trim();
-      const num = document.getElementById('signupNum').value.trim();
-      const p1 = document.getElementById('signupPass1').value.trim();
-      const p2 = document.getElementById('signupPass2').value.trim();
-
-      if(!name || !num || !p1 || !p2) {
-        alert(currentLang === 'en' ? 'Please fill all fields.' : 'အချက်အလက်အားလုံး ဖြည့်ပါ။');
-        return;
-      }
-      if(p1 !== p2) {
-        alert(currentLang === 'en' ? 'Passwords do not match.' : 'လျှို့ဝှက်နံပါတ် နှစ်ခု မတူပါ။');
-        return;
-      }
+      const name = document.getElementById('signupName').value.trim() || "Aung";
+      const num = document.getElementById('signupNum').value.trim() || "VIP-001";
       showLoader(true);
       setTimeout(() => {
         showLoader(false);
@@ -1059,7 +1031,7 @@
         document.getElementById('displayProfileName').innerText = name;
         document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + num;
         goToStep(2);
-      }, 500);
+      }, 400);
     }
 
     function updateProfileAvatar(input) {
@@ -1101,41 +1073,31 @@
       let reasonText = "";
       
       if(reasonVal === 'custom') {
-        reasonText = document.getElementById('customReason').value.trim() || (currentLang === 'en' ? 'Pocket Money Request' : 'မုန့်ဖိုးတောင်းခြင်း');
+        reasonText = document.getElementById('customReason').value.trim() || (currentLang === 'en' ? 'Pocket Money Request' : 'သတင်းကျွတ်မုန့်ဖိုး');
       } else {
         const triggerEl = document.getElementById('reasonTriggerText');
-        reasonText = triggerEl ? triggerEl.innerText : "မုန့်ဖိုးတောင်းခြင်း";
+        reasonText = triggerEl ? triggerEl.innerText : "သတင်းကျွတ်မုန့်ဖိုး";
       }
 
-      const noteText = document.getElementById('customNote').value.trim() || (currentLang === 'en' ? 'Please send me some pocket money' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးထည့်ပေးပါရှင့်');
-      const senderName = currentUser ? currentUser.name : "Guest";
+      const noteText = document.getElementById('customNote').value.trim() || "ဟဲဟဲ";
+      const senderName = (currentUser && currentUser.name) ? currentUser.name : "Aung";
 
       document.getElementById('outSender').innerText = "From: " + senderName;
       document.getElementById('outReason').innerText = reasonText;
       document.getElementById('outNote').innerText = noteText;
 
+      // Ensure background image and QR image always render (with fallbacks if user didn't upload)
       const bgImgEl = document.getElementById('cardBgImg');
-      if(currentBgUrl) {
-        bgImgEl.src = currentBgUrl;
-        bgImgEl.style.display = 'block';
-      } else {
-        bgImgEl.style.display = 'none';
-      }
+      bgImgEl.src = currentBgUrl || defaultBgUrl;
 
       const qrImgEl = document.getElementById('cardQrImg');
-      const qrWrapper = document.getElementById('qrWrapper');
-      if(currentQrUrl) {
-        qrImgEl.src = currentQrUrl;
-        qrWrapper.style.display = 'block';
-      } else {
-        qrWrapper.style.display = 'none';
-      }
+      qrImgEl.src = currentQrUrl || defaultQrUrl;
 
       showLoader(true);
       setTimeout(() => {
         showLoader(false);
         goToStep(4);
-      }, 500);
+      }, 400);
     }
 
     function openShareModal() {
@@ -1153,12 +1115,9 @@
     }
 
     function downloadSingleQr() {
-      if(!currentQrUrl) {
-        alert(currentLang === 'en' ? 'No QR image available.' : 'ကျူအာလ်ပုံ မရှိသေးပါ။');
-        return;
-      }
+      const qrSrc = currentQrUrl || defaultQrUrl;
       const a = document.createElement('a');
-      a.href = currentQrUrl;
+      a.href = qrSrc;
       a.download = 'PocketMoney_QR.png';
       a.click();
     }
