@@ -181,7 +181,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// TikTok API မှတဆင့် သီချင်းလင့်ခ်ဆွဲထုတ်ခြင်း နှင့် Preview လုပ်ခြင်း (Array နှင့် Object နှစ်မျိုးလုံးကို Support လုပ်ပေးသည်)
+// TikTok API မှ urls Array ထဲမှ လင့်ခ်များကို အဓိကထား ဆွဲထုတ်ပေးမည့် လုပ်ဆောင်ချက်
 async function handleMusicPreview(url) {
   if (!url || !url.trim().includes('tiktok.com')) return;
   
@@ -202,20 +202,15 @@ async function handleMusicPreview(url) {
     const response = await fetch(TIKTOK_API_URL, options);
     const result = await response.json();
     
-    // API မှ အချက်အလက် ဘာတွေပြန်လာသလဲ Console တွင် စစ်ဆေးရန်
     console.log("TikTok API Response Data:", result);
 
     if (loader) loader.classList.remove('show');
 
-    // Array ဖြစ်နေလျှင် ပထမ Index ကိုယူရန်၊ မဟုတ်လျှင် Result ကို တိုက်ရိုက်ယူရန်
     const resData = Array.isArray(result) ? result[0] : result;
-    
-    if (resData) {
-      console.log("Object Keys inside resData:", Object.keys(resData));
-    }
-
     let audioSrc = '';
+
     if (resData) {
+      // ၁။ သီးသန့် Key များ ရှိမရှိ စစ်ဆေးခြင်း
       audioSrc = resData.music || 
                  resData.audio || 
                  resData.play || 
@@ -227,7 +222,17 @@ async function handleMusicPreview(url) {
                  (resData.data && (resData.data.music || resData.data.audio || resData.data.play || resData.data.url)) ||
                  (resData.music_info && resData.music_info.url) || '';
 
-      // အကယ်၍ အထက်ပါ Keys များထဲတွင် မတွေ့ပါက http ပါသော Link မှန်သမျှကို အလိုအလျောက် ရှာယူမည်
+      // ၂။ urls Array ထဲမှ လင့်ခ်များကို စစ်ဆေးခြင်း
+      if (!audioSrc && Array.isArray(resData.urls) && resData.urls.length > 0) {
+        const firstUrl = resData.urls[0];
+        if (typeof firstUrl === 'string') {
+          audioSrc = firstUrl;
+        } else if (typeof firstUrl === 'object' && firstUrl !== null) {
+          audioSrc = firstUrl.url || firstUrl.link || firstUrl.play || Object.values(firstUrl).find(v => typeof v === 'string' && v.startsWith('http')) || '';
+        }
+      }
+
+      // ၃။ အခြားသော Object ပိုင်ဆိုင်မှုများထဲမှ http လင့်ခ် မှန်သမျှကို ရှာယူခြင်း
       if (!audioSrc && typeof resData === 'object') {
         for (let key in resData) {
           if (typeof resData[key] === 'string' && resData[key].startsWith('http')) {
@@ -248,7 +253,7 @@ async function handleMusicPreview(url) {
       }
       alert('✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
     } else {
-      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Console တွင် Object Keys ကို စစ်ဆေးပါ)');
+      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။');
     }
   } catch (err) {
     if (loader) loader.classList.remove('show');
