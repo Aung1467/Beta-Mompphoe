@@ -209,8 +209,12 @@ async function handleMusicPreview(url) {
 
     // Array ဖြစ်နေလျှင် ပထမ Index ကိုယူရန်၊ မဟုတ်လျှင် Result ကို တိုက်ရိုက်ယူရန်
     const resData = Array.isArray(result) ? result[0] : result;
-    let audioSrc = '';
+    
+    if (resData) {
+      console.log("Object Keys inside resData:", Object.keys(resData));
+    }
 
+    let audioSrc = '';
     if (resData) {
       audioSrc = resData.music || 
                  resData.audio || 
@@ -219,8 +223,19 @@ async function handleMusicPreview(url) {
                  resData.nowm || 
                  resData.musicUrl || 
                  resData.sound || 
+                 resData.music_dl ||
                  (resData.data && (resData.data.music || resData.data.audio || resData.data.play || resData.data.url)) ||
                  (resData.music_info && resData.music_info.url) || '';
+
+      // အကယ်၍ အထက်ပါ Keys များထဲတွင် မတွေ့ပါက http ပါသော Link မှန်သမျှကို အလိုအလျောက် ရှာယူမည်
+      if (!audioSrc && typeof resData === 'object') {
+        for (let key in resData) {
+          if (typeof resData[key] === 'string' && resData[key].startsWith('http')) {
+            audioSrc = resData[key];
+            break;
+          }
+        }
+      }
     }
 
     if (audioSrc) {
@@ -233,7 +248,7 @@ async function handleMusicPreview(url) {
       }
       alert('✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
     } else {
-      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Console တွင် Response ကို စစ်ဆေးပါ)');
+      alert('❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Console တွင် Object Keys ကို စစ်ဆေးပါ)');
     }
   } catch (err) {
     if (loader) loader.classList.remove('show');
