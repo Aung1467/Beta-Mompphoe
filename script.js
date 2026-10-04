@@ -142,7 +142,7 @@ const i18n = {
   }
 };
 
-// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85) သို့ မြှင့်ထားပါသည်
+// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85)
 function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
@@ -202,7 +202,6 @@ async function handleMusicPreview(url) {
     const response = await fetch(TIKTOK_API_URL, options);
     const result = await response.json();
     
-    // Console တွင် Object ကြီးကို ဖွင့်ကြည့်စရာမလိုဘဲ အချက်အလက်အပြည့်အစုံကို စာသားအဖြစ် ဖော်ပြပေးမည်
     console.log("Full TikTok API Response:", JSON.stringify(result, null, 2));
 
     if (loader) loader.classList.remove('show');
@@ -211,7 +210,6 @@ async function handleMusicPreview(url) {
     let audioSrc = '';
 
     if (resData) {
-      // ၁။ သီးသန့် Key များ ရှိမရှိ စစ်ဆေးခြင်း
       audioSrc = resData.music || 
                  resData.audio || 
                  resData.play || 
@@ -223,7 +221,6 @@ async function handleMusicPreview(url) {
                  (resData.data && (resData.data.music || resData.data.audio || resData.data.play || resData.data.url)) ||
                  (resData.music_info && resData.music_info.url) || '';
 
-      // ၂။ urls Array ထဲမှ လင့်ခ်များကို စစ်ဆေးခြင်း
       if (!audioSrc && Array.isArray(resData.urls) && resData.urls.length > 0) {
         for (let item of resData.urls) {
           if (typeof item === 'string' && item.startsWith('http')) {
@@ -239,7 +236,6 @@ async function handleMusicPreview(url) {
         }
       }
 
-      // ၃။ အခြားသော Object ပိုင်ဆိုင်မှုများထဲမှ http လင့်ခ် မှန်သမျှကို ရှာယူခြင်း
       if (!audioSrc && typeof resData === 'object') {
         for (let key in resData) {
           if (typeof resData[key] === 'string' && resData[key].startsWith('http')) {
@@ -337,6 +333,13 @@ function renderCardData(data) {
   }
   if (data.musicUrl) {
     savedMusicUrl = data.musicUrl;
+    // Step 4 တွင် သီချင်းပါလာပါက အလိုအလျောက် Player ဖွင့်ပေးရန် သို့မဟုတ် အသင့်ဖြစ်စေရန်
+    const player = document.getElementById('audioPreviewPlayer');
+    const previewGroup = document.getElementById('audioPreviewGroup');
+    if (player && previewGroup) {
+      player.src = data.musicUrl;
+      previewGroup.style.display = 'block';
+    }
   }
 }
 

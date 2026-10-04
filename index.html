@@ -509,7 +509,6 @@
       display: none;
     }
 
-    /* Sender Tag Positioned at Top Right Corner */
     .sender-tag {
       position: absolute;
       top: 12px;
@@ -583,7 +582,6 @@
       object-fit: fill;
     }
 
-    /* Random Floating Emojis Overlay inside exportCard */
     .emoji-overlay {
       position: absolute;
       inset: 0;
@@ -1439,7 +1437,7 @@
       }
     }
 
-    // TikTok Music RapidAPI Backend Handler (With Console Logging Added)
+    // TikTok Music RapidAPI Handler (Updated to support urls Array response safely)
     async function handleMusicPreview(url) {
       if (!url || !url.trim().includes('tiktok.com')) {
         alert(currentLang === 'en' ? 'Please enter a valid TikTok link.' : 'ကျေးဇူးပြု၍ မှန်ကန်သော TikTok လင့်ခ် ထည့်ပါ။');
@@ -1461,16 +1459,48 @@
         const response = await fetch(TIKTOK_API_URL, options);
         const result = await response.json();
         
-        // Eruda Console ထဲတွင် API Result ကို ချက်ချင်းစစ်ဆေးရန်
-        console.log("TikTok API Response Data:", result);
+        console.log("Full TikTok API Response:", JSON.stringify(result, null, 2));
 
         showLoader(false);
 
+        const resData = Array.isArray(result) ? result[0] : result;
         let audioSrc = '';
-        if (result && result.data) {
-          audioSrc = result.data.music || result.data.audio || result.data.play || '';
-        } else if (result) {
-          audioSrc = result.music || result.audio || result.play || '';
+
+        if (resData) {
+          audioSrc = resData.music || 
+                     resData.audio || 
+                     resData.play || 
+                     resData.url || 
+                     resData.nowm || 
+                     resData.musicUrl || 
+                     resData.sound || 
+                     resData.music_dl ||
+                     (resData.data && (resData.data.music || resData.data.audio || resData.data.play || resData.data.url)) ||
+                     (resData.music_info && resData.music_info.url) || '';
+
+          if (!audioSrc && Array.isArray(resData.urls) && resData.urls.length > 0) {
+            for (let item of resData.urls) {
+              if (typeof item === 'string' && item.startsWith('http')) {
+                audioSrc = item;
+                break;
+              } else if (typeof item === 'object' && item !== null) {
+                const found = item.url || item.link || item.play || Object.values(item).find(v => typeof v === 'string' && v.startsWith('http'));
+                if (found) {
+                  audioSrc = found;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (!audioSrc && typeof resData === 'object') {
+            for (let key in resData) {
+              if (typeof resData[key] === 'string' && resData[key].startsWith('http')) {
+                audioSrc = resData[key];
+                break;
+              }
+            }
+          }
         }
 
         if (audioSrc) {
@@ -1481,9 +1511,9 @@
             previewGroup.style.display = 'block';
             player.src = audioSrc;
           }
-          alert(currentLang === 'en' ? '✅ TikTok music retrieved successfully!' : '✅ TikTok သီချင်းကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
+          alert(currentLang === 'en' ? '✅ TikTok music retrieved successfully!' : '✅ TikTok သီချင်းလင့်ခ်ကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
         } else {
-          alert(currentLang === 'en' ? '❌ Audio not found from this link.' : '❌ ဤလင့်ခ်မှ သီချင်းဖိုင်ကို ရှာမတွေ့ပါ။ (Eruda Console တွင် Response ကို စစ်ဆေးပါ)');
+          alert(currentLang === 'en' ? '❌ Audio not found from this link.' : '❌ ဤလင့်ခ်မှ ဖိုင်ကို ရှာမတွေ့ပါ။ Eruda Console တွင် စစ်ဆေးပါ။');
         }
       } catch (err) {
         showLoader(false);
@@ -1703,7 +1733,7 @@
     }
   </script>
 
-  <!-- Eruda Console for Mobile Debugging (ဖုန်းပေါ်တွင် Console ကြည့်ရန် ထည့်သွင်းထားသည်) -->
+  <!-- Eruda Console for Mobile Debugging -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 </body>
