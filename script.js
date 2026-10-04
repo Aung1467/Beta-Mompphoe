@@ -20,12 +20,9 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 
-// Music Folder ထဲရှိ သီချင်းစာရင်း (လိုအပ်ပါက ဤနေရာတွင် အလွယ်တကူ ထပ်ထည့်နိုင်ပါသည်)
+// Music Folder ထဲရှိ သီချင်းစာရင်း (ယခု song1.mp3 တစ်ပုד်တည်းကို ထည့်ထားပါသည်)
 const localMusicList = [
-  { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
-  { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
-  { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
-  { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
+  { name: '🎵 song1.mp3', url: 'music/song1.mp3' }
 ];
 
 const i18n = {
