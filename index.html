@@ -604,6 +604,133 @@
       100% { transform: translateY(-380px) scale(1.3) rotate(360deg); opacity: 0; }
     }
 
+    /* Clean Minimal Animated Music Player Styles (No Text) */
+    .custom-music-player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(14, 17, 36, 0.9);
+      border: 1.5px solid var(--accent);
+      border-radius: 16px;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .spinning-disc {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff0055, #00f2fe, #ff0055);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinDisc 3s linear infinite;
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .spinning-disc-inner {
+      width: 12px;
+      height: 12px;
+      background: #05030f;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    @keyframes spinDisc {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ✨ အလယ်က အဝိုင်းပုံစံ Border ပါသော gif/anime.gif စတိုင်လ် */
+    .anime-dancer-free {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .anime-dancer-free img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Equalizer Wave Animation */
+    .equalizer-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 10px; }
+    .eq-bar:nth-child(2) { animation-delay: 0.4s; height: 18px; }
+    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 14px; }
+    .eq-bar:nth-child(4) { animation-delay: 0.5s; height: 20px; }
+
+    @keyframes eqBounce {
+      0% { transform: scaleY(0.3); }
+      100% { transform: scaleY(1); }
+    }
+
+    /* Custom Equalizer Preview Player Styles (Centered & Clean) */
+    .custom-preview-player {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(14, 17, 36, 0.9);
+      border: 1.5px solid var(--accent);
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: 0 0 12px var(--accent-glow);
+      height: 52px;
+    }
+
+    .preview-eq-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      height: 20px;
+    }
+
+    .preview-eq-bars.playing .p-bar {
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+    }
+
+    .p-bar {
+      width: 4px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 3px;
+      box-shadow: 0 0 6px var(--accent);
+      transition: height 0.3s ease;
+    }
+
+    .preview-eq-bars.playing .p-bar:nth-child(1) { animation-delay: 0.1s; }
+    .preview-eq-bars.playing .p-bar:nth-child(2) { animation-delay: 0.4s; }
+    .preview-eq-bars.playing .p-bar:nth-child(3) { animation-delay: 0.2s; }
+    .preview-eq-bars.playing .p-bar:nth-child(4) { animation-delay: 0.5s; }
+    .preview-eq-bars.playing .p-bar:nth-child(5) { animation-delay: 0.3s; }
+
     .save-btn { background: linear-gradient(135deg, #2ed573, #26af5f); box-shadow: 0 4px 10px rgba(46, 213, 115, 0.25); }
     .share-btn { background: linear-gradient(135deg, #3742fa, #2f3542); box-shadow: 0 4px 10px rgba(55, 66, 250, 0.25); }
 
@@ -784,11 +911,11 @@
       </div>
 
       <div class="form-group">
-        <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းဖို့ စာစီရန်</label>
+        <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းဖို့ စာစီရန် (မဖြစ်မနေ ရေးရန်)</label>
         <textarea id="customNote" rows="2" placeholder="စာစီပါ"></textarea>
       </div>
 
-      <!-- Music Folder Selection Dropdown (Clean Filename Display) -->
+      <!-- Music Folder Selection Dropdown -->
       <div class="form-group">
         <label id="lbl_musicLabel">သီချင်း ရွေးချယ်ရန် (Music Folder)</label>
         <div class="custom-select-wrapper" id="musicCustomSelect">
@@ -801,13 +928,23 @@
         <input type="hidden" id="musicDropdown" value="">
       </div>
 
+      <!-- Custom Equalizer Preview Player -->
       <div class="form-group" id="audioPreviewGroup" style="display: none;">
         <label id="lbl_audioPreview">သီချင်း နားဆောင်ရန် (Preview)</label>
-        <audio id="audioPreviewPlayer" controls style="width: 100%; border-radius: 12px; height: 36px; outline: none;"></audio>
+        <div class="custom-preview-player">
+          <div class="preview-eq-bars">
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+          </div>
+        </div>
+        <audio id="audioPreviewPlayer" style="display: none;"></audio>
       </div>
 
       <div class="form-group">
-        <label id="lbl_bgLabel">နောက်ခံပုံ (3:4 Ratio HD)</label>
+        <label id="lbl_bgLabel">နောက်ခံပုံ (3:4 Ratio HD) - မဖြစ်မနေ ထည့်ရန်</label>
         <div class="file-input-wrapper">
           <div class="file-btn" id="bgImgLabel">📸 နောက်ခံပုံ ရွေးရန် (အကြည်)</div>
           <input type="file" accept="image/*" onchange="handleBgImage(this)">
@@ -815,7 +952,7 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ (1:1 HD)</label>
+        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ (1:1 HD) - မဖြစ်မနေ ထည့်ရန်</label>
         <div class="file-input-wrapper">
           <div class="file-btn" id="qrImgLabel">💳 QR Code ပုံ ရွေးရန်</div>
           <input type="file" accept="image/*" onchange="handleQrImage(this)">
@@ -849,10 +986,25 @@
         </div>
       </div>
 
-      <!-- Music Player for Result Card & Share Link View -->
-      <div class="form-group" id="cardAudioGroup" style="display: none; margin-bottom: 12px;">
-        <label id="lbl_cardAudio" style="font-size: 11px; margin-bottom: 4px; color: var(--accent);">🎵 သီချင်း နားဆင်ရန်</label>
-        <audio id="cardAudioPlayer" controls style="width: 100%; border-radius: 12px; height: 36px; outline: none;"></audio>
+      <!-- Minimal Animated Music Player with gif/anime.gif in the Middle -->
+      <div class="custom-music-player" id="cardAudioGroup" style="display: none;">
+        <div class="spinning-disc">
+          <div class="spinning-disc-inner"></div>
+        </div>
+        
+        <!-- ✨ အလယ်က အဝိုင်းပုံစံ Border ပါသော gif/anime.gif -->
+        <div class="anime-dancer-free">
+          <img src="gif/anime.gif" alt="Custom GIF">
+        </div>
+
+        <div class="equalizer-bars">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <!-- Hidden Audio Element with autoplay and loop -->
+        <audio id="cardAudioPlayer" autoplay loop style="display: none;"></audio>
       </div>
 
       <div class="btn-group">
@@ -886,11 +1038,11 @@
     let currentBgUrl = "";
     let currentQrUrl = "";
     let currentMusicUrl = "";
+    let currentMusicName = "song1.mp3";
     let currentLang = 'my';
     let emojiInterval = null;
     let currentShareableLink = '';
 
-    // MP3 ဖိုင်နာမည်အတိုင်း တိုက်ရိုက်ဖော်ပြမည့် သီချင်းစာရင်း (1,2,3 အစား ဖိုင်နာမည်အစစ်များဖြင့် ပြသရန်)
     const localMusicList = [
       { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
       { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
@@ -1258,7 +1410,6 @@
       populateMusicDropdown();
     }
 
-    // App Initialization & URL card id loader
     window.addEventListener('DOMContentLoaded', async () => {
       setTimeout(() => {
         const splash = document.getElementById('introSplash');
@@ -1303,10 +1454,12 @@
                 currentMusicUrl = data.music_url;
                 const cardPlayer = document.getElementById('cardAudioPlayer');
                 const cardAudioGroup = document.getElementById('cardAudioGroup');
+
                 if (cardPlayer && cardAudioGroup) {
                   cardPlayer.src = data.music_url;
                   cardPlayer.load();
-                  cardAudioGroup.style.display = 'block';
+                  cardPlayer.play().catch(e => console.log("Autoplay prevented:", e));
+                  cardAudioGroup.style.display = 'flex';
                 }
               }
               showLoader(false);
@@ -1427,7 +1580,6 @@
       toggleCustomReason();
     }
 
-    // Music Folder Dropdown Populate & Selection (Clean Filename Display)
     function populateMusicDropdown() {
       const container = document.getElementById('musicCustomOptions');
       if (!container) return;
@@ -1453,6 +1605,7 @@
         document.getElementById('musicTriggerText').innerText = localMusicList[0].name;
         document.getElementById('musicDropdown').value = localMusicList[0].url;
         currentMusicUrl = localMusicList[0].url;
+        currentMusicName = localMusicList[0].name;
         
         const previewGroup = document.getElementById('audioPreviewGroup');
         const player = document.getElementById('audioPreviewPlayer');
@@ -1460,6 +1613,12 @@
           previewGroup.style.display = 'block';
           player.src = localMusicList[0].url;
           player.load();
+          player.loop = true;
+          
+          player.play().then(() => {
+            const eqContainer = document.querySelector('.preview-eq-bars');
+            if(eqContainer) eqContainer.classList.add('playing');
+          }).catch(e => console.log("Auto-play error:", e));
         }
       }
     }
@@ -1470,12 +1629,19 @@
       document.getElementById('musicCustomSelect').classList.remove('open');
       
       currentMusicUrl = url;
+      currentMusicName = name;
       const previewGroup = document.getElementById('audioPreviewGroup');
       const player = document.getElementById('audioPreviewPlayer');
       if (previewGroup && player) {
         previewGroup.style.display = 'block';
         player.src = url;
         player.load();
+        player.loop = true;
+        
+        player.play().then(() => {
+          const eqContainer = document.querySelector('.preview-eq-bars');
+          if(eqContainer) eqContainer.classList.add('playing');
+        }).catch(e => console.log("Auto-play error:", e));
       }
     }
 
@@ -1532,7 +1698,7 @@
       }, 500);
     }
 
-    function handleSignup() {
+    async function handleSignup() {
       const name = document.getElementById('signupName').value.trim();
       const num = document.getElementById('signupNum').value.trim();
       const p1 = document.getElementById('signupPass1').value.trim();
@@ -1554,13 +1720,32 @@
       }
 
       showLoader(true);
-      setTimeout(() => {
-        showLoader(false);
-        currentUser = { name: name, num: num };
-        document.getElementById('displayProfileName').innerText = name;
-        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ဂဏန်း: ') + num;
-        goToStep(2);
-      }, 500);
+
+      try {
+        const sb = getSupabase();
+        if (sb) {
+          const { data: existingUsers, error: checkError } = await sb
+            .from('users')
+            .select('*')
+            .or(`name.eq.${name},num.eq.${num}`);
+
+          if (existingUsers && existingUsers.length > 0) {
+            showLoader(false);
+            alert(currentLang === 'en' ? 'Name or ID Code already exists! Please choose another.' : 'ဤနာမည် (သို့) ID Code ဖြင့် အကောင့်ဖွင့်ပြီးသား ရှိနေပါပြီ။ ကျေးဇူးပြု၍ အခြားနာမည် သို့မဟုတ် နံပါတ်ကို အသုံးပြုပါ။');
+            return;
+          }
+
+          await sb.from('users').insert([{ name: name, num: num, password: p1 }]);
+        }
+      } catch (err) {
+        console.log('User check/register notice:', err);
+      }
+
+      showLoader(false);
+      currentUser = { name: name, num: num };
+      document.getElementById('displayProfileName').innerText = name;
+      document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ဂဏန်း: ') + num;
+      goToStep(2);
     }
 
     function updateProfileAvatar(input) {
@@ -1598,6 +1783,21 @@
     }
 
     async function generateAndSaveCard() {
+      const noteText = document.getElementById('customNote').value.trim();
+
+      if (!noteText) {
+        alert(currentLang === 'en' ? 'Please write your note/message for pocket money!' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းမည့် စာစီစာကုံး/စာသားကို ရေးသားပေးပါ။');
+        return;
+      }
+      if (!currentBgUrl) {
+        alert(currentLang === 'en' ? 'Please select a background image!' : 'ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်သွင်းပေးပါ။');
+        return;
+      }
+      if (!currentQrUrl) {
+        alert(currentLang === 'en' ? 'Please select a QR Code / Payment image!' : 'ကျေးဇူးပြု၍ QR Code (သို့) ငွေပေးချေမှုပုံကို ထည့်သွင်းပေးပါ။');
+        return;
+      }
+
       const reasonVal = document.getElementById('reasonDropdown').value;
       let reasonText = "";
       
@@ -1608,7 +1808,6 @@
         reasonText = triggerEl ? triggerEl.innerText : "မုန့်ဖိုးတောင်းခြင်း";
       }
 
-      const noteText = document.getElementById('customNote').value.trim() || (currentLang === 'en' ? 'Please send me some pocket money' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးထည့်ပေးပါရှင့်');
       const senderName = currentUser ? currentUser.name : "Guest";
 
       document.getElementById('outSender').innerText = "From: " + senderName;
@@ -1635,10 +1834,12 @@
       if(currentMusicUrl) {
         const cardPlayer = document.getElementById('cardAudioPlayer');
         const cardAudioGroup = document.getElementById('cardAudioGroup');
+
         if(cardPlayer && cardAudioGroup) {
           cardPlayer.src = currentMusicUrl;
           cardPlayer.load();
-          cardAudioGroup.style.display = 'block';
+          cardPlayer.play().catch(e => console.log("Autoplay error:", e));
+          cardAudioGroup.style.display = 'flex';
         }
       }
 

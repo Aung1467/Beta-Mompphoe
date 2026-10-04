@@ -182,7 +182,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// Music Folder Dropdown Populate & Selection Functions
+// Music Folder Dropdown Populate & Selection Functions (Auto Play & Equalizer Animation Added)
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
   if (!container) return;
@@ -215,6 +215,12 @@ function populateMusicDropdown() {
       previewGroup.style.display = 'block';
       player.src = localMusicList[0].url;
       player.load();
+      player.loop = true;
+      
+      player.play().then(() => {
+        const eqContainer = document.querySelector('.preview-eq-bars');
+        if(eqContainer) eqContainer.classList.add('playing');
+      }).catch(e => console.log("Auto-play error:", e));
     }
   }
 }
@@ -231,6 +237,12 @@ function selectMusicOption(url, name) {
     previewGroup.style.display = 'block';
     player.src = url;
     player.load();
+    player.loop = true;
+    
+    player.play().then(() => {
+      const eqContainer = document.querySelector('.preview-eq-bars');
+      if(eqContainer) eqContainer.classList.add('playing');
+    }).catch(e => console.log("Auto-play error:", e));
   }
 }
 
