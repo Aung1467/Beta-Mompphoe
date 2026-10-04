@@ -468,6 +468,19 @@ function showStep(stepNumber) {
     target.style.display = 'block';
     setTimeout(() => target.classList.add('active'), 50);
   }
+
+  // ✨ Step 4 (ရလဒ်ကတ်) သို့ ရောက်သွားသည့်အခါ Preview Player နှင့် Equalizer ကို ရပ်တန့်ရန်
+  if (stepNumber === 4) {
+    const previewPlayer = document.getElementById('audioPreviewPlayer');
+    if (previewPlayer) {
+      previewPlayer.pause();
+      previewPlayer.currentTime = 0;
+    }
+    const eqContainer = document.querySelector('.preview-eq-bars');
+    if (eqContainer) {
+      eqContainer.classList.remove('playing');
+    }
+  }
 }
 
 function toggleCustomReason() {
