@@ -643,7 +643,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* ✨ အလယ်က အဝိုင်းပုံစံ Border ပါသော gif/anime.gif (ဘောင်နဲ့ကွက်တိဖြစ်အောင် အနည်းငယ် ကြီးထားသည်) */
     .anime-dancer-free {
       width: 48px;
       height: 48px;
@@ -992,7 +991,6 @@
           <div class="spinning-disc-inner"></div>
         </div>
         
-        <!-- ✨ အလယ်က အဝိုင်းပုံစံ Border ပါသော gif/anime.gif -->
         <div class="anime-dancer-free">
           <img src="gif/anime.gif" alt="Custom GIF">
         </div>
@@ -1423,6 +1421,13 @@
 
       if (cardId) {
         showLoader(true);
+        // Share လင့်ခ်ဖြင့် ဝင်လာသည့်အခါ Preview Player လုံးဝ မပွင့်စေရန် ရပ်တန့်ခြင်း
+        const previewPlayer = document.getElementById('audioPreviewPlayer');
+        if (previewPlayer) {
+          previewPlayer.pause();
+          previewPlayer.currentTime = 0;
+        }
+
         try {
           const sb = getSupabase();
           if (sb) {
@@ -1489,6 +1494,16 @@
 
       if (stepNum === 4) {
         startEmojiOverlay();
+        // Step 4 သို့ ရောက်သည်နှင့် Preview Player ကို အသံရပ်တန့်စေခြင်း
+        const previewPlayer = document.getElementById('audioPreviewPlayer');
+        if (previewPlayer) {
+          previewPlayer.pause();
+          previewPlayer.currentTime = 0;
+        }
+        const eqContainer = document.querySelector('.preview-eq-bars');
+        if (eqContainer) {
+          eqContainer.classList.remove('playing');
+        }
       } else {
         stopEmojiOverlay();
       }
@@ -1614,11 +1629,7 @@
           player.src = localMusicList[0].url;
           player.load();
           player.loop = true;
-          
-          player.play().then(() => {
-            const eqContainer = document.querySelector('.preview-eq-bars');
-            if(eqContainer) eqContainer.classList.add('playing');
-          }).catch(e => console.log("Auto-play error:", e));
+          // Auto-play on load is removed here to prevent multiple audio overlaps
         }
       }
     }
@@ -1783,6 +1794,17 @@
     }
 
     async function generateAndSaveCard() {
+      // "ကတ်ဖန်တီးမည်" ခလုတ်နှိပ်သည်နှင့် Preview အသံကို ချက်ချင်းရပ်တန့်ခြင်း
+      const previewPlayer = document.getElementById('audioPreviewPlayer');
+      if (previewPlayer) {
+        previewPlayer.pause();
+        previewPlayer.currentTime = 0;
+      }
+      const eqContainer = document.querySelector('.preview-eq-bars');
+      if (eqContainer) {
+        eqContainer.classList.remove('playing');
+      }
+
       const noteText = document.getElementById('customNote').value.trim();
 
       if (!noteText) {

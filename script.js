@@ -182,7 +182,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// Music Folder Dropdown Populate & Selection Functions (Auto Play & Equalizer Animation Added)
+// Music Folder Dropdown Populate & Selection Functions (Auto-play on load disabled to prevent overlap)
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
   if (!container) return;
@@ -216,11 +216,7 @@ function populateMusicDropdown() {
       player.src = localMusicList[0].url;
       player.load();
       player.loop = true;
-      
-      player.play().then(() => {
-        const eqContainer = document.querySelector('.preview-eq-bars');
-        if(eqContainer) eqContainer.classList.add('playing');
-      }).catch(e => console.log("Auto-play error:", e));
+      // မူလအစတွင် အလိုအလျောက် အသံမပွင့်စေရန် play() ကို ဖြုတ်ထားပါသည်
     }
   }
 }
@@ -239,6 +235,7 @@ function selectMusicOption(url, name) {
     player.load();
     player.loop = true;
     
+    // သီချင်းကို တမင်ရွေးချယ်မှသာ Preview အသံ ပွင့်မည်
     player.play().then(() => {
       const eqContainer = document.querySelector('.preview-eq-bars');
       if(eqContainer) eqContainer.classList.add('playing');
@@ -274,6 +271,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (cardId) {
     const loader = document.getElementById('stepLoader');
     if (loader) loader.classList.add('show');
+
+    // Share လင့်ခ်ဖြင့် ဝင်လာသည့်အခါ Preview Player လုံးဝ မပွင့်စေရန် ရပ်တန့်ခြင်း
+    const previewPlayer = document.getElementById('audioPreviewPlayer');
+    if (previewPlayer) {
+      previewPlayer.pause();
+      previewPlayer.currentTime = 0;
+    }
 
     try {
       const sb = getSupabase();
@@ -328,23 +332,15 @@ function renderCardData(data) {
   }
   if (data.musicUrl) {
     savedMusicUrl = data.musicUrl;
-    
-    // Step 3 preview player
-    const player = document.getElementById('audioPreviewPlayer');
-    const previewGroup = document.getElementById('audioPreviewGroup');
-    if (player && previewGroup) {
-      player.src = data.musicUrl;
-      player.load();
-      previewGroup.style.display = 'block';
-    }
 
-    // Step 4 card player (Share လင့်ခ်ဖြင့် ပြန်ဝင်လာသည့်အခါ သီချင်းပါလာစေရန်)
+    // Step 4 card player (Share လင့်ခ်ဖြင့် ပြန်ဝင်လာသည့်အခါ Card Player သီးသန့် ဖွင့်ရန်)
     const cardPlayer = document.getElementById('cardAudioPlayer');
     const cardAudioGroup = document.getElementById('cardAudioGroup');
     if (cardPlayer && cardAudioGroup) {
       cardPlayer.src = data.musicUrl;
       cardPlayer.load();
-      cardAudioGroup.style.display = 'block';
+      cardPlayer.play().catch(e => console.log("Autoplay prevented:", e));
+      cardAudioGroup.style.display = 'flex';
     }
   }
 }
@@ -469,7 +465,7 @@ function showStep(stepNumber) {
     setTimeout(() => target.classList.add('active'), 50);
   }
 
-  // ✨ Step 4 သို့ ရောက်သည့်အခါ ထပ်မံအတည်ပြုရန်
+  // ✨ Step 4 သို့ ရောက်သည့်အခါ Preview Player ကို အသံရပ်တန့်စေခြင်း
   if (stepNumber === 4) {
     const previewPlayer = document.getElementById('audioPreviewPlayer');
     if (previewPlayer) {
@@ -522,7 +518,7 @@ function handleQrImage(input) {
 }
 
 async function generateAndSaveCard() {
-  // ✨ အသံမထပ်စေရန် "ကတ်ဖန်တီးမည်" ခလုတ်နှိပ်လိုက်သည်နှင့် Preview အသံကို ချက်ချင်းရပ်တန့်ခိုင်းခြင်း
+  // ✨ "ကတ်ဖန်တီးမည်" ခလုတ်နှိပ်သည်နှင့် Preview အသံကို ချက်ချင်းရပ်တန့်ခိုင်းခြင်း
   const previewPlayer = document.getElementById('audioPreviewPlayer');
   if (previewPlayer) {
     previewPlayer.pause();
@@ -602,6 +598,16 @@ async function generateAndSaveCard() {
 
       if (loader) loader.classList.remove('show');
       showStep(4);
+
+      // ✨ Step 4 ရောက်တာနဲ့ Card Player စတင်ဖွင့်ရန်
+      const cardPlayer = document.getElementById('cardAudioPlayer');
+      const cardAudioGroup = document.getElementById('cardAudioGroup');
+      if (cardPlayer && cardAudioGroup && savedMusicUrl) {
+        cardPlayer.src = savedMusicUrl;
+        cardPlayer.load();
+        cardPlayer.play().catch(e => console.log("Card audio play error:", e));
+        cardAudioGroup.style.display = 'flex';
+      }
     }
   } catch (err) {
     console.error('Supabase Save Error:', err);
