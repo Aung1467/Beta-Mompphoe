@@ -788,13 +788,17 @@
         <textarea id="customNote" rows="2" placeholder="စာစီပါ"></textarea>
       </div>
 
-      <!-- TikTok Music Section with RapidAPI Integration -->
+      <!-- Music Folder Selection Dropdown (Clean Filename Display) -->
       <div class="form-group">
-        <label id="lbl_musicLabel">သီချင်းထည့်ရန် (TikTok Link)</label>
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="tiktokMusicLink" placeholder="tiktok video link ထည့်ရန်" style="flex: 1;">
-          <button type="button" class="btn" style="width: auto; padding: 10px 14px; margin-top: 0; font-size: 12px;" onclick="handleMusicPreview(document.getElementById('tiktokMusicLink').value)">ဆွဲမည်</button>
+        <label id="lbl_musicLabel">သီချင်း ရွေးချယ်ရန် (Music Folder)</label>
+        <div class="custom-select-wrapper" id="musicCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
+            <span id="musicTriggerText">သီချင်း ရွေးချယ်ပါ</span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="musicCustomOptions"></div>
         </div>
+        <input type="hidden" id="musicDropdown" value="">
       </div>
 
       <div class="form-group" id="audioPreviewGroup" style="display: none;">
@@ -862,11 +866,6 @@
     const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
 
-    // RapidAPI TikTok Downloader Credentials
-    const TIKTOK_API_HOST = 'tiktok-video-downloader-api1.p.rapidapi.com';
-    const TIKTOK_API_KEY = '70859b2b0dmsh50bef4b29850745p174506jsnde824fc2401a';
-    const TIKTOK_API_URL = 'https://tiktok-video-downloader-api1.p.rapidapi.com/api/tiktok/links';
-
     let supabaseClient = null;
 
     function getSupabase() {
@@ -884,6 +883,14 @@
     let currentLang = 'my';
     let emojiInterval = null;
     let currentShareableLink = '';
+
+    // MP3 ဖိုင်နာမည်အတိုင်း တိုက်ရိုက်ဖော်ပြမည့် သီချင်းစာရင်း (1,2,3 အစား ဖိုင်နာမည်အစစ်များဖြင့် ပြသရန်)
+    const localMusicList = [
+      { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
+      { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
+      { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
+      { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
+    ];
 
     const translations = {
       my: {
@@ -910,8 +917,7 @@
         dropdown: "အကြောင်းအရာ ရွေးချယ်ရန်",
         customReason: "ကိုယ်တိုင်စာရေးရန်",
         customNote: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
-        musicLabel: "သီချင်းထည့်ရန် (TikTok Link)",
-        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        musicLabel: "သီချင်း ရွေးချယ်ရန် (Music Folder)",
         audioPreview: "သီချင်း နားဆောင်ရန် (Preview)",
         bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
         qrLabel: "QR Code / အချက်အလက်ပုံ (1:1 HD)",
@@ -961,8 +967,7 @@
         dropdown: "Select Reason",
         customReason: "Custom Reason",
         customNote: "Custom Note",
-        musicLabel: "Add Music (TikTok Link)",
-        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        musicLabel: "Select Music (Music Folder)",
         audioPreview: "Preview Audio",
         bgLabel: "Background (3:4 HD)",
         qrLabel: "QR Code / Payment Info (1:1 HD)",
@@ -1012,8 +1017,7 @@
         dropdown: "เลือกเหตุผล",
         customReason: "เหตุผลอื่นๆ",
         customNote: "ข้อความเพิ่มเติม",
-        musicLabel: "เพิ่มเพลง (TikTok Link)",
-        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        musicLabel: "เลือกเพลง (Music Folder)",
         audioPreview: "ฟังเสียงตัวอย่าง (Preview)",
         bgLabel: "ภาพพื้นหลัง (3:4 HD)",
         qrLabel: "QR Code / ข้อมูลการชำระเงิน",
@@ -1063,8 +1067,7 @@
         dropdown: "选择原因",
         customReason: "自定义原因",
         customNote: "留言备注",
-        musicLabel: "添加音乐 (TikTok Link)",
-        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        musicLabel: "选择音乐 (Music Folder)",
         audioPreview: "预览试听",
         bgLabel: "背景图 (3:4 HD)",
         qrLabel: "二维码 / 支付信息",
@@ -1114,8 +1117,7 @@
         dropdown: "理由を選択",
         customReason: "その他の理由",
         customNote: "メッセージ",
-        musicLabel: "音楽を追加 (TikTok Link)",
-        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        musicLabel: "音楽を選択 (Music Folder)",
         audioPreview: "プレビュー試聴",
         bgLabel: "背景 (3:4 HD)",
         qrLabel: "QRコード / 支払い情報",
@@ -1165,8 +1167,7 @@
         dropdown: "사유 선택",
         customReason: "직접 작성",
         customNote: "요청 메시지",
-        musicLabel: "음악 추가 (TikTok Link)",
-        musicPlaceholder: "tiktok video link ထည့်ရန်",
+        musicLabel: "음악 선택 (Music Folder)",
         audioPreview: "미리 듣기 (Preview)",
         bgLabel: "배경 화면 (3:4 HD)",
         qrLabel: "QR 코드 / 결제 정보",
@@ -1228,7 +1229,6 @@
       if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = t.customNote;
       
       if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = t.musicLabel;
-      if(document.getElementById('tiktokMusicLink')) document.getElementById('tiktokMusicLink').placeholder = t.musicPlaceholder;
       if(document.getElementById('lbl_audioPreview')) document.getElementById('lbl_audioPreview').innerText = t.audioPreview;
 
       if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = t.bgLabel;
@@ -1249,6 +1249,7 @@
       if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = t.closeModal;
 
       populateReasons();
+      populateMusicDropdown();
     }
 
     // App Initialization & URL card id loader
@@ -1257,6 +1258,7 @@
         const splash = document.getElementById('introSplash');
         if(splash) splash.classList.add('fade-out');
         populateReasons();
+        populateMusicDropdown();
       }, 500);
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -1412,6 +1414,58 @@
       toggleCustomReason();
     }
 
+    // Music Folder Dropdown Populate & Selection (Clean Filename Display)
+    function populateMusicDropdown() {
+      const container = document.getElementById('musicCustomOptions');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const currentVal = document.getElementById('musicDropdown').value;
+      let found = false;
+
+      localMusicList.forEach(song => {
+        const div = document.createElement('div');
+        div.className = 'custom-option';
+        div.innerText = song.name;
+        div.onclick = () => selectMusicOption(song.url, song.name);
+        container.appendChild(div);
+
+        if (song.url === currentVal) {
+          document.getElementById('musicTriggerText').innerText = song.name;
+          found = true;
+        }
+      });
+
+      if (!found && localMusicList.length > 0) {
+        document.getElementById('musicTriggerText').innerText = localMusicList[0].name;
+        document.getElementById('musicDropdown').value = localMusicList[0].url;
+        currentMusicUrl = localMusicList[0].url;
+        
+        const previewGroup = document.getElementById('audioPreviewGroup');
+        const player = document.getElementById('audioPreviewPlayer');
+        if (previewGroup && player) {
+          previewGroup.style.display = 'block';
+          player.src = localMusicList[0].url;
+          player.load();
+        }
+      }
+    }
+
+    function selectMusicOption(url, name) {
+      document.getElementById('musicTriggerText').innerText = name;
+      document.getElementById('musicDropdown').value = url;
+      document.getElementById('musicCustomSelect').classList.remove('open');
+      
+      currentMusicUrl = url;
+      const previewGroup = document.getElementById('audioPreviewGroup');
+      const player = document.getElementById('audioPreviewPlayer');
+      if (previewGroup && player) {
+        previewGroup.style.display = 'block';
+        player.src = url;
+        player.load();
+      }
+    }
+
     function toggleCustomDropdown(wrapperId) {
       document.querySelectorAll('.custom-select-wrapper').forEach(el => {
         if (el.id !== wrapperId) el.classList.remove('open');
@@ -1434,91 +1488,6 @@
         } else {
           customGroup.style.display = 'none';
         }
-      }
-    }
-
-    // TikTok Music RapidAPI Handler (Updated to support urls Array response safely)
-    async function handleMusicPreview(url) {
-      if (!url || !url.trim().includes('tiktok.com')) {
-        alert(currentLang === 'en' ? 'Please enter a valid TikTok link.' : 'ကျေးဇူးပြု၍ မှန်ကန်သော TikTok လင့်ခ် ထည့်ပါ။');
-        return;
-      }
-      
-      showLoader(true);
-      try {
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-rapidapi-host': TIKTOK_API_HOST,
-            'x-rapidapi-key': TIKTOK_API_KEY
-          },
-          body: JSON.stringify({ url: url.trim() })
-        };
-
-        const response = await fetch(TIKTOK_API_URL, options);
-        const result = await response.json();
-        
-        console.log("Full TikTok API Response:", JSON.stringify(result, null, 2));
-
-        showLoader(false);
-
-        const resData = Array.isArray(result) ? result[0] : result;
-        let audioSrc = '';
-
-        if (resData) {
-          audioSrc = resData.music || 
-                     resData.audio || 
-                     resData.play || 
-                     resData.url || 
-                     resData.nowm || 
-                     resData.musicUrl || 
-                     resData.sound || 
-                     resData.music_dl ||
-                     (resData.data && (resData.data.music || resData.data.audio || resData.data.play || resData.data.url)) ||
-                     (resData.music_info && resData.music_info.url) || '';
-
-          if (!audioSrc && Array.isArray(resData.urls) && resData.urls.length > 0) {
-            for (let item of resData.urls) {
-              if (typeof item === 'string' && item.startsWith('http')) {
-                audioSrc = item;
-                break;
-              } else if (typeof item === 'object' && item !== null) {
-                const found = item.url || item.link || item.play || Object.values(item).find(v => typeof v === 'string' && v.startsWith('http'));
-                if (found) {
-                  audioSrc = found;
-                  break;
-                }
-              }
-            }
-          }
-
-          if (!audioSrc && typeof resData === 'object') {
-            for (let key in resData) {
-              if (typeof resData[key] === 'string' && resData[key].startsWith('http')) {
-                audioSrc = resData[key];
-                break;
-              }
-            }
-          }
-        }
-
-        if (audioSrc) {
-          currentMusicUrl = audioSrc;
-          const previewGroup = document.getElementById('audioPreviewGroup');
-          const player = document.getElementById('audioPreviewPlayer');
-          if (previewGroup && player) {
-            previewGroup.style.display = 'block';
-            player.src = audioSrc;
-          }
-          alert(currentLang === 'en' ? '✅ TikTok music retrieved successfully!' : '✅ TikTok သီချင်းလင့်ခ်ကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
-        } else {
-          alert(currentLang === 'en' ? '❌ Audio not found from this link.' : '❌ ဤလင့်ခ်မှ ဖိုင်ကို ရှာမတွေ့ပါ။ Eruda Console တွင် စစ်ဆေးပါ။');
-        }
-      } catch (err) {
-        showLoader(false);
-        console.error('TikTok API Error:', err);
-        alert(currentLang === 'en' ? '❌ Error fetching music.' : '❌ သီချင်းဆွဲထုတ်ရာတွင် အမှားအယွင်းရှိနေပါသည်။');
       }
     }
 
