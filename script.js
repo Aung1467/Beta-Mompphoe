@@ -142,7 +142,7 @@ const i18n = {
   }
 };
 
-// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85)
+// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85) သို့ မြှင့်ထားပါသည်
 function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
@@ -253,6 +253,7 @@ async function handleMusicPreview(url) {
       if (previewGroup && player) {
         previewGroup.style.display = 'block';
         player.src = audioSrc;
+        player.load(); // 👈 သီချင်းအသစ် load ဖြစ်စေရန် ထည့်သွင်းထားသည်
       }
       alert('✅ TikTok သီချင်းလင့်ခ်ကို အောင်မြင်စွာ ရယူနိုင်ပါပြီ!');
     } else {
@@ -333,11 +334,11 @@ function renderCardData(data) {
   }
   if (data.musicUrl) {
     savedMusicUrl = data.musicUrl;
-    // Step 4 တွင် သီချင်းပါလာပါက အလိုအလျောက် Player ဖွင့်ပေးရန် သို့မဟုတ် အသင့်ဖြစ်စေရန်
     const player = document.getElementById('audioPreviewPlayer');
     const previewGroup = document.getElementById('audioPreviewGroup');
     if (player && previewGroup) {
       player.src = data.musicUrl;
+      player.load(); // 👈 Database မှ သီချင်းလင့်ခ်ဆွဲထုတ်လာပါက play လို့ရအောင် load လုပ်ပေးသည်
       previewGroup.style.display = 'block';
     }
   }
