@@ -469,7 +469,7 @@ function showStep(stepNumber) {
     setTimeout(() => target.classList.add('active'), 50);
   }
 
-  // ✨ Step 4 (ရလဒ်ကတ်) သို့ ရောက်သွားသည့်အခါ Preview Player နှင့် Equalizer ကို ရပ်တန့်ရန်
+  // ✨ Step 4 သို့ ရောက်သည့်အခါ ထပ်မံအတည်ပြုရန်
   if (stepNumber === 4) {
     const previewPlayer = document.getElementById('audioPreviewPlayer');
     if (previewPlayer) {
@@ -522,6 +522,17 @@ function handleQrImage(input) {
 }
 
 async function generateAndSaveCard() {
+  // ✨ အသံမထပ်စေရန် "ကတ်ဖန်တီးမည်" ခလုတ်နှိပ်လိုက်သည်နှင့် Preview အသံကို ချက်ချင်းရပ်တန့်ခိုင်းခြင်း
+  const previewPlayer = document.getElementById('audioPreviewPlayer');
+  if (previewPlayer) {
+    previewPlayer.pause();
+    previewPlayer.currentTime = 0;
+  }
+  const eqContainer = document.querySelector('.preview-eq-bars');
+  if (eqContainer) {
+    eqContainer.classList.remove('playing');
+  }
+
   const reasonDropdown = document.getElementById('reasonDropdown').value;
   const customReason = document.getElementById('customReason').value.trim();
   const customNote = document.getElementById('customNote').value.trim();
