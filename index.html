@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>မုန့်ဖိုးတောင်းလွှာ Web App</title>
   
-  <!-- Supabase JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- html2canvas Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -227,6 +224,7 @@
       position: relative;
     }
 
+    /* Prominent Labels */
     label {
       display: block;
       margin-bottom: 7px;
@@ -236,7 +234,7 @@
       text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
     }
 
-    /* Custom Dropdown Styling */
+    /* ✨ Smooth Custom Drawdown with Delay & Push Effect ✨ */
     .custom-select-wrapper {
       position: relative;
       width: 100%;
@@ -279,6 +277,7 @@
     .custom-options {
       max-height: 0;
       overflow: hidden;
+      /* Smooth delay and easing for opening/closing */
       transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease 0.05s, margin-top 0.35s ease;
       opacity: 0;
       background: #0e1124;
@@ -315,6 +314,7 @@
       color: var(--accent);
     }
 
+    /* Standard Inputs (No Placeholder) */
     input[type="text"], input[type="password"], textarea {
       width: 100%;
       padding: 12px 16px;
@@ -334,23 +334,20 @@
       background: rgba(255, 255, 255, 0.12);
     }
 
-    /* File Input Styling */
     .file-input-wrapper {
       position: relative;
       overflow: hidden;
-      display: block;
+      display: inline-block;
       width: 100%;
     }
 
     .file-input-wrapper input[type=file] {
+      font-size: 100px;
       position: absolute;
-      top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0;
       opacity: 0;
       cursor: pointer;
-      z-index: 10;
     }
 
     .file-btn {
@@ -367,8 +364,6 @@
       font-size: 14px;
       font-weight: 700;
       transition: all 0.3s ease;
-      position: relative;
-      z-index: 1;
     }
 
     .file-btn:hover {
@@ -461,8 +456,7 @@
 
     .card-full-bg {
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -542,7 +536,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: block;
     }
 
     .save-btn { background: linear-gradient(135deg, #00b09b, #96c93d); box-shadow: 0 4px 18px rgba(0, 176, 155, 0.5); }
@@ -608,20 +601,19 @@
     <p id="lbl_loaderMsg" style="margin-top: 14px; color: var(--accent); font-weight: 700; font-size: 14px; text-shadow: 0 0 10px var(--accent-glow);">ခဏစောင့်ပါ</p>
   </div>
 
-  <!-- Share Modal -->
   <div id="shareModal">
     <div class="modal-content">
       <h3 id="lbl_modalTitle" style="color:var(--accent); margin-bottom:10px; text-shadow: 0 0 10px var(--accent-glow);">မျှဝေရန်</h3>
       <p id="lbl_modalSub" style="font-size:13px; font-weight:600; margin-bottom:16px; color:#cbd5e1;">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန်</p>
       <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 10px; font-size: 14px;" onclick="copyShareLink()">လင့်ခ် ကူးယူရန်</button>
-      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 10px; font-size: 14px;" onclick="downloadCardImage()">ကတ်ပုံရိပ် သိမ်းရန်</button>
+      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 10px; font-size: 14px;" onclick="downloadSingleQrFromModal()">QR ပုံ သိမ်းရန်</button>
       <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 14px;" onclick="closeShareModal()">ပိတ်မည်</button>
     </div>
   </div>
 
   <div class="app-card">
 
-    <!-- STEP 1: AUTH -->
+    <!-- STEP 1 -->
     <div class="step active" id="step1">
       <h2 id="lbl_authTitle">အကောင့်ဝင်ရန်</h2>
       <div class="form-group">
@@ -642,8 +634,8 @@
 
       <div id="loginFormSection">
         <div class="form-group">
-          <label id="lbl_loginName">သင်၏ ကုဒ်နံပါတ် သို့မဟုတ် နာမည်</label>
-          <input type="text" id="loginName" placeholder="VIP-001">
+          <label id="lbl_loginName">သင်၏ နာမည်</label>
+          <input type="text" id="loginName">
         </div>
         <div class="form-group">
           <label id="lbl_loginPass">လျှို့ဝှက်နံပါတ်</label>
@@ -658,8 +650,8 @@
           <input type="text" id="signupName">
         </div>
         <div class="form-group">
-          <label id="lbl_signupNum">ကုဒ်နံပါတ် (သို့မဟုတ် ဖုန်းနံပါတ်)</label>
-          <input type="text" id="signupNum" placeholder="09123456789">
+          <label id="lbl_signupNum">ကုဒ်နံပါတ်</label>
+          <input type="text" id="signupNum">
         </div>
         <div class="form-group">
           <label id="lbl_signupPass1">လျှို့ဝှက်နံပါတ်အသစ်</label>
@@ -673,7 +665,7 @@
       </div>
     </div>
 
-    <!-- STEP 2: PROFILE -->
+    <!-- STEP 2 -->
     <div class="step" id="step2">
       <h2 id="lbl_profileTitle">ကိုယ်ရေးအချက်အလက်</h2>
       <div class="profile-container">
@@ -690,12 +682,12 @@
         <div class="profile-id" id="displayProfileNum">ကုဒ်နံပါတ် -</div>
         <div class="dashboard-actions">
           <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)">မုန့်ဖိုးတောင်းရန်</button>
-          <button class="btn btn-secondary" id="lbl_logoutBtn" onclick="handleLogout()">အကောင့်ထွက်မည်</button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()">မှတ်တမ်းများ</button>
         </div>
       </div>
     </div>
 
-    <!-- STEP 3: CREATE CARD -->
+    <!-- STEP 3 -->
     <div class="step" id="step3">
       <h2 id="lbl_step3Title">မုန့်ဖိုးတောင်းမည့်အကြောင်းအရာ</h2>
       <div class="form-group">
@@ -739,7 +731,7 @@
       </div>
     </div>
 
-    <!-- STEP 4: PREVIEW & EXPORT -->
+    <!-- STEP 4 -->
     <div class="step" id="step4">
       <h2 id="lbl_step4Title">မုန့်ဖိုးတောင်းလွှာ</h2>
 
@@ -759,7 +751,7 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" id="btn_saveQr" onclick="downloadCardImage()">ကတ်ပုံရိပ်သိမ်းရန်</button>
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()">ကျူအာလ်သိမ်းရန်</button>
         <button class="btn share-btn" id="btn_share" onclick="openShareModal()">မျှဝေမည်</button>
       </div>
       <div class="btn-group" style="margin-top: 8px;">
@@ -770,22 +762,12 @@
   </div>
 
   <script>
-    // =========================================================================
-    // 1. SUPABASE INITIALIZATION (မိမိ၏ Supabase Key များကို ဒီနေရာတွင် ထည့်ပါ)
-    // =========================================================================
-    const SUPABASE_URL = "https://your-project-id.supabase.co"; 
-    const SUPABASE_ANON_KEY = "your-actual-anon-key";
-
-    // Supabase Client စတင်ခြင်း
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
     let currentUser = null;
     let currentAvatarUrl = "";
     let currentBgUrl = "";
     let currentQrUrl = "";
     let currentLang = 'my';
 
-    // Translations Dictionary
     const translations = {
       my: {
         introMsg: "ခဏစောင့်ပေးပါ",
@@ -794,18 +776,18 @@
         modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
         optLogin: "အကောင့်ရှိပြီးသား (Login)",
         optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
-        loginName: "သင်၏ ကုဒ်နံပါတ် သို့မဟုတ် နာမည်",
+        loginName: "သင်၏ နာမည်",
         loginPass: "လျှို့ဝှက်နံပါတ်",
         btnLogin: "အကောင့်ဝင်မည်",
         signupName: "သင်၏ နာမည်",
-        signupNum: "ကုဒ်နံပါတ် (သို့မဟုတ် ဖုန်းနံပါတ်)",
+        signupNum: "ကုဒ်နံပါတ်",
         signupPass1: "လျှို့ဝှက်နံပါတ်အသစ်",
         signupPass2: "လျှို့ဝှက်နံပါတ်ကို ထပ်မံရိုက်ပါ",
         btnSignup: "အကောင့်အသစ်ဖွင့်မည်",
         profileTitle: "ကိုယ်ရေးအချက်အလက်",
         changeAvatar: "ပရိုဖိုင်ပုံပြောင်းရန်",
         reqPocketBtn: "မုန့်ဖိုးတောင်းရန်",
-        logoutBtn: "အကောင့်ထွက်မည်",
+        historyBtn: "မှတ်တမ်းများ",
         step3Title: "မုန့်ဖိုးတောင်းမည့်အကြောင်းအရာ",
         dropdown: "အကြောင်းအရာရွေးချယ်ရန်",
         customReason: "ကိုယ်တိုင်ရေးသားရန်",
@@ -818,13 +800,13 @@
         btnGen: "ကတ်ဖန်တီးမည်",
         step4Title: "မုန့်ဖိုးတောင်းလွှာ",
         qrHint: "ငွေပေးချေရန် ကျူအာလ်ကိုစကန်ဖတ်ပါ",
-        saveQr: "ကတ်ပုံရိပ်သိမ်းရန်",
+        saveQr: "ကျူအာလ်သိမ်းရန်",
         share: "မျှဝေမည်",
         profileReturn: "ပရိုဖိုင်သို့ပြန်ရန်",
         modalTitle: "မျှဝေရန်",
         modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန်",
         copyLink: "လင့်ခ် ကူးယူရန်",
-        dlQrModal: "ကတ်ပုံရိပ် သိမ်းရန်",
+        dlQrModal: "QR ပုံ သိမ်းရန်",
         closeModal: "ပိတ်မည်",
         reasons: [
           { val: 'snack', text: 'မုန့်ဖိုးဝယ်စားဖို့ပါ' },
@@ -841,18 +823,18 @@
         modeSelect: "Select Mode",
         optLogin: "Login (Existing Account)",
         optSignup: "Sign Up (New Account)",
-        loginName: "Your Code or Name",
+        loginName: "Your Name",
         loginPass: "Password",
         btnLogin: "Login",
         signupName: "Your Name",
-        signupNum: "Code / Phone Number",
+        signupNum: "Number Code",
         signupPass1: "New Password",
         signupPass2: "Confirm Password",
         btnSignup: "Sign Up",
         profileTitle: "Profile",
         changeAvatar: "Change Profile Picture",
         reqPocketBtn: "Request Pocket Money",
-        logoutBtn: "Logout",
+        historyBtn: "History",
         step3Title: "Reason for Request",
         dropdown: "Select Reason",
         customReason: "Custom Reason",
@@ -865,13 +847,13 @@
         btnGen: "Generate Card",
         step4Title: "Pocket Money Card",
         qrHint: "Scan or Pay to Send Pocket Money",
-        saveQr: "Save Card Image",
+        saveQr: "Save QR",
         share: "Share",
         profileReturn: "Return to Profile",
         modalTitle: "Share",
         modalSub: "Send card and link",
         copyLink: "Copy Link",
-        dlQrModal: "Save Card Image",
+        dlQrModal: "Save QR",
         closeModal: "Close",
         reasons: [
           { val: 'snack', text: 'For Snacks' },
@@ -883,7 +865,6 @@
       }
     };
 
-    // UI Language Change Handler
     function changeLanguage(lang) {
       currentLang = lang;
       const t = translations[lang] || translations['my'];
@@ -913,7 +894,7 @@
       if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = t.profileTitle;
       if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = t.changeAvatar;
       if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = t.reqPocketBtn;
-      if(document.getElementById('lbl_logoutBtn')) document.getElementById('lbl_logoutBtn').innerText = t.logoutBtn;
+      if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = t.historyBtn;
       if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = t.step3Title;
       if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = t.dropdown;
       if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = t.customReason;
@@ -938,26 +919,21 @@
       populateReasons();
     }
 
-    // App Initialization
-    window.addEventListener('DOMContentLoaded', async () => {
+    window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const splash = document.getElementById('introSplash');
         if(splash) splash.classList.add('fade-out');
         populateReasons();
-      }, 500);
-
-      // Check Active Supabase Session
-      try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if(session) {
-          currentUser = session.user;
-          setupProfileUI();
-          goToStep(2);
-        }
-      } catch (err) {
-        console.warn("Supabase Config Error or Offline:", err);
-      }
+      }, 400);
     });
+
+    setTimeout(() => {
+      const splash = document.getElementById('introSplash');
+      if(splash && !splash.classList.contains('fade-out')) {
+        splash.classList.add('fade-out');
+        populateReasons();
+      }
+    }, 1000);
 
     function showLoader(show) {
       const loader = document.getElementById('stepLoader');
@@ -997,28 +973,21 @@
       const reasons = t.reasons;
       const container = document.getElementById('reasonCustomOptions');
       if(!container) return;
-
-      const currentVal = document.getElementById('reasonDropdown').value;
       container.innerHTML = '';
 
-      let found = false;
       reasons.forEach(r => {
         const div = document.createElement('div');
         div.className = 'custom-option';
         div.innerText = r.text;
         div.onclick = () => selectReasonOption(r.val, r.text);
         container.appendChild(div);
-        if(r.val === currentVal) {
-          document.getElementById('reasonTriggerText').innerText = r.text;
-          found = true;
-        }
       });
 
-      if(!found && reasons.length > 0) {
+      if(reasons.length > 0) {
         document.getElementById('reasonTriggerText').innerText = reasons[0].text;
         document.getElementById('reasonDropdown').value = reasons[0].val;
+        toggleCustomReason();
       }
-      toggleCustomReason();
     }
 
     function selectReasonOption(val, text) {
@@ -1053,42 +1022,24 @@
       }
     }
 
-    // Convert code/number to standard email format for Supabase Auth
-    function formatAuthEmail(inputCode) {
-      const clean = inputCode.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
-      return `${clean || 'user'}@app.local`;
-    }
-
-    // =========================================================================
-    // 2. SUPABASE AUTH & HANDLERS
-    // =========================================================================
-    async function handleLogin() {
-      const nameOrCode = document.getElementById('loginName').value.trim();
+    function handleLogin() {
+      const name = document.getElementById('loginName').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
-      if(!nameOrCode || !pass) {
-        alert(currentLang === 'en' ? 'Please enter code/name and password.' : 'ကျေးဇူးပြု၍ နာမည်/ကုဒ်နံပါတ် နှင့် လျှို့ဝှက်နံပါတ် ဖြည့်ပါ။');
+      if(!name || !pass) {
+        alert(currentLang === 'en' ? 'Please enter name and password.' : 'ကျေးဇူးပြု၍ နာမည်နှင့် လျှို့ဝှက်နံပါတ် ဖြည့်ပါ။');
         return;
       }
       showLoader(true);
-
-      const email = formatAuthEmail(nameOrCode);
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: pass
-      });
-
-      showLoader(false);
-
-      if (error) {
-        alert(currentLang === 'en' ? "Login Failed: " + error.message : "အကောင့်ဝင်ရောက်မှု မအောင်မြင်ပါ - " + error.message);
-      } else {
-        currentUser = data.user;
-        setupProfileUI();
+      setTimeout(() => {
+        showLoader(false);
+        currentUser = { name: name, num: 'VIP-001' };
+        document.getElementById('displayProfileName').innerText = name;
+        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + 'VIP-001';
         goToStep(2);
-      }
+      }, 500);
     }
 
-    async function handleSignup() {
+    function handleSignup() {
       const name = document.getElementById('signupName').value.trim();
       const num = document.getElementById('signupNum').value.trim();
       const p1 = document.getElementById('signupPass1').value.trim();
@@ -1102,57 +1053,23 @@
         alert(currentLang === 'en' ? 'Passwords do not match.' : 'လျှို့ဝှက်နံပါတ် နှစ်ခု မတူပါ။');
         return;
       }
-
       showLoader(true);
-
-      const email = formatAuthEmail(num);
-      const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: p1,
-        options: {
-          data: { full_name: name, code_num: num }
-        }
-      });
-
-      showLoader(false);
-
-      if (error) {
-        alert(currentLang === 'en' ? "Sign Up Failed: " + error.message : "အကောင့်ဖွင့်မှု မအောင်မြင်ပါ - " + error.message);
-      } else {
-        currentUser = data.user;
-        alert(currentLang === 'en' ? "Account created successfully!" : "အကောင့်အောင်မြင်စွာ ဖွင့်ပြီးပါပြီ။");
-        setupProfileUI();
+      setTimeout(() => {
+        showLoader(false);
+        currentUser = { name: name, num: num };
+        document.getElementById('displayProfileName').innerText = name;
+        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + num;
         goToStep(2);
-      }
+      }, 500);
     }
 
-    async function handleLogout() {
-      showLoader(true);
-      await supabaseClient.auth.signOut();
-      currentUser = null;
-      showLoader(false);
-      goToStep(1);
-    }
-
-    function setupProfileUI() {
-      if(!currentUser) return;
-      const meta = currentUser.user_metadata || {};
-      const name = meta.full_name || currentUser.email.split('@')[0];
-      const code = meta.code_num || 'VIP-' + currentUser.id.slice(0, 4).toUpperCase();
-
-      document.getElementById('displayProfileName').innerText = name;
-      document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ကုဒ်နံပါတ် - ') + code;
-    }
-
-    // =========================================================================
-    // 3. FILE & CARD PREVIEW
-    // =========================================================================
     function updateProfileAvatar(input) {
       if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
           currentAvatarUrl = e.target.result;
-          document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
+          const box = document.getElementById('profileAvatarBox');
+          box.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
         }
         reader.readAsDataURL(input.files[0]);
       }
@@ -1192,13 +1109,12 @@
       }
 
       const noteText = document.getElementById('customNote').value.trim() || (currentLang === 'en' ? 'Please send me some pocket money' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးထည့်ပေးပါရှင့်');
-      const senderName = currentUser ? (currentUser.user_metadata?.full_name || currentUser.email) : "Guest";
+      const senderName = currentUser ? currentUser.name : "Guest";
 
       document.getElementById('outSender').innerText = "From: " + senderName;
       document.getElementById('outReason').innerText = reasonText;
       document.getElementById('outNote').innerText = noteText;
 
-      // 4:3 Ratio Background Image render
       const bgImgEl = document.getElementById('cardBgImg');
       if(currentBgUrl) {
         bgImgEl.src = currentBgUrl;
@@ -1207,7 +1123,6 @@
         bgImgEl.style.display = 'none';
       }
 
-      // QR Code Image render
       const qrImgEl = document.getElementById('cardQrImg');
       const qrWrapper = document.getElementById('qrWrapper');
       if(currentQrUrl) {
@@ -1238,28 +1153,24 @@
       closeShareModal();
     }
 
-    /* Card Image Download using html2canvas */
-    function downloadCardImage() {
-      const card = document.getElementById('exportCard');
-      showLoader(true);
-      html2canvas(card, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null
-      }).then(canvas => {
-        showLoader(false);
-        const a = document.createElement('a');
-        a.href = canvas.toDataURL('image/png');
-        a.download = 'PocketMoney_Card.png';
-        a.click();
-        if(document.getElementById('shareModal').style.display === 'flex') {
-          closeShareModal();
-        }
-      }).catch(err => {
-        showLoader(false);
-        alert(currentLang === 'en' ? 'Failed to download card.' : 'ပုံထုတ်ယူ၍ မရပါ');
-      });
+    function downloadSingleQr() {
+      if(!currentQrUrl) {
+        alert(currentLang === 'en' ? 'No QR image available.' : 'ကျူအာလ်ပုံ မရှိသေးပါ။');
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = currentQrUrl;
+      a.download = 'PocketMoney_QR.png';
+      a.click();
+    }
+
+    function downloadSingleQrFromModal() {
+      downloadSingleQr();
+      closeShareModal();
+    }
+
+    function viewHistory() {
+      alert(currentLang === 'en' ? 'No history found.' : 'မှတ်တမ်းများ မရှိသေးပါ။');
     }
   </script>
 </body>
