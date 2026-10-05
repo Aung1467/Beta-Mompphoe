@@ -153,13 +153,29 @@ const i18n = {
   }
 };
 
-// 🌟 Injected CSS Styles (Fixes applied here)
+// 🌟 Injected CSS Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
-  /* Floating Animation Definition */
+  /* Floating Animation */
   @keyframes float1to1 {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-6px); }
+  }
+
+  /* 🌟 Faster Realistic Glow Animation (1.0s speed) */
+  @keyframes realisticFireGlow {
+    0% {
+      border-color: #ff3838;
+      box-shadow: 0 0 8px #ff4d4d, 0 0 16px #ff9f1a, inset 0 0 8px #ff3838;
+    }
+    50% {
+      border-color: #ff9f1a;
+      box-shadow: 0 0 14px #ffb142, 0 0 24px #ff5252, inset 0 0 12px #ff9f1a;
+    }
+    100% {
+      border-color: #ff3838;
+      box-shadow: 0 0 8px #ff4d4d, 0 0 16px #ff9f1a, inset 0 0 8px #ff3838;
+    }
   }
 
   /* Preview EQ Bars for Step 3 Music Player */
@@ -233,12 +249,12 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
   }
 
-  /* 🌟 #exportCard (4:3 Card Box) - တည်ငြိမ်ပြီး မလှုပ်တော့အောင် animation ပိတ်ထားပါသည် */
+  /* 🌟 #exportCard Box (4:3 Card) */
   #exportCard {
     position: relative !important;
     overflow: hidden !important;
     box-shadow: 0 0 20px rgba(0, 242, 254, 0.4), 0 10px 24px rgba(0, 0, 0, 0.8) !important;
-    animation: none !important; /* ❌ 4:3 Card မလှုပ်တော့ပါ */
+    animation: none !important;
     width: 100% !important;
     max-width: 320px !important;
     aspect-ratio: 3 / 4 !important;
@@ -252,7 +268,7 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
-  /* 🌟 Composition Area Background Image - 4:3 နေရာတစ်ခုလုံး အပြည့် fill / stretch ဖြစ်စေရန် */
+  /* 🌟 Composition Area Background Image */
   #cardBgImg {
     display: block !important;
     position: absolute !important;
@@ -261,22 +277,34 @@ cardStyleInjected.innerHTML = `
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: fill !important; /* 🌟 4:3 Composition Area အပြည့် Stretch ဖြစ်စေရန် */
+    object-fit: cover !important;
     z-index: 1 !important;
     pointer-events: none !important;
   }
 
-  /* Ensure Card Contents display over Background Image */
   #exportCard > *:not(#cardBgImg) {
     position: relative !important;
     z-index: 5 !important;
   }
 
-  #outSender {
+  /* 🌟 "From: Aung" Tag Fix: ညာဘက်အပေါ်ထောင့်တွင် ကျစ်ကျစ်လစ်လစ် ကပ်ပေးခြင်း */
+  #outSender, .sender-tag {
     position: absolute !important;
     top: 12px !important;
     right: 12px !important;
-    z-index: 6 !important;
+    left: auto !important;
+    width: auto !important;
+    max-width: fit-content !important;
+    display: inline-block !important;
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    background: var(--primary, #ff0055) !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 3px 8px rgba(255, 0, 85, 0.5) !important;
+    z-index: 10 !important;
+    white-space: nowrap !important;
   }
 
   #lbl_qrHint {
@@ -290,7 +318,7 @@ cardStyleInjected.innerHTML = `
     object-fit: cover !important;
   }
 
-  /* 🌟 1:1 QR Box - Floating Animation အလုပ်လုပ်ရန် */
+  /* 🌟 1:1 QR Box - Floating + မြန်ဆန်သော Glow Animation (1.0s) */
   .qr-img-wrapper, #qrWrapper {
     display: block !important;
     width: 100% !important;
@@ -303,7 +331,7 @@ cardStyleInjected.innerHTML = `
     background: rgba(255, 255, 255, 0.95) !important;
     z-index: 5 !important;
     position: relative !important;
-    animation: float1to1 3.5s ease-in-out infinite, realisticFireGlow 2.2s infinite ease-in-out !important; /* 🌟 1:1 Border ကိုသာ လှုပ်ရှားစေရန် */
+    animation: float1to1 3.5s ease-in-out infinite, realisticFireGlow 1.0s infinite ease-in-out !important;
   }
 
   .top-card-timer {
