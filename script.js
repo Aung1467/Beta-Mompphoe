@@ -34,7 +34,7 @@ const localMusicList = [
 // ဘာသာစကား စာသားများ (မြန်မာ / English)
 const i18n = {
   my: {
-    pageTitle: "မုန့်ဖိုးတောင်းလွှာ Web App",
+    pageTitle: "မုန့်ဖိုးတောင်းလွှာ",
     introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
     authTitle: "အကောင့်ဝင်ရန်",
@@ -66,8 +66,8 @@ const i18n = {
     customNotePlaceholder: "စာစီပါ...",
     musicLabel: "သီချင်း ရွေးချယ်ရန်",
     bgLabel: "နောက်ခံပုံ / Video (Max 15s)",
-    bgBtn: "📸/🎬 နောက်ခံပုံ သို့မဟုတ် Video ရွေးရန်",
-    qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
+    bgBtn: "📸/🎬 ပုံ သို့မဟုတ် Video",
+    qrLabel: "QR Code / အချက်အလက်ပုံ",
     qrBtn: "💳 QR Code / ပုံ ရွေးရန်",
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
