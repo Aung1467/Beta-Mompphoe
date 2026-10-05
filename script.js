@@ -20,7 +20,7 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 let emojiIntervalId = null;
-let cardTimerInterval = null; // 🌟 Timer Interval အတွက် ထည့်သွင်းခြင်း
+let cardTimerInterval = null;
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
@@ -68,7 +68,6 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "Scan or Pay to Send",
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -90,29 +89,25 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (Language Switcher နှင့် တန်းတန်းဖြစ်သော Top Timer ဒီဇိုင်း)
+// 🌟 CSS Styles Injection (Animation ဖျောက်ပြီး Black Shadow ထည့်သွင်းထားခြင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
-  @keyframes textGlowAnimation {
-    0% { text-shadow: 0 0 6px #ff2a6d, 0 0 12px #ff2a6d; color: #ff2a6d; }
-    33% { text-shadow: 0 0 6px #05d9e8, 0 0 12px #05d9e8; color: #05d9e8; }
-    66% { text-shadow: 0 0 6px #ffde59, 0 0 12px #ffde59; color: #ffde59; }
-    100% { text-shadow: 0 0 6px #ff2a6d, 0 0 12px #ff2a6d; color: #ff2a6d; }
-  }
   #outReason {
     margin-bottom: 18px !important;
     display: block !important;
-    animation: textGlowAnimation 3s infinite;
     font-weight: bold;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
   #outNote {
     margin-top: 10px !important;
     display: block !important;
-    animation: textGlowAnimation 3s infinite 1.5s;
     font-weight: bold;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 Language Switcher ၏ ဘယ်ဘက်တည့်တည့် ထိပ်ဆုံးတွင်ရှိမည့် 120 မိနစ် Timer Badge ဒီဇိုင်း */
+  /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
   .top-card-timer {
     position: absolute;
     top: 20px;
@@ -417,7 +412,6 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (loader) loader.classList.remove('show');
           showStep(4);
           
-          // 🌟 ၁၂၀ မိနစ် Timer စတင်ရန်
           startCardTimer(cardId);
           return;
         }
@@ -429,7 +423,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// 🌟 Render Card Data Function (ပုံများနှင့် အချက်အလက်များ သန့်ရှင်းစွာ ပေါ်လာစေရန်)
+// Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
@@ -486,13 +480,12 @@ function startCardTimer(cardId) {
   let expireTime = localStorage.getItem(storageKey);
 
   if (!expireTime) {
-    expireTime = Date.now() + 120 * 60 * 1000; // ၁၂၀ မိနစ် (၇၂၀၀ စက္ကန့်)
+    expireTime = Date.now() + 120 * 60 * 1000;
     localStorage.setItem(storageKey, expireTime);
   } else {
     expireTime = parseInt(expireTime, 10);
   }
 
-  // Timer Badge UI ဖန်တီးခြင်း (Language Switcher နှင့် တန်းတန်းထိပ်ဆုံးတွင် ထားရှိသည်)
   let timerEl = document.getElementById('topCardTimer');
   if (!timerEl) {
     timerEl = document.createElement('div');
@@ -510,7 +503,6 @@ function startCardTimer(cardId) {
       clearInterval(cardTimerInterval);
       if (timerEl) timerEl.innerText = "⏳ အချိန်ကုန်သွားပါပြီ";
       
-      // ကတ်ဒေတာများနှင့် Supabase မှပါ ဖျက်မည်
       await deleteCardDataAndClean(cardId, storageKey);
       return;
     }
@@ -878,7 +870,6 @@ async function generateAndSaveCard() {
       if (loader) loader.classList.remove('show');
       showStep(4);
 
-      // 🌟 ကတ်အသစ်ဖန်တီးပြီးသည်နှင့် Timer စတင်ရန်
       startCardTimer(generatedId);
 
       const cardPlayer = document.getElementById('cardAudioPlayer');
