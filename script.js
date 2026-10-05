@@ -89,7 +89,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (Pendulum Animation နှင့် Neon Heart Bubble Animation များ ထည့်သွင်းခြင်း)
+// 🌟 CSS Styles Injection (အပြင်ဘောင် ငြိမ်စေပြီး အထဲက ပုံကိုသာ Random smooth ဖြစ်ဖြစ် လှုပ်ရှားစေခြင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   #outReason {
@@ -107,16 +107,19 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 4:3 ပုံ/ကတ်ပြားအတွက် Pendulum (လွှဲသီးပုံစံ) Animation */
-  @keyframes pendulumSwing {
-    0% { transform: rotate(-2deg); }
-    50% { transform: rotate(2deg); }
-    100% { transform: rotate(-2deg); }
+  /* 🌟 အထဲရှိ 4:3 ပုံ (Background Image) ကိုသာ အလယ်ဗဟိုကို margin ယူ၍ Random smooth ဖြစ်ဖြစ် ညင်သာစွာ လှုပ်ရှားစေခြင်း */
+  @keyframes smoothRandomImageMove {
+    0% { transform: scale(1) translate(0px, 0px); }
+    20% { transform: scale(1.03) translate(-4px, 3px); }
+    40% { transform: scale(1.02) translate(3px, -3px); }
+    60% { transform: scale(1.04) translate(-2px, -4px); }
+    80% { transform: scale(1.01) translate(4px, 2px); }
+    100% { transform: scale(1) translate(0px, 0px); }
   }
 
-  #exportCard {
-    transform-origin: top center;
-    animation: pendulumSwing 4s infinite ease-in-out !important;
+  #cardBgImg {
+    transform-origin: center center !important;
+    animation: smoothRandomImageMove 7s infinite ease-in-out !important;
   }
 
   /* 🌟 Neon Heart Bubble Animation styles */
@@ -460,7 +463,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Render Card Data Function (Scan or Pay to Send စာသားမပါဝင်တော့ပါ)
+// Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
