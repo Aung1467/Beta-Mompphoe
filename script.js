@@ -94,59 +94,78 @@ const i18n = {
   }
 };
 
-// 🌟 Clean & Sharp Equalizer Styles (No Glow, Flat & Blocky)
+// 🌟 Reality & Fast Twitchy Equalizer Styles (ဘားအရွယ်အစား အနည်းငယ်ကြီးပြီး အမြန်နှုန်းမြှင့်ထားသည်)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: 4px;
-    height: 38px;
+    gap: 5px;
+    height: 48px;
     position: relative;
   }
 
   .preview-eq-bars.playing .p-bar {
-    animation: eqCleanBounce infinite ease-in-out alternate;
+    /* တက်ကြွပြီး ခပ်မြန်မြန် လှုပ်ရှားစေရန် Animation များကို သီးသန့်ချိတ်ဆက်ထားသည် */
   }
 
   .p-bar {
-    width: 6px;
-    height: 18px;
-    border-radius: 0px; /* ဒေါင့်ဆန်ဆန် (sharp/rectangular) ပုံစံ */
+    width: 8px; /* ဘားအရွယ်အစား အနည်းငယ် ပိုကြီးစေသည် */
+    height: 24px; /* အစအဆုံး အနည်းငယ် ပိုရှည်စေသည် */
+    border-radius: 1px;
   }
 
-  /* Glow လုံးဝမပါဘဲ သန့်ရှင်းသော အရောင်စုံ ბလောက်များ */
   .p-bar:nth-child(1) {
     background: #00bcd4;
-    animation-duration: 0.35s;
-    animation-delay: 0.05s;
+    animation: eqReal1 0.22s infinite ease-in-out alternate;
   }
   .p-bar:nth-child(2) {
     background: #3f51b5;
-    animation-duration: 0.25s;
-    animation-delay: 0.2s;
+    animation: eqReal2 0.16s infinite ease-in-out alternate;
   }
   .p-bar:nth-child(3) {
     background: #e91e63;
-    animation-duration: 0.45s;
-    animation-delay: 0.1s;
+    animation: eqReal3 0.26s infinite ease-in-out alternate;
   }
   .p-bar:nth-child(4) {
     background: #ffeb3b;
-    animation-duration: 0.3s;
-    animation-delay: 0.15s;
+    animation: eqReal4 0.19s infinite ease-in-out alternate;
   }
   .p-bar:nth-child(5) {
     background: #4caf50;
-    animation-duration: 0.4s;
-    animation-delay: 0.25s;
+    animation: eqReal5 0.23s infinite ease-in-out alternate;
   }
 
-  @keyframes eqCleanBounce {
+  @keyframes eqReal1 {
     0% { transform: scaleY(0.3); }
-    50% { transform: scaleY(1.2); }
-    100% { transform: scaleY(1.7); }
+    40% { transform: scaleY(1.2); }
+    70% { transform: scaleY(0.6); }
+    100% { transform: scaleY(1.5); }
+  }
+  @keyframes eqReal2 {
+    0% { transform: scaleY(0.8); }
+    30% { transform: scaleY(0.4); }
+    60% { transform: scaleY(1.4); }
+    100% { transform: scaleY(0.5); }
+  }
+  @keyframes eqReal3 {
+    0% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1.6); }
+    80% { transform: scaleY(0.7); }
+    100% { transform: scaleY(1.1); }
+  }
+  @keyframes eqReal4 {
+    0% { transform: scaleY(1.1); }
+    35% { transform: scaleY(0.3); }
+    65% { transform: scaleY(1.3); }
+    100% { transform: scaleY(0.6); }
+  }
+  @keyframes eqReal5 {
+    0% { transform: scaleY(0.5); }
+    45% { transform: scaleY(1.4); }
+    75% { transform: scaleY(0.8); }
+    100% { transform: scaleY(1.2); }
   }
 
   #outReason {
