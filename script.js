@@ -102,7 +102,7 @@ const i18n = {
   }
 };
 
-// 🌟 Custom Combined Animation & Bottom-Left Settings Panel Styles
+// 🌟 Custom Combined Animation & Top-Left Header Settings Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -226,12 +226,19 @@ cardStyleInjected.innerHTML = `
     display: block !important;
   }
 
-  /* Bottom-Left Settings Button & Panel */
+  /* Card Header Row (Same row as From: Aung) */
+  .card-top-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 20;
+  }
+
+  /* Setting Button & Panel */
   .card-settings-btn {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    z-index: 30;
     background: rgba(15, 23, 42, 0.9);
     border: 1.5px solid rgba(0, 242, 254, 0.7);
     color: #00f2fe;
@@ -244,22 +251,24 @@ cardStyleInjected.innerHTML = `
     cursor: pointer;
     font-size: 15px;
     box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    z-index: 25;
   }
 
   .card-settings-panel {
     position: absolute;
-    bottom: 52px;
-    left: 12px;
-    z-index: 35;
-    background: rgba(15, 23, 42, 0.96);
-    border: 1px solid rgba(0, 242, 254, 0.4);
+    top: 42px;
+    left: 0;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.98);
+    border: 1px solid rgba(0, 242, 254, 0.5);
     border-radius: 12px;
     padding: 12px;
-    width: 210px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    width: 220px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
     display: none;
     flex-direction: column;
     gap: 8px;
+    pointer-events: auto !important;
   }
 
   .card-settings-panel.show {
@@ -282,6 +291,22 @@ cardStyleInjected.innerHTML = `
     width: 100%;
     accent-color: #00f2fe;
     cursor: pointer;
+    pointer-events: auto !important;
+  }
+
+  .setting-save-btn {
+    background: #00f2fe;
+    color: #090d16;
+    border: none;
+    padding: 6px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 11.5px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 4px;
+    pointer-events: auto !important;
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
   }
 
   .top-card-timer {
@@ -332,12 +357,34 @@ cardStyleInjected.innerHTML = `
 `;
 document.head.appendChild(cardStyleInjected);
 
-// Inject Settings Button and Panel into Step 4 Container dynamically if not present
+// Inject Settings Button and Panel into Step 4 Container dynamically next to From: Aung
 function ensureCardSettingsUI() {
   const step4El = document.getElementById('step4');
   if (!step4El) return;
 
-  if (!document.getElementById('cardSettingsBtn')) {
+  // Locate From: Aung element (`outSender`)
+  const outSender = document.getElementById('outSender');
+  if (!outSender) return;
+
+  // Check if header row container already wraps them
+  let headerRow = document.getElementById('cardTopHeaderRow');
+  if (!headerRow) {
+    headerRow = document.createElement('div');
+    headerRow.id = 'cardTopHeaderRow';
+    headerRow.className = 'card-top-header-row';
+    
+    // Insert headerRow right before outSender parent or wrap outSender
+    outSender.parentNode.insertBefore(headerRow, outSender);
+  }
+
+  // Ensure Setting Button & Panel container on the left
+  let leftWrapper = document.getElementById('settingLeftWrapper');
+  if (!leftWrapper) {
+    leftWrapper = document.createElement('div');
+    leftWrapper.id = 'settingLeftWrapper';
+    leftWrapper.style.position = 'relative';
+    headerRow.appendChild(leftWrapper);
+
     const btn = document.createElement('button');
     btn.id = 'cardSettingsBtn';
     btn.className = 'card-settings-btn';
@@ -348,10 +395,8 @@ function ensureCardSettingsUI() {
       const panel = document.getElementById('cardSettingsPanel');
       if (panel) panel.classList.toggle('show');
     };
-    step4El.appendChild(btn);
-  }
+    leftWrapper.appendChild(btn);
 
-  if (!document.getElementById('cardSettingsPanel')) {
     const panel = document.createElement('div');
     panel.id = 'cardSettingsPanel';
     panel.className = 'card-settings-panel';
@@ -372,8 +417,14 @@ function ensureCardSettingsUI() {
         <label>ပုံအရွယ်အစား (Scale): <span id="lblValScale">1.06</span></label>
         <input type="range" id="animScaleRange" min="1.0" max="1.3" step="0.02" value="1.06" oninput="updateAnimSetting('scale', this.value)">
       </div>
+      <button class="setting-save-btn" onclick="saveAnimSettingsPanel(event)">သိမ်းမည် (Save)</button>
     `;
-    step4El.appendChild(panel);
+    leftWrapper.appendChild(panel);
+  }
+
+  // Move outSender into headerRow on the right
+  if (outSender.parentNode !== headerRow) {
+    headerRow.appendChild(outSender);
   }
 }
 
@@ -388,6 +439,13 @@ function updateAnimSetting(key, val) {
   applyAnimConfigToDOM();
 }
 
+function saveAnimSettingsPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('cardSettingsPanel');
+  if (panel) panel.classList.remove('show');
+  alert('✅ Animation ဆက်တင်များကို သိမ်းဆည်းပြီးပါပြီ!');
+}
+
 function applyAnimConfigToDOM() {
   const bgEl = document.getElementById('cardBgImg');
   if (bgEl) {
@@ -400,14 +458,18 @@ function applyAnimConfigToDOM() {
 
 function setSettingsInteractive(isInteractive) {
   const panelInputs = document.querySelectorAll('#cardSettingsPanel input');
+  const saveBtn = document.querySelector('.setting-save-btn');
   panelInputs.forEach(inp => {
     inp.disabled = !isInteractive;
   });
+  if (saveBtn) {
+    saveBtn.style.display = isInteractive ? 'block' : 'none';
+  }
 }
 
 // Close settings panel when clicking outside
 window.addEventListener('click', function(e) {
-  if (!e.target.closest('#cardSettingsBtn') && !e.target.closest('#cardSettingsPanel')) {
+  if (!e.target.closest('#settingLeftWrapper')) {
     const panel = document.getElementById('cardSettingsPanel');
     if (panel) panel.classList.remove('show');
   }
@@ -672,8 +734,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 function renderCardData(data) {
   if (!data) return;
 
+  ensureCardSettingsUI();
+
   let rawNote = data.note || '';
-  // Check if animation config is embedded in note
   if (rawNote.includes('|||ANIM_CONFIG:')) {
     try {
       const parts = rawNote.split('|||ANIM_CONFIG:');
@@ -681,7 +744,6 @@ function renderCardData(data) {
       const cfg = JSON.parse(parts[1].split('|||')[0]);
       currentAnimConfig = cfg;
       
-      // Update UI sliders if present
       if (document.getElementById('animSpeedRange')) {
         document.getElementById('animSpeedRange').value = cfg.speed;
         document.getElementById('lblValSpeed').innerText = `${cfg.speed}s`;
