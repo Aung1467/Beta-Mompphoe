@@ -23,14 +23,6 @@ let cardTimerInterval = null;
 let historyTimerInterval = null; 
 let isSharedLinkVisitor = false; 
 
-// Animation Configuration State
-let currentAnimConfig = {
-  speed: 4.0,
-  height: 10,
-  rot: 2.0,
-  scale: 1.06
-};
-
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
   { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
@@ -80,7 +72,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "", 
+    qrHint: "", // ဖျောက်ထားလိုက်ပါပြီ
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -102,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Custom Combined Animation & Top-Left Header Settings Styles
+// 🌟 Metallic CD Disc & Optimized Background / Faster Animation Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -142,10 +134,12 @@ cardStyleInjected.innerHTML = `
     z-index: 1;
   }
 
+  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း */
   .p-bar {
     display: none !important;
   }
 
+  /* သီချင်းစဖွင့်သောအခါ CD ပြား လည်ပတ်ခြင်း Animation */
   .preview-eq-bars.playing {
     animation: spinCdDisc 1.8s linear infinite !important;
   }
@@ -170,25 +164,16 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Combined Animation: Vertical translation + Center rotation swing */
-  @keyframes customCombinedAnim {
-    0% {
-      transform: scale(var(--anim-scale, 1.06)) translateY(0px) rotate(0deg);
-    }
-    25% {
-      transform: scale(var(--anim-scale, 1.06)) translateY(calc(var(--anim-height, 10px) * -1)) rotate(var(--anim-rot, 2deg));
-    }
-    50% {
-      transform: scale(var(--anim-scale, 1.06)) translateY(0px) rotate(0deg);
-    }
-    75% {
-      transform: scale(var(--anim-scale, 1.06)) translateY(var(--anim-height, 10px)) rotate(calc(var(--anim-rot, 2deg) * -1));
-    }
-    100% {
-      transform: scale(var(--anim-scale, 1.06)) translateY(0px) rotate(0deg);
-    }
+  /* Swing Animation ကို ပိုမိုမြန်ဆန်စေရန် (8s မှ 4.5s သို့ ပြောင်းထားသည်) */
+  @keyframes smoothSwingAnimation {
+    0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
+    25% { transform: scale(1.06) rotate(-1.5deg) translate(-3px, 2px); }
+    50% { transform: scale(1.06) rotate(1deg) translate(2px, 3px); }
+    75% { transform: scale(1.06) rotate(-1deg) translate(-2px, -2px); }
+    100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
   }
 
+  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း (3:4 အပါအဝင် အချိုးအစားအမျိုးမျိုးအတွက်) */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
@@ -196,7 +181,7 @@ cardStyleInjected.innerHTML = `
 
   #cardBgImg {
     transform-origin: center center !important;
-    animation: customCombinedAnim var(--anim-speed, 4s) infinite ease-in-out !important;
+    animation: smoothSwingAnimation 4.5s infinite ease-in-out !important;
     display: block !important;
     position: absolute !important;
     top: 0 !important;
@@ -207,11 +192,13 @@ cardStyleInjected.innerHTML = `
     z-index: 0 !important;
   }
 
+  /* ကတ်ပေါ်ရှိ အချက်အလက်များ နောက်ခံပုံအပေါ်မှ ပေါ်စေရန် */
   #step4 > *:not(#cardBgImg) {
     position: relative !important;
     z-index: 2 !important;
   }
 
+  /* ငွေလွဲရန် QR ညွှန်ကြားချက် စာသားကို လုံးဝဖျောက်ရန် */
   #lbl_qrHint {
     display: none !important;
   }
@@ -224,89 +211,6 @@ cardStyleInjected.innerHTML = `
 
   #qrWrapper {
     display: block !important;
-  }
-
-  /* Card Header Row (Same row as From: Aung) */
-  .card-top-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 15px;
-    position: relative;
-    z-index: 20;
-  }
-
-  /* Setting Button & Panel */
-  .card-settings-btn {
-    background: rgba(15, 23, 42, 0.9);
-    border: 1.5px solid rgba(0, 242, 254, 0.7);
-    color: #00f2fe;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 15px;
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
-    z-index: 25;
-  }
-
-  .card-settings-panel {
-    position: absolute;
-    top: 42px;
-    left: 0;
-    z-index: 50;
-    background: rgba(15, 23, 42, 0.98);
-    border: 1px solid rgba(0, 242, 254, 0.5);
-    border-radius: 12px;
-    padding: 12px;
-    width: 220px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-    display: none;
-    flex-direction: column;
-    gap: 8px;
-    pointer-events: auto !important;
-  }
-
-  .card-settings-panel.show {
-    display: flex;
-  }
-
-  .setting-row {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .setting-row label {
-    font-size: 10.5px;
-    color: #cbd5e1;
-    font-weight: 600;
-  }
-
-  .setting-row input[type="range"] {
-    width: 100%;
-    accent-color: #00f2fe;
-    cursor: pointer;
-    pointer-events: auto !important;
-  }
-
-  .setting-save-btn {
-    background: #00f2fe;
-    color: #090d16;
-    border: none;
-    padding: 6px;
-    border-radius: 6px;
-    font-weight: bold;
-    font-size: 11.5px;
-    cursor: pointer;
-    text-align: center;
-    margin-top: 4px;
-    pointer-events: auto !important;
-    box-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
   }
 
   .top-card-timer {
@@ -356,124 +260,6 @@ cardStyleInjected.innerHTML = `
   }
 `;
 document.head.appendChild(cardStyleInjected);
-
-// Inject Settings Button and Panel into Step 4 Container dynamically next to From: Aung
-function ensureCardSettingsUI() {
-  const step4El = document.getElementById('step4');
-  if (!step4El) return;
-
-  // Locate From: Aung element (`outSender`)
-  const outSender = document.getElementById('outSender');
-  if (!outSender) return;
-
-  // Check if header row container already wraps them
-  let headerRow = document.getElementById('cardTopHeaderRow');
-  if (!headerRow) {
-    headerRow = document.createElement('div');
-    headerRow.id = 'cardTopHeaderRow';
-    headerRow.className = 'card-top-header-row';
-    
-    // Insert headerRow right before outSender parent or wrap outSender
-    outSender.parentNode.insertBefore(headerRow, outSender);
-  }
-
-  // Ensure Setting Button & Panel container on the left
-  let leftWrapper = document.getElementById('settingLeftWrapper');
-  if (!leftWrapper) {
-    leftWrapper = document.createElement('div');
-    leftWrapper.id = 'settingLeftWrapper';
-    leftWrapper.style.position = 'relative';
-    headerRow.appendChild(leftWrapper);
-
-    const btn = document.createElement('button');
-    btn.id = 'cardSettingsBtn';
-    btn.className = 'card-settings-btn';
-    btn.innerHTML = '⚙️';
-    btn.title = 'Animation Settings';
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      const panel = document.getElementById('cardSettingsPanel');
-      if (panel) panel.classList.toggle('show');
-    };
-    leftWrapper.appendChild(btn);
-
-    const panel = document.createElement('div');
-    panel.id = 'cardSettingsPanel';
-    panel.className = 'card-settings-panel';
-    panel.innerHTML = `
-      <div class="setting-row">
-        <label>အမြန်နှုန်း (Speed): <span id="lblValSpeed">4.0s</span></label>
-        <input type="range" id="animSpeedRange" min="1" max="10" step="0.5" value="4.0" oninput="updateAnimSetting('speed', this.value)">
-      </div>
-      <div class="setting-row">
-        <label>အမြင့် (Height): <span id="lblValHeight">10px</span></label>
-        <input type="range" id="animHeightRange" min="2" max="30" step="1" value="10" oninput="updateAnimSetting('height', this.value)">
-      </div>
-      <div class="setting-row">
-        <label>ဘေးခါနှုန်း (Rotation): <span id="lblValRot">2.0°</span></label>
-        <input type="range" id="animRotRange" min="0.5" max="8" step="0.5" value="2.0" oninput="updateAnimSetting('rot', this.value)">
-      </div>
-      <div class="setting-row">
-        <label>ပုံအရွယ်အစား (Scale): <span id="lblValScale">1.06</span></label>
-        <input type="range" id="animScaleRange" min="1.0" max="1.3" step="0.02" value="1.06" oninput="updateAnimSetting('scale', this.value)">
-      </div>
-      <button class="setting-save-btn" onclick="saveAnimSettingsPanel(event)">သိမ်းမည် (Save)</button>
-    `;
-    leftWrapper.appendChild(panel);
-  }
-
-  // Move outSender into headerRow on the right
-  if (outSender.parentNode !== headerRow) {
-    headerRow.appendChild(outSender);
-  }
-}
-
-function updateAnimSetting(key, val) {
-  currentAnimConfig[key] = parseFloat(val);
-  
-  if (key === 'speed') document.getElementById('lblValSpeed').innerText = `${val}s`;
-  if (key === 'height') document.getElementById('lblValHeight').innerText = `${val}px`;
-  if (key === 'rot') document.getElementById('lblValRot').innerText = `${val}°`;
-  if (key === 'scale') document.getElementById('lblValScale').innerText = val;
-
-  applyAnimConfigToDOM();
-}
-
-function saveAnimSettingsPanel(e) {
-  e.stopPropagation();
-  const panel = document.getElementById('cardSettingsPanel');
-  if (panel) panel.classList.remove('show');
-  alert('✅ Animation ဆက်တင်များကို သိမ်းဆည်းပြီးပါပြီ!');
-}
-
-function applyAnimConfigToDOM() {
-  const bgEl = document.getElementById('cardBgImg');
-  if (bgEl) {
-    bgEl.style.setProperty('--anim-speed', `${currentAnimConfig.speed}s`);
-    bgEl.style.setProperty('--anim-height', `${currentAnimConfig.height}px`);
-    bgEl.style.setProperty('--anim-rot', `${currentAnimConfig.rot}deg`);
-    bgEl.style.setProperty('--anim-scale', currentAnimConfig.scale);
-  }
-}
-
-function setSettingsInteractive(isInteractive) {
-  const panelInputs = document.querySelectorAll('#cardSettingsPanel input');
-  const saveBtn = document.querySelector('.setting-save-btn');
-  panelInputs.forEach(inp => {
-    inp.disabled = !isInteractive;
-  });
-  if (saveBtn) {
-    saveBtn.style.display = isInteractive ? 'block' : 'none';
-  }
-}
-
-// Close settings panel when clicking outside
-window.addEventListener('click', function(e) {
-  if (!e.target.closest('#settingLeftWrapper')) {
-    const panel = document.getElementById('cardSettingsPanel');
-    if (panel) panel.classList.remove('show');
-  }
-});
 
 // Text Localization Function
 function updateTexts() {
@@ -676,7 +462,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateTexts();
   populateReasonDropdown('my');
   populateMusicDropdown();
-  ensureCardSettingsUI();
 
   setTimeout(() => {
     const splash = document.getElementById('introSplash');
@@ -718,8 +503,6 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (loader) loader.classList.remove('show');
           showStep(4);
           
-          // Shared visitor: disable settings adjustment
-          setSettingsInteractive(false);
           startCardTimer(cardId);
           return;
         }
@@ -734,38 +517,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 function renderCardData(data) {
   if (!data) return;
 
-  ensureCardSettingsUI();
-
-  let rawNote = data.note || '';
-  if (rawNote.includes('|||ANIM_CONFIG:')) {
-    try {
-      const parts = rawNote.split('|||ANIM_CONFIG:');
-      rawNote = parts[0];
-      const cfg = JSON.parse(parts[1].split('|||')[0]);
-      currentAnimConfig = cfg;
-      
-      if (document.getElementById('animSpeedRange')) {
-        document.getElementById('animSpeedRange').value = cfg.speed;
-        document.getElementById('lblValSpeed').innerText = `${cfg.speed}s`;
-      }
-      if (document.getElementById('animHeightRange')) {
-        document.getElementById('animHeightRange').value = cfg.height;
-        document.getElementById('lblValHeight').innerText = `${cfg.height}px`;
-      }
-      if (document.getElementById('animRotRange')) {
-        document.getElementById('animRotRange').value = cfg.rot;
-        document.getElementById('lblValRot').innerText = `${cfg.rot}°`;
-      }
-      if (document.getElementById('animScaleRange')) {
-        document.getElementById('animScaleRange').value = cfg.scale;
-        document.getElementById('lblValScale').innerText = cfg.scale;
-      }
-    } catch(e) { console.error('Parse anim config error:', e); }
-  }
-
   document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
   document.getElementById('outReason').innerText = data.reason || '';
-  document.getElementById('outNote').innerText = rawNote;
+  document.getElementById('outNote').innerText = data.note || '';
 
   const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
   if (bgImgSrc) {
@@ -783,8 +537,6 @@ function renderCardData(data) {
       bgEl.style.zIndex = '0';
     }
   }
-
-  applyAnimConfigToDOM();
 
   const qrImgSrc = data.qrImage || data.qr_image || savedQrImage;
   if (qrImgSrc) {
@@ -1220,7 +972,6 @@ async function viewCardFromHistory(cardId) {
         });
         if (loader) loader.classList.remove('show');
         showStep(4);
-        setSettingsInteractive(false);
         startCardTimer(cardId);
         return;
       } else {
@@ -1268,9 +1019,6 @@ function goToStep(stepNumber) {
   setTimeout(() => {
     loader.classList.remove('show');
     showStep(stepNumber);
-    if (stepNumber === 4 && !isSharedLinkVisitor) {
-      setSettingsInteractive(true);
-    }
   }, 800);
 }
 
@@ -1411,13 +1159,10 @@ async function generateAndSaveCard() {
       savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
     }
 
-    // Pack animation configuration into note safely
-    const finalNoteWithConfig = customNote + '|||ANIM_CONFIG:' + JSON.stringify(currentAnimConfig) + '|||';
-
     const payload = {
       sender: currentUser ? currentUser.name : 'Aung',
       reason: finalReason,
-      note: finalNoteWithConfig,
+      note: customNote,
       bg_image: savedBgImage,
       qr_image: savedQrImage,
       music_url: savedMusicUrl
@@ -1463,9 +1208,6 @@ async function generateAndSaveCard() {
 
       if (loader) loader.classList.remove('show');
       showStep(4);
-      
-      // Once saved by creator, disable interactive settings change on preview card
-      setSettingsInteractive(false);
 
       startCardTimer(generatedId);
 
