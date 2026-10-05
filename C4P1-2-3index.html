@@ -1,0 +1,914 @@
+<!-- =========================================================
+     C4 SYSTEM: WITH PHOTO COUNTER (1/10) & SMALL ICON PREVIEWS
+     ========================================================= -->
+
+<style>
+    /* COMMON SCREEN BASE */
+    .c4-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #2e1065 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        z-index: 996;
+        padding: 20px;
+        color: white;
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    /* SENDER BADGE */
+    .c4-badge {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        border: none;
+        border-radius: 8px;
+        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        z-index: 10;
+        animation: c4FadeIn 1s ease forwards;
+    }
+
+    /* HEADER SECTIONS */
+    .c4-header {
+        width: 100%;
+        max-width: 380px;
+        text-align: center;
+        margin-top: 48px;
+        margin-bottom: 18px;
+        z-index: 2;
+        opacity: 0;
+        animation: c4ElementFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+    }
+
+    .c4-title { font-size: 20px; font-weight: 700; color: #ffffff; margin: 0 0 6px 0; }
+    .c4-subtitle { font-size: 12px; color: #cbd5e1; margin: 0; }
+
+    /* FORM CARD (C4P1) */
+    .c4p1-card {
+        width: 100%;
+        max-width: 380px;
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(16px);
+        border: none;
+        border-radius: 12px;
+        padding: 20px 18px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        opacity: 0;
+        animation: c4ElementFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+        margin-bottom: 20px;
+        z-index: 2;
+    }
+
+    .card-type-selector { display: flex; gap: 8px; width: 100%; }
+
+    .type-btn {
+        flex: 1;
+        padding: 11px 8px;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 8px;
+        color: #cbd5e1;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .type-btn.selected {
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+    .form-label { font-size: 12px; color: #a5b4fc; font-weight: 500; }
+    .input-sublabel { font-size: 11px; color: #cbd5e1; margin-bottom: 4px; display: block; }
+
+    /* PHOTO COUNTER BADGE */
+    .photo-count-badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: #a855f7;
+        background: rgba(168, 85, 247, 0.2);
+        padding: 2px 8px;
+        border-radius: 12px;
+        border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .form-input-box, .form-textarea {
+        width: 100%;
+        padding: 11px 13px;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 13px;
+        outline: none;
+        box-sizing: border-box;
+        transition: background 0.2s ease;
+        font-family: inherit;
+    }
+
+    .datetime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+    .form-input-box::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+    .location-gps-wrap { display: flex; gap: 6px; margin-bottom: 10px; }
+    .btn-location-gps {
+        background: rgba(168, 85, 247, 0.25);
+        border: none;
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 0 10px;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    .form-textarea { height: 75px; resize: none; }
+    .wish-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+    .chip-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 6px;
+        color: #cbd5e1;
+        font-size: 11px;
+        padding: 6px 10px;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    /* SHAPE SELECTOR GRID */
+    .shape-selector-grid {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .shape-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 8px;
+        color: #cbd5e1;
+        font-size: 11px;
+        padding: 8px 10px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .shape-btn.selected {
+        background: rgba(168, 85, 247, 0.45);
+        color: #ffffff;
+        box-shadow: 0 0 0 2px #a855f7;
+    }
+
+    .btn-upload-photo {
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 8px;
+        padding: 11px;
+        color: #cbd5e1;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    /* SMALL ICON PREVIEW GRID IN P1 */
+    .photo-preview-grid { 
+        display: flex; 
+        gap: 8px; 
+        overflow-x: auto; 
+        padding-top: 6px; 
+        padding-bottom: 4px; 
+    }
+
+    .photo-thumb-item { 
+        position: relative; 
+        width: 42px; 
+        height: 42px; 
+        flex-shrink: 0; 
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+
+    .photo-thumb-img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+
+    .photo-thumb-remove {
+        position: absolute; 
+        top: -4px; 
+        right: -4px; 
+        background: #ef4444;
+        color: #ffffff; 
+        border: none; 
+        border-radius: 50%; 
+        width: 16px; 
+        height: 16px; 
+        font-size: 9px; 
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+
+    .theme-options, .sticker-options { display: flex; gap: 10px; }
+    .theme-circle { width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer; }
+    .theme-circle.selected { transform: scale(1.12); box-shadow: 0 0 0 2px #ffffff; }
+
+    .sticker-chip { background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 8px 12px; font-size: 16px; cursor: pointer; }
+    .sticker-chip.selected { background: rgba(168, 85, 247, 0.4); }
+
+    .c4-action-box {
+        width: 100%;
+        max-width: 380px;
+        margin-top: auto;
+        padding-bottom: 10px;
+        opacity: 0;
+        z-index: 2;
+        animation: c4ElementFade 1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+    }
+
+    .btn-c4-main {
+        width: 100%; padding: 13px; background: linear-gradient(135deg, #6366f1, #a855f7);
+        color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-c4-sub {
+        width: 100%; padding: 11px; background: rgba(255, 255, 255, 0.08); color: #cbd5e1;
+        border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 8px;
+    }
+
+    /* AUTO CUT SHAPE CLASSES */
+    .shape-circle { border-radius: 50% !important; }
+    .shape-circle .photo-thumb-img { border-radius: 50% !important; }
+
+    .shape-square { border-radius: 8px !important; }
+    .shape-square .photo-thumb-img { border-radius: 8px !important; }
+
+    .shape-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%) !important; }
+    .shape-diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%) !important; }
+
+    /* FLOATING OVERLAY ANIMATION LAYER (C4P2) */
+    .c4p2-floating-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .floating-icon-item {
+        position: absolute;
+        bottom: -60px;
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
+        mix-blend-mode: overlay;
+        filter: brightness(1.3) contrast(1.1);
+        opacity: 0.75;
+        animation: floatUpAnim 8s linear infinite;
+    }
+
+    @keyframes floatUpAnim {
+        0% { transform: translateY(0) scale(0.7) rotate(0deg); opacity: 0; }
+        15% { opacity: 0.75; }
+        85% { opacity: 0.75; }
+        100% { transform: translateY(-110vh) scale(1.15) rotate(30deg); opacity: 0; }
+    }
+
+    /* DISPLAY CARD STYLES */
+    .c4-display-card {
+        width: 100%;
+        max-width: 380px;
+        background: linear-gradient(135deg, #6366f1, #a855f7);
+        border: none;
+        border-radius: 12px;
+        padding: 24px 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        box-sizing: border-box;
+        overflow: hidden;
+        margin-bottom: 24px;
+        z-index: 2;
+        opacity: 0;
+        animation: c4CardEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+    }
+
+    .card-stickers-line { font-size: 24px; margin-bottom: 8px; letter-spacing: 4px; }
+    .card-type-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.85); margin-bottom: 4px; }
+    .card-person-name { font-size: 22px; font-weight: 800; color: #ffffff; margin: 0 0 14px 0; }
+
+    .card-msg-box {
+        font-size: 13.5px; color: #ffffff; line-height: 1.6; margin: 0 0 16px 0;
+        background: rgba(0, 0, 0, 0.2); padding: 12px 16px; border-radius: 8px;
+        width: 100%; box-sizing: border-box; word-break: break-word;
+    }
+
+    .c4p2-gallery { display: flex; gap: 10px; overflow-x: auto; width: 100%; padding-bottom: 8px; margin-bottom: 14px; }
+    .c4p2-gallery-img { width: 85px; height: 85px; object-fit: cover; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+
+    .c4p3-info-grid {
+        width: 100%; background: rgba(0, 0, 0, 0.22); border-radius: 8px; padding: 12px;
+        box-sizing: border-box; text-align: left; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; font-size: 12.5px;
+    }
+    .c4p3-info-item { display: flex; align-items: flex-start; gap: 8px; color: rgba(255, 255, 255, 0.95); }
+
+    .c4p3-qr-wrap { width: 130px; height: 130px; background: #ffffff; border-radius: 8px; padding: 6px; box-sizing: border-box; margin-bottom: 14px; }
+    .c4p3-qr-img { width: 100%; height: 100%; object-fit: contain; }
+
+    .card-sender-text { font-size: 12px; color: rgba(255, 255, 255, 0.9); font-weight: 600; }
+
+    @keyframes c4CardEntrance {
+        from { opacity: 0; transform: translateY(24px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes c4ElementFade {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes c4FadeIn {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<!-- =========================================================
+     C4P1 SCREEN: FORM INPUT
+     ========================================================= -->
+<div id="c4p1-screen" class="c4-screen">
+    <div class="c4-badge">
+        <span id="c4p1-badge-icon">🎂</span>
+        <span id="c4p1-badge-name">Guest</span>
+    </div>
+
+    <div class="c4-header">
+        <h3 class="c4-title">မွေးနေ့ ကတ် ပြင်ဆင်ပါ 🎂</h3>
+        <p class="c4-subtitle">အမျိုးအစားနှင့် အချက်အလက်များ ဖြည့်စွက်ပေးပါ</p>
+    </div>
+
+    <div class="c4p1-card">
+        <!-- 1. CARD TYPE SELECTOR -->
+        <div class="form-group">
+            <label class="form-label">ပြုလုပ်လိုသည့် အမျိုးအစား ရွေးပါ</label>
+            <div class="card-type-selector">
+                <button type="button" class="type-btn selected" id="btn-type-wish" onclick="switchC4Type('wish', this)">
+                    🎂 မွေးနေ့ဆုတောင်း
+                </button>
+                <button type="button" class="type-btn" id="btn-type-invite" onclick="switchC4Type('invitation', this)">
+                    ✉️ မွေးနေ့ဖိတ်ကြားလွှာ
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. RECEIVER NAME -->
+        <div class="form-group">
+            <label class="form-label" id="lbl-c4-receiver">မွေးနေ့ရှင် နာမည် (Receiver Name)</label>
+            <input type="text" class="form-input-box" id="c4-input-receiver" placeholder="ဥပမာ - Su Su">
+        </div>
+
+        <!-- 3. MESSAGE -->
+        <div class="form-group">
+            <label class="form-label" id="lbl-c4-msg">ဆုတောင်း စာသား (Wish Message)</label>
+            <textarea class="form-textarea" id="c4-input-msg" placeholder="မွေးနေ့မှစ၍ နောင်နှစ်ပေါင်းများစွာတိုင် ပျော်ရွှင်ပါစေ..."></textarea>
+            <div class="wish-chips">
+                <button type="button" class="chip-btn" onclick="applyQuickText(1)">🎉 ပျော်ရွှင်ပါစေ</button>
+                <button type="button" class="chip-btn" onclick="applyQuickText(2)">✨ လိုရာဆန္ဒပြည့်ပါစေ</button>
+                <button type="button" class="chip-btn" onclick="applyQuickText(3)">💖 ကျန်းမာပါစေ</button>
+            </div>
+        </div>
+
+        <!-- 4. INVITATION EXTRA FIELDS -->
+        <div class="form-group" id="c4-invite-fields" style="display: none;">
+            <label class="form-label">ပွဲကျင်းပမည့် အချက်အလက်များ</label>
+            <div class="datetime-grid">
+                <div>
+                    <span class="input-sublabel">📅 ရက်စွဲ</span>
+                    <input type="date" class="form-input-box" id="c4-input-date">
+                </div>
+                <div>
+                    <span class="input-sublabel">⏰ အချိန်</span>
+                    <input type="time" class="form-input-box" id="c4-input-time">
+                </div>
+            </div>
+            <div>
+                <span class="input-sublabel">📍 ကျင်းပမည့်နေရာ</span>
+                <div class="location-gps-wrap">
+                    <input type="text" class="form-input-box" id="c4-input-location" placeholder="ဥပမာ - Junction City (Yangon)">
+                    <button type="button" class="btn-location-gps" id="btn-c4-gps" onclick="getDeviceLocation()">🎯 နေရာယူမည်</button>
+                </div>
+            </div>
+            <div>
+                <span class="input-sublabel">🏢 တိုက် / အခန်း / လမ်း (Building Details)</span>
+                <input type="text" class="form-input-box" id="c4-input-building" placeholder="ဥပမာ - တိုက် (A)၊ အခန်း (၄၀၂)၊ ၁၅ လမ်း">
+            </div>
+        </div>
+
+        <!-- 5. PHOTO SHAPE SELECTOR (WISH ONLY) -->
+        <div class="form-group" id="shape-selector-group">
+            <label class="form-label">ဓာတ်ပုံ / Icon ပုံသဏ္ဌာန် ရွေးပါ</label>
+            <div class="shape-selector-grid">
+                <button type="button" class="shape-btn selected" onclick="selectC4Shape('circle', this)">🔴 အဝိုင်း</button>
+                <button type="button" class="shape-btn" onclick="selectC4Shape('square', this)">⬛ စတုရန်း</button>
+                <button type="button" class="shape-btn" onclick="selectC4Shape('star', this)">⭐ ကြယ်ပုံ</button>
+                <button type="button" class="shape-btn" onclick="selectC4Shape('diamond', this)">🔷 စိန်ပုံ</button>
+            </div>
+        </div>
+
+        <!-- 6. DYNAMIC PHOTO UPLOAD WITH COUNTER & SMALL ICON PREVIEWS -->
+        <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                <label class="form-label" id="lbl-c4-photo">မွေးနေ့ရှင် ဓာတ်ပုံများ</label>
+                <!-- QUANTITY COUNTER BADGE (e.g., 0/10, 3/10) -->
+                <span id="c4-photo-counter" class="photo-count-badge">0/10</span>
+            </div>
+
+            <button type="button" class="btn-upload-photo" id="btn-c4-upload-label" onclick="triggerPhotoUpload()">
+                📸 ဓာတ်ပုံ ရွေးချယ်ရန် နှိပ်ပါ
+            </button>
+            <input type="file" id="c4-photo-file-input" accept="image/*" multiple style="display: none;" onchange="handlePhotoSelect(event)">
+            
+            <!-- SMALL ICON THUMBNAIL PREVIEW GRID -->
+            <div class="photo-preview-grid" id="c4-photo-preview-grid" style="display: none;"></div>
+        </div>
+
+        <!-- 7. THEME PICKER -->
+        <div class="form-group">
+            <label class="form-label">ကတ်ဒီဇိုင်း Theme</label>
+            <div class="theme-options">
+                <div class="theme-circle selected" style="background: linear-gradient(135deg, #6366f1, #a855f7);" onclick="selectC4Theme('purple', 'linear-gradient(135deg, #6366f1, #a855f7)', this)"></div>
+                <div class="theme-circle" style="background: linear-gradient(135deg, #f43f5e, #fb7185);" onclick="selectC4Theme('rose', 'linear-gradient(135deg, #f43f5e, #fb7185)', this)"></div>
+                <div class="theme-circle" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8);" onclick="selectC4Theme('ocean', 'linear-gradient(135deg, #0ea5e9, #38bdf8)', this)"></div>
+                <div class="theme-circle" style="background: linear-gradient(135deg, #eab308, #d97706);" onclick="selectC4Theme('gold', 'linear-gradient(135deg, #eab308, #d97706)', this)"></div>
+            </div>
+        </div>
+
+        <!-- 8. STICKERS -->
+        <div class="form-group">
+            <label class="form-label">အလှဆင် စတစ်ကာများ</label>
+            <div class="sticker-options">
+                <span class="sticker-chip selected" onclick="toggleC4Sticker('🎂', this)">🎂</span>
+                <span class="sticker-chip" onclick="toggleC4Sticker('🎈', this)">🎈</span>
+                <span class="sticker-chip" onclick="toggleC4Sticker('🎁', this)">🎁</span>
+                <span class="sticker-chip" onclick="toggleC4Sticker('👑', this)">👑</span>
+                <span class="sticker-chip selected" onclick="toggleC4Sticker('✨', this)">✨</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="c4-action-box">
+        <button type="button" class="btn-c4-main" onclick="submitC4Form()">
+            ဆက်သွားမည် ➔
+        </button>
+    </div>
+</div>
+
+<!-- =========================================================
+     C4P2 SCREEN: BIRTHDAY WISH DISPLAY
+     ========================================================= -->
+<div id="c4p2-screen" class="c4-screen" style="display: none;">
+    <div class="c4p2-floating-bg" id="c4p2-floating-bg"></div>
+
+    <div class="c4-badge">
+        <span class="c4-badge-icon">🎂</span>
+        <span class="c4-badge-name-disp">Guest</span>
+    </div>
+
+    <div class="c4-header">
+        <h3 class="c4-title">မွေးနေ့ဆုတောင်းလွှာ ရရှိပါပြီ ဧ</h3>
+        <p class="c4-subtitle">သင့်ဆုတောင်းလွှာ ဖန်တီးမှု ပြီးမြောက်ပါပြီ</p>
+    </div>
+
+    <div class="c4-display-card" id="c4p2-card-bg">
+        <div class="card-stickers-line" id="c4p2-stickers-disp">🎂 ✨</div>
+        <span class="card-type-tag">HAPPY BIRTHDAY</span>
+        <h2 class="card-person-name" id="c4p2-receiver-disp">မွေးနေ့ရှင်</h2>
+
+        <div class="c4p2-gallery" id="c4p2-gallery-box" style="display: none;"></div>
+
+        <p class="card-msg-box" id="c4p2-msg-disp">ပျော်ရွှင်စရာ မွေးနေ့လေး ဖြစ်ပါစေ။</p>
+        <span class="card-sender-text" id="c4p2-sender-disp">From: Guest</span>
+    </div>
+
+    <div class="c4-action-box">
+        <button type="button" class="btn-c4-main" onclick="copyCardLink()">🔗 ကတ်လင့်ခ် ကူးယူမည် (Copy Link)</button>
+        <button type="button" class="btn-c4-sub" onclick="backToEditor()">✏️ ပြန်လည်ပြင်ဆင်မည်</button>
+    </div>
+</div>
+
+<!-- =========================================================
+     C4P3 SCREEN: BIRTHDAY INVITATION DISPLAY
+     ========================================================= -->
+<div id="c4p3-screen" class="c4-screen" style="display: none;">
+    <div class="c4-badge">
+        <span class="c4-badge-icon">✉️</span>
+        <span class="c4-badge-name-disp">Guest</span>
+    </div>
+
+    <div class="c4-header">
+        <h3 class="c4-title">မွေးနေ့ဖိတ်ကြားလွှာ ရရှိပါပြီ ✉️</h3>
+        <p class="c4-subtitle">သင့်ဖိတ်ကြားလွှာ ဖန်တီးမှု ပြီးမြောက်ပါပြီ</p>
+    </div>
+
+    <div class="c4-display-card" id="c4p3-card-bg">
+        <div class="card-stickers-line" id="c4p3-stickers-disp">🎂 ✨</div>
+        <span class="card-type-tag">BIRTHDAY INVITATION</span>
+        <h2 class="card-person-name" id="c4p3-receiver-disp">ဧည့်သည်တော်များ</h2>
+
+        <p class="card-msg-box" id="c4p3-msg-disp">ကျွန်ုပ်၏ မွေးနေ့ပွဲသို့ ကြွရောက်ပါရန် ဖိတ်ကြားအပ်ပါသည်။</p>
+
+        <div class="c4p3-info-grid">
+            <div class="c4p3-info-item">📅 <span id="c4p3-date-disp">ရက်စွဲ - မသတ်မှတ်ရသေးပါ</span></div>
+            <div class="c4p3-info-item">⏰ <span id="c4p3-time-disp">အချိန် - မသတ်မှတ်ရသေးပါ</span></div>
+            <div class="c4p3-info-item">📍 <span id="c4p3-loc-disp">နေရာ - မသတ်မှတ်ရသေးပါ</span></div>
+            <div class="c4p3-info-item" id="c4p3-building-wrap" style="display: none;">🏢 <span id="c4p3-building-disp"></span></div>
+        </div>
+
+        <div class="c4p3-qr-wrap" id="c4p3-qr-container" style="display: none;">
+            <img id="c4p3-qr-img" class="c4p3-qr-img" alt="Payment QR Code">
+        </div>
+
+        <span class="card-sender-text" id="c4p3-sender-disp">Invited By: Guest</span>
+    </div>
+
+    <div class="c4-action-box">
+        <button type="button" class="btn-c4-main" onclick="copyCardLink()">🔗 ဖိတ်ကြားလွှာ လင့်ခ် ကူးယူမည်</button>
+        <button type="button" class="btn-c4-sub" onclick="backToEditor()">✏️ ပြန်လည်ပြင်ဆင်မည်</button>
+    </div>
+</div>
+
+<!-- =========================================================
+     JAVASCRIPT CONTROLLER FOR C4 (P1, P2, P3)
+     ========================================================= -->
+<script>
+    let c4Data = {
+        cardType: 'wish',
+        receiverName: '',
+        message: '',
+        eventDate: '',
+        eventTime: '',
+        eventLocation: '',
+        eventBuilding: '',
+        photoShape: 'circle',
+        photoUrls: [],
+        gradientStyle: 'linear-gradient(135deg, #6366f1, #a855f7)',
+        stickers: ['🎂', '✨']
+    };
+
+    function showTemplateEditorScreen() {
+        const p1 = document.getElementById('c4p1-screen');
+        if (p1) p1.style.display = 'flex';
+
+        if (typeof userProfile !== 'undefined') {
+            document.querySelectorAll('.c4-badge-name-disp, #c4p1-badge-name').forEach(el => {
+                if (userProfile.name) el.innerText = userProfile.name;
+            });
+        }
+    }
+
+    function switchC4Type(type, btnElem) {
+        c4Data.cardType = type;
+        c4Data.photoUrls = [];
+
+        document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('selected'));
+        btnElem.classList.add('selected');
+
+        const lblReceiver = document.getElementById('lbl-c4-receiver');
+        const lblMsg = document.getElementById('lbl-c4-msg');
+        const msgInput = document.getElementById('c4-input-msg');
+        const inviteFields = document.getElementById('c4-invite-fields');
+        const shapeGroup = document.getElementById('shape-selector-group');
+        const photoLabel = document.getElementById('lbl-c4-photo');
+        const fileInput = document.getElementById('c4-photo-file-input');
+
+        if (type === 'invitation') {
+            lblReceiver.innerText = 'ဖိတ်ကြားခံရသူ / မွေးနေ့ရှင် နာမည်';
+            lblMsg.innerText = 'ဖိတ်ကြားလွှာ စာသား (Invitation Message)';
+            msgInput.placeholder = 'ကျရောက်လုပြီဖြစ်သော ကျွန်ုပ်၏ မွေးနေ့ပွဲသို့ ချစ်ခင်ရပါသော မိတ်ဆွေများအား ကြွရောက်ပါရန် ဖိတ်ကြားအပ်ပါသည်။';
+            inviteFields.style.display = 'flex';
+            shapeGroup.style.display = 'none';
+            photoLabel.innerText = 'လက်ဖွဲ့လက်ခံရန် QR Code / ငွေလက်ခံမည့် အချက်အလက်ပုံ (၁ ပုံ)';
+            fileInput.removeAttribute('multiple');
+        } else {
+            lblReceiver.innerText = 'မွေးနေ့ရှင် နာမည် (Receiver Name)';
+            lblMsg.innerText = 'ဆုတောင်း စာသား (Wish Message)';
+            msgInput.placeholder = 'မွေးနေ့မှစ၍ နောင်နှစ်ပေါင်းများစွာတိုင် ပျော်ရွှင်ပါစေ...';
+            inviteFields.style.display = 'none';
+            shapeGroup.style.display = 'flex';
+            photoLabel.innerText = 'မွေးနေ့ရှင် ဓာတ်ပုံများ';
+            fileInput.setAttribute('multiple', 'multiple');
+        }
+        updatePhotoUI();
+    }
+
+    function selectC4Shape(shapeName, btnElem) {
+        c4Data.photoShape = shapeName;
+        document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('selected'));
+        btnElem.classList.add('selected');
+        updatePhotoUI();
+    }
+
+    function getDeviceLocation() {
+        const locInput = document.getElementById('c4-input-location');
+        const gpsBtn = document.getElementById('btn-c4-gps');
+
+        if (navigator.geolocation) {
+            gpsBtn.innerText = '⏳ ရှာနေပါသည်...';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            locInput.value = data.display_name || `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+                            gpsBtn.innerText = '✅ ရရှိပြီး';
+                        })
+                        .catch(() => {
+                            locInput.value = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
+                            gpsBtn.innerText = '✅ ရရှိပြီး';
+                        });
+                },
+                () => {
+                    alert('Device Location ရယူ၍ မရပါခင်ဗျာ။');
+                    gpsBtn.innerText = '🎯 နေရာယူမည်';
+                }
+            );
+        }
+    }
+
+    function triggerPhotoUpload() {
+        document.getElementById('c4-photo-file-input').click();
+    }
+
+    function handlePhotoSelect(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+
+        if (c4Data.cardType === 'invitation') {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                c4Data.photoUrls = [e.target.result];
+                updatePhotoUI();
+            };
+            reader.readAsDataURL(files[0]);
+        } else {
+            // Max 10 photos limit
+            const currentCount = c4Data.photoUrls.length;
+            const availableSlots = 10 - currentCount;
+            if (availableSlots <= 0) {
+                alert('ဓာတ်ပုံ ၁၀ ပုံအထိသာ ထည့်သွင်းနိုင်ပါသည်!');
+                return;
+            }
+
+            const filesToLoad = files.slice(0, availableSlots);
+            let loaded = 0;
+
+            filesToLoad.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    c4Data.photoUrls.push(e.target.result);
+                    loaded++;
+                    if (loaded === filesToLoad.length) updatePhotoUI();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    /* UPDATE UI FOR SMALL ICON PREVIEWS AND COUNTER BADGE */
+    function updatePhotoUI() {
+        const grid = document.getElementById('c4-photo-preview-grid');
+        const label = document.getElementById('btn-c4-upload-label');
+        const counter = document.getElementById('c4-photo-counter');
+        const count = c4Data.photoUrls.length;
+        const shapeClass = 'shape-' + c4Data.photoShape;
+
+        if (c4Data.cardType === 'invitation') {
+            counter.style.display = 'none';
+            if (count > 0) {
+                label.innerText = '✅ QR Code ပုံ တင်ပြီးပါပြီ';
+                grid.style.display = 'flex';
+                grid.innerHTML = `<div class="photo-thumb-item shape-square"><img src="${c4Data.photoUrls[0]}" class="photo-thumb-img"><button type="button" class="photo-thumb-remove" onclick="removePhoto(0)">✕</button></div>`;
+            } else {
+                label.innerText = '💳 QR Code ပုံ ရွေးချယ်ရန် နှိပ်ပါ (Max 1)';
+                grid.style.display = 'none';
+                grid.innerHTML = '';
+            }
+        } else {
+            // Wish mode photo counter (e.g. 1/10, 3/10)
+            counter.style.display = 'inline-block';
+            counter.innerText = `${count}/10`;
+
+            if (count > 0) {
+                label.innerText = count >= 10 ? '🔒 ဓာတ်ပုံ ပြည့်သွားပါပြီ (Max 10)' : '📸 ဓာတ်ပုံ ထပ်မံထည့်ရန် နှိပ်ပါ';
+                grid.style.display = 'flex';
+                grid.innerHTML = '';
+
+                c4Data.photoUrls.forEach((url, i) => {
+                    const thumb = document.createElement('div');
+                    thumb.className = `photo-thumb-item ${shapeClass}`;
+                    thumb.innerHTML = `
+                        <img src="${url}" class="photo-thumb-img">
+                        <button type="button" class="photo-thumb-remove" onclick="removePhoto(${i})">✕</button>
+                    `;
+                    grid.appendChild(thumb);
+                });
+            } else {
+                label.innerText = '📸 ဓာတ်ပုံ ရွေးချယ်ရန် နှိပ်ပါ';
+                grid.style.display = 'none';
+                grid.innerHTML = '';
+            }
+        }
+    }
+
+    function removePhoto(idx) {
+        c4Data.photoUrls.splice(idx, 1);
+        updatePhotoUI();
+    }
+
+    function applyQuickText(num) {
+        const msgArea = document.getElementById('c4-input-msg');
+        if (c4Data.cardType === 'wish') {
+            if (num === 1) msgArea.value = "ပျော်ရွှင်စရာ မွေးနေ့လေးဖြစ်ပါစေကြောင်း ဆုမွန်ကောင်းတောင်းပေးလိုက်ပါတယ်။ 🎉";
+            else if (num === 2) msgArea.value = "မွေးနေ့မှစ၍ လိုရာဆန္ဒဟူသမျှ အကုန်ပြည့်ဝပြီး အောင်မြင်ပါစေ။ ✨";
+            else if (num === 3) msgArea.value = "စိတ်၏ချမ်းသာခြင်း၊ ကိုယ်၏ကျန်းမာခြင်းတို့ဖြင့် အစဉ်အမြဲ ပြည့်စုံပါစေ။ 💖";
+        } else {
+            if (num === 1) msgArea.value = "ကျွန်ုပ်၏ မွေးနေ့ မင်္ဂလာပွဲသို့ မိတ်ဆွေများအား အလှူတော်မင်္ဂလာ ပါဝင်ဆင်နွှဲရန် ဖိတ်ကြားအပ်ပါသည်။ 🎉";
+            else if (num === 2) msgArea.value = "မွေးနေ့ မွေးနံ မင်္ဂလာအခါသမယသို့ ကြွရောက်ပေးပါရန် လေးစားစွာ ဖိတ်ကြားအပ်ပါသည်။ ✨";
+            else if (num === 3) msgArea.value = "ချစ်ခင်ရပါသော မိတ်ဆွေများအားလုံး မွေးနေ့ပါတီပွဲသို့ မပျက်မကွက် ကြွရောက်ပေးပါရန် ဖိတ်ခေါ်ပါသည်။ 💖";
+        }
+    }
+
+    function selectC4Theme(name, grad, elem) {
+        c4Data.gradientStyle = grad;
+        document.querySelectorAll('.theme-circle').forEach(el => el.classList.remove('selected'));
+        elem.classList.add('selected');
+    }
+
+    function toggleC4Sticker(emoji, elem) {
+        const idx = c4Data.stickers.indexOf(emoji);
+        if (idx > -1) {
+            c4Data.stickers.splice(idx, 1);
+            elem.classList.remove('selected');
+        } else {
+            c4Data.stickers.push(emoji);
+            elem.classList.add('selected');
+        }
+    }
+
+    /* RENDER FLOATING OVERLAY ANIMATION IN C4P2 */
+    function renderFloatingBackground() {
+        const bgContainer = document.getElementById('c4p2-floating-bg');
+        bgContainer.innerHTML = '';
+
+        const shapeClass = 'shape-' + c4Data.photoShape;
+        const totalItems = 10;
+
+        for (let i = 0; i < totalItems; i++) {
+            const item = document.createElement('img');
+            
+            if (c4Data.photoUrls.length > 0) {
+                const photoIdx = i % c4Data.photoUrls.length;
+                item.src = c4Data.photoUrls[photoIdx];
+            } else {
+                item.src = 'https://cdn-icons-png.flaticon.com/512/3159/3159449.png';
+            }
+
+            item.className = `floating-icon-item ${shapeClass}`;
+
+            const leftPos = Math.random() * 85 + 5;
+            const animDuration = 6 + Math.random() * 6;
+            const animDelay = Math.random() * 5;
+
+            item.style.left = leftPos + '%';
+            item.style.animationDuration = animDuration + 's';
+            item.style.animationDelay = animDelay + 's';
+
+            bgContainer.appendChild(item);
+        }
+    }
+
+    /* SUBMIT FORM & SWITCH SCREENS */
+    function submitC4Form() {
+        const receiver = document.getElementById('c4-input-receiver').value.trim();
+        const msg = document.getElementById('c4-input-msg').value.trim();
+
+        if (!receiver) {
+            alert('ကျေးဇူးပြု၍ နာမည် ရိုက်ထည့်ပေးပါ!');
+            return;
+        }
+
+        c4Data.receiverName = receiver;
+        c4Data.message = msg || (c4Data.cardType === 'wish' ? "ပျော်ရွှင်စရာ မွေးနေ့လေးဖြစ်ပါစေ။" : "မွေးနေ့ပွဲသို့ ကြွရောက်ပါရန် ဖိတ်ကြားအပ်ပါသည်။");
+        c4Data.eventDate = document.getElementById('c4-input-date').value;
+        c4Data.eventTime = document.getElementById('c4-input-time').value;
+        c4Data.eventLocation = document.getElementById('c4-input-location').value.trim();
+        c4Data.eventBuilding = document.getElementById('c4-input-building').value.trim();
+
+        const senderName = (typeof userProfile !== 'undefined' && userProfile.name) ? userProfile.name : 'Guest';
+        const shapeClass = 'shape-' + c4Data.photoShape;
+
+        document.getElementById('c4p1-screen').style.display = 'none';
+
+        if (c4Data.cardType === 'wish') {
+            document.getElementById('c4p2-card-bg').style.background = c4Data.gradientStyle;
+            document.getElementById('c4p2-stickers-disp').innerText = c4Data.stickers.join(' ');
+            document.getElementById('c4p2-receiver-disp').innerText = c4Data.receiverName;
+            document.getElementById('c4p2-msg-disp').innerText = c4Data.message;
+            document.getElementById('c4p2-sender-disp').innerText = 'From: ' + senderName;
+
+            const gallery = document.getElementById('c4p2-gallery-box');
+            if (c4Data.photoUrls.length > 0) {
+                gallery.style.display = 'flex';
+                gallery.innerHTML = '';
+                c4Data.photoUrls.forEach(url => {
+                    gallery.innerHTML += `<img src="${url}" class="c4p2-gallery-img ${shapeClass}">`;
+                });
+            } else {
+                gallery.style.display = 'none';
+            }
+
+            renderFloatingBackground();
+            document.getElementById('c4p2-screen').style.display = 'flex';
+        } else {
+            document.getElementById('c4p3-card-bg').style.background = c4Data.gradientStyle;
+            document.getElementById('c4p3-stickers-disp').innerText = c4Data.stickers.join(' ');
+            document.getElementById('c4p3-receiver-disp').innerText = c4Data.receiverName;
+            document.getElementById('c4p3-msg-disp').innerText = c4Data.message;
+            document.getElementById('c4p3-sender-disp').innerText = 'Invited By: ' + senderName;
+
+            document.getElementById('c4p3-date-disp').innerText = 'ရက်စွဲ - ' + (c4Data.eventDate || 'မသတ်မှတ်ရသေးပါ');
+            document.getElementById('c4p3-time-disp').innerText = 'အချိန် - ' + (c4Data.eventTime || 'မသတ်မှတ်ရသေးပါ');
+            document.getElementById('c4p3-loc-disp').innerText = 'နေရာ - ' + (c4Data.eventLocation || 'မသတ်မှတ်ရသေးပါ');
+
+            const bldWrap = document.getElementById('c4p3-building-wrap');
+            if (c4Data.eventBuilding) {
+                bldWrap.style.display = 'flex';
+                document.getElementById('c4p3-building-disp').innerText = c4Data.eventBuilding;
+            } else {
+                bldWrap.style.display = 'none';
+            }
+
+            const qrContainer = document.getElementById('c4p3-qr-container');
+            if (c4Data.photoUrls.length > 0) {
+                qrContainer.style.display = 'block';
+                document.getElementById('c4p3-qr-img').src = c4Data.photoUrls[0];
+            } else {
+                qrContainer.style.display = 'none';
+            }
+
+            document.getElementById('c4p3-screen').style.display = 'flex';
+        }
+    }
+
+    function backToEditor() {
+        document.getElementById('c4p2-screen').style.display = 'none';
+        document.getElementById('c4p3-screen').style.display = 'none';
+        document.getElementById('c4p1-screen').style.display = 'flex';
+    }
+
+    function copyCardLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('မွေးနေ့လင့်ခ် ကူးယူပြီးပါပြီ! ✨');
+        });
+    }
+</script>
