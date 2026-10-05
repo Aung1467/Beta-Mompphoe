@@ -20,8 +20,8 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 let cardTimerInterval = null;
-let historyTimerInterval = null; // 🌟 မှတ်တမ်းများအတွက် Timer Interval
-let isSharedLinkVisitor = false; // 🌟 Card Link ကနေ ဝင်လာသူ ဟုတ်မဟုတ် မှတ်သားရန်
+let historyTimerInterval = null; 
+let isSharedLinkVisitor = false; 
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
@@ -34,6 +34,7 @@ const localMusicList = [
 // မြန်မာဘာသာစာသားများ သီးသန့်
 const i18n = {
   my: {
+    pageTitle: "မုန့်ဖိုးတောင်းလွှာ Web App",
     introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
     authTitle: "အကောင့်ဝင်ရန်",
@@ -55,6 +56,8 @@ const i18n = {
     changeNickBtn: "နာမည်ပြောင်းရန်",
     reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
     historyBtn: "မှတ်တမ်းများ",
+    historyTitle: "မှတ်တမ်းများ",
+    backHistoryBtn: "⬅ နောက်သို့",
     step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
     dropdownLabel: "အကြောင်းအရာ ရွေးချယ်ရန်",
     customReasonLabel: "ကိုယ်တိုင်စာရေးရန်",
@@ -69,6 +72,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
+    qrHint: "👇 ငွေလွှဲရန် QR ကိုနှိပ်ပါ သို့မဟုတ် စကင်ဖတ်ပါ 👇",
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -108,7 +112,6 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 4:3 ပုံ (Background Image) Swing Animation */
   @keyframes smoothSwingAnimation {
     0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
     25% { transform: scale(1.06) rotate(-1.2deg) translate(-4px, 3px); }
@@ -157,25 +160,10 @@ cardStyleInjected.innerHTML = `
     gap: 6px;
   }
 
-  .player-controls-row > div:nth-child(2) img,
-  .media-center-btn img,
-  .anime-circle-container img {
-    transform: scale(1.45);
-    transform-origin: center;
-    border-radius: 50%;
-  }
-
   @keyframes eqGlowWave {
     0% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8); }
     70% { box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0); }
     100% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0); }
-  }
-
-  .player-controls-row > div:nth-child(2),
-  .media-center-btn,
-  .anime-circle-container {
-    animation: eqGlowWave 2s infinite ease-in-out;
-    border-radius: 50%;
   }
 
   .custom-preview-player {
@@ -211,6 +199,7 @@ document.head.appendChild(cardStyleInjected);
 // Text Localization Function
 function updateTexts() {
   const d = i18n.my;
+  if(document.getElementById('page_title')) document.getElementById('page_title').innerText = d.pageTitle;
   if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
   if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
   if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
@@ -255,6 +244,8 @@ function updateTexts() {
 
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
+  if(document.getElementById('lbl_historyTitle')) document.getElementById('lbl_historyTitle').innerText = d.historyTitle;
+  if(document.getElementById('btn_backHistory')) document.getElementById('btn_backHistory').innerText = d.backHistoryBtn;
 
   if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
   if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
@@ -276,6 +267,7 @@ function updateTexts() {
   if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
 
   if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
+  if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = d.qrHint;
   if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
   if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
   if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
@@ -704,7 +696,6 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (ဘောင်ကျဉ်း၍ မီနူးနှင့် တန်းတူညီညာစေပြီး Dropdown အောက်သို့ ဆင်းစေရန်)
 function renderHistoryList() {
   if (historyTimerInterval) clearInterval(historyTimerInterval);
 
@@ -723,19 +714,18 @@ function renderHistoryList() {
     row.style.display = 'flex';
     row.style.flexDirection = 'column';
     row.style.position = 'relative';
-    row.style.padding = '8px 12px'; // 🌟 ဘောင်ကို ပိုကျဉ်းစေပြီး ကျစ်လစ်စေရန်
+    row.style.padding = '8px 12px';
     row.style.marginBottom = '6px';
     row.style.borderRadius = '10px';
     row.style.background = 'rgba(15, 23, 42, 0.85)';
     row.style.border = '1px solid rgba(255, 255, 255, 0.08)';
 
-    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်ကို ဘေးချင်းတန်းတူ ဖြစ်စေရန်)
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.justifyContent = 'space-between';
     topRow.style.alignItems = 'center';
     topRow.style.width = '100%';
-    topRow.style.position = 'relative'; // 🌟 Dropdown နေရာချရန် 
+    topRow.style.position = 'relative';
     topRow.style.marginBottom = '2px';
 
     const expireText = document.createElement('span');
@@ -763,7 +753,6 @@ function renderHistoryList() {
     topRow.appendChild(expireText);
     topRow.appendChild(menuBtn);
 
-    // 🌟 Dropdown Menu (မီနူးကို နှိပ်လျှင် အောက်သို့ သပ်ရပ်စွာ ဆင်းကျလာစေရန်၊ နောက်သို့ခလုတ်ကို မကွယ်စေရန်)
     const dropdown = document.createElement('div');
     dropdown.className = 'history-dropdown-menu';
     dropdown.id = `historyDropdown_${index}`;
@@ -801,7 +790,6 @@ function renderHistoryList() {
     dropdown.appendChild(deleteItem);
     topRow.appendChild(dropdown);
 
-    // 🌟 အောက်ပိုင်း (လင့်ခ်စာသား)
     const bottomRow = document.createElement('div');
     bottomRow.style.width = '100%';
 
