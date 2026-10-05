@@ -153,14 +153,16 @@ const i18n = {
   }
 };
 
-// 🌟 Injected CSS Styles (Profile ပုံစံ သပ်ရပ်စေရန်၊ Border များ သေးစေရန်နှင့် အပေါ်အောက် တန်းစီရန်)
+// 🌟 Injected CSS Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
+  /* Floating Animation */
   @keyframes float1to1 {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-6px); }
   }
 
+  /* Fast Glow Animation (1.0s speed) */
   @keyframes realisticFireGlow {
     0% {
       border-color: #ff3838;
@@ -180,6 +182,7 @@ cardStyleInjected.innerHTML = `
     display: none !important;
   }
 
+  /* Mini Equalizer Wave Animation */
   .mini-eq-container {
     display: inline-flex;
     align-items: flex-end;
@@ -251,6 +254,7 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
+  /* BG Image and BG Video Positioning */
   #cardBgImg, #cardBgVideo {
     position: absolute !important;
     inset: 0 !important;
@@ -339,66 +343,16 @@ cardStyleInjected.innerHTML = `
     margin: 4px auto !important;
     height: auto !important;
   }
-
-  /* 🌟 Modern Clean Profile Layout Customization */
-  #step2 .card, #step2 > div {
-    background: rgba(15, 23, 42, 0.75) !important;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 242, 254, 0.25) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-    border-radius: 20px !important;
-  }
-
-  /* Profile အပိုင်းကို သက်သက်ခွဲထုတ်၍ ရိုးရှင်းသပ်ရပ်စေရန် */
-  #profileAvatarBox {
-    width: 80px !important;
-    height: 80px !important;
-    margin: 0 auto 10px auto !important;
-    border-radius: 50% !important;
-    border: 2px solid #00f2fe !important;
-    overflow: hidden !important;
-    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4) !important;
-  }
-  #profileAvatarBox img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
-  /* Profile ပုံပြောင်းရန် နှင့် နာမည်ပြောင်းရန် ခလုတ်များ Border သေး၍ အပေါ်အောက် တန်းစီရန် */
-  #step2 .profile-buttons-container, #step2 div:has(> #lbl_changeAvatar), #step2 .btn-group-vertical {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    width: 100% !important;
-    max-width: 220px !important;
-    margin: 10px auto !important;
-  }
-
-  #step2 button.profile-action-btn, #step2 label[for], #step2 .btn-outline {
-    border: 1px solid rgba(0, 242, 254, 0.4) !important;
-    border-radius: 10px !important;
-    padding: 8px 12px !important;
-    font-size: 13px !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #fff !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    text-align: center !important;
-    width: 100% !important;
-  }
-  #step2 button.profile-action-btn:hover, #step2 label[for]:hover {
-    background: rgba(0, 242, 254, 0.15) !important;
-    border-color: #00f2fe !important;
-  }
 `;
 document.head.appendChild(cardStyleInjected);
 
+// Helper: LocalStorage ထဲတွင် နာမည်တူရှိမရှိ စစ်ဆေးသည့် Function
 function isNameTaken(name, currentNum = null) {
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key.startsWith('user_')) {
       const u = JSON.parse(localStorage.getItem(key));
+      // တကယ်လို့ နာမည်တူပြီး ID (num) မတူရင် တူတယ်ဟု သတ်မှတ်မည်
       if (u.name.toLowerCase() === name.toLowerCase() && u.num !== currentNum) {
         return true;
       }
@@ -407,6 +361,7 @@ function isNameTaken(name, currentNum = null) {
   return false;
 }
 
+// Text Localization Function
 function updateTexts() {
   const d = i18n[currentLang] || i18n.my;
   if(document.getElementById('page_title')) document.getElementById('page_title').innerText = d.pageTitle;
@@ -491,12 +446,14 @@ function updateTexts() {
   if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
 }
 
+// Language Switcher Function
 function changeLanguage(lang) {
   currentLang = lang || 'my';
   updateTexts();
   populateReasonDropdown(currentLang);
 }
 
+// Compress File or Read File as DataURL
 function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
@@ -544,6 +501,7 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   });
 }
 
+// Check Video Duration (Max 15s)
 function getVideoDuration(file) {
   return new Promise((resolve) => {
     const video = document.createElement('video');
@@ -557,6 +515,7 @@ function getVideoDuration(file) {
   });
 }
 
+// Helper: Mini Equalizer Html
 function getMiniEqHtml() {
   return `
     <div class="mini-eq-container">
@@ -568,6 +527,7 @@ function getMiniEqHtml() {
   `;
 }
 
+// Music Dropdown Functions
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
   if (!container) return;
@@ -691,6 +651,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+// Render Card Data
 function renderCardData(data) {
   if (!data) return;
 
@@ -845,7 +806,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     }
   }
 
-  alert(currentLang === 'en' ? '⚠️ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  alert(currentLang === 'en' ? '⚠️️ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
   goToStep(2);
 }
 
@@ -869,17 +830,20 @@ function selectAuthModeOption(val, text) {
   switchAuthMode(val);
 }
 
+// 🌟 Account သစ်ဖွင့်ခြင်း (Signup Validation - ID နှင့် Name နှစ်ခုလုံး တူမရအောင် စစ်ဆေးပေးသည်)
 function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
   const p1 = document.getElementById('signupPass1').value;
   const p2 = document.getElementById('signupPass2').value;
 
+  // ၁။ ကွက်လပ်များ ပြည့်စုံစွာ ဖြည့်ထားခြင်း ရှိမရှိ စစ်ဆေးခြင်း
   if (!name || !num || !p1 || !p2) {
     alert(currentLang === 'en' ? 'Please fill in all fields.' : 'အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
     return;
   }
 
+  // ၂။ ID တစ်ယောက်ယောက် သုံးပြီးသား ဟုတ်/မဟုတ် စစ်ဆေးခြင်း
   if (localStorage.getItem(`user_${num}`)) {
     alert(
       currentLang === 'en'
@@ -889,15 +853,17 @@ function handleSignup() {
     return;
   }
 
+  // ၃။ နာမည် တူနေသူ ရှိမရှိ စစ်ဆေးခြင်း (Name Unique Check)
   if (isNameTaken(name)) {
     alert(
       currentLang === 'en'
         ? '⚠️ This name is already taken. Please choose a different name.'
-        : '⚠️ ဤနာမည်ဖြင့် အကောင့်ဖွင့်ထားပြီး ဖြစ်ပါသဖြင့် အခြားနာမည်တစ်ခု ပြောင်းလဲသုံးပေးပါ။'
+        : '⚠️ ဤနာမည်ဖြင့် အကောင့်ဖွင့်ထားပြီး ဖြစ်ပါသည်။ ကျေးဇူးပြု၍ အခြားနာမည်တစ်ခု ပြောင်းလဲသုံးပေးပါ။'
     );
     return;
   }
 
+  // ၄။ Password အနည်းဆုံး ၆ လုံး နှင့် English စာလုံး ပါဝင်မှု ရှိမရှိ စစ်ဆေးခြင်း
   const hasEnglishLetter = /[a-zA-Z]/.test(p1);
   if (p1.length < 6 || !hasEnglishLetter) {
     alert(
@@ -908,6 +874,7 @@ function handleSignup() {
     return;
   }
 
+  // ၅။ Password ၂ ခု ကိုက်ညီမှု စစ်ဆေးခြင်း
   if (p1 !== p2) {
     alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
     return;
@@ -922,6 +889,7 @@ function handleSignup() {
   goToStep(2);
 }
 
+// Account ဝင်ရောက်ခြင်း (Login)
 function handleLogin() {
   const name = document.getElementById('loginName').value.trim();
   const pass = document.getElementById('loginPass').value;
@@ -969,6 +937,7 @@ function setupProfileView() {
   }
 }
 
+// 🌟 နာမည်ပြောင်းသည့်အခါ နာမည်တူရှိနေပါက ပြောင်းမရအောင် စစ်ဆေးသည့် Logic ပါဝင်သော Function
 function changeNickname() {
   if (!currentUser) return;
   
@@ -1032,11 +1001,12 @@ function changeNickname() {
   modal.querySelector('#customNickOk').onclick = () => {
     const newName = input.value.trim();
     if (newName) {
+      // နာမည်အသစ်သည် အခြားသူ သုံးပြီးသားဖြစ်နေပါက Alert ထုတ်ပြမည်
       if (isNameTaken(newName, currentUser.num)) {
         alert(
           currentLang === 'en'
             ? '⚠️ This name is already taken by another user.'
-            : '⚠️ ဤနာမည်အား အခြားသူတစ်ဦးမှ အသုံးပြုထားပြီး ဖြစ်ပါသည်။'
+            : '⚠️ ဤနာမည်အား အခြားသူတစ်ဦးမှ အသုံးပြုထားပြီး ဖြစ်ပါသည်။ အခြားနာမည်တစ်ခု ပြောင်းလဲရိုက်ထည့်ပါ။'
         );
         return;
       }
