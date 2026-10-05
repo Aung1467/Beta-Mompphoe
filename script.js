@@ -72,7 +72,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "👇 ငွေလွှဲရန် QR ကိုနှိပ်ပါ သို့မဟုတ် စကင်ဖတ်ပါ 👇",
+    qrHint: "", // ဖျောက်ထားလိုက်ပါပြီ
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Realistic Metallic CD Disc Style
+// 🌟 Metallic CD Disc & Background Fix Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -172,6 +172,12 @@ cardStyleInjected.innerHTML = `
     100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
   }
 
+  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း */
+  #step4 {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
   #cardBgImg {
     transform-origin: center center !important;
     animation: smoothSwingAnimation 8s infinite ease-in-out !important;
@@ -182,6 +188,18 @@ cardStyleInjected.innerHTML = `
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    z-index: 1 !important;
+  }
+
+  /* ကတ်ပေါ်ရှိ အချက်အလက်များ နောက်ခံပုံအပေါ်မှ ပေါ်စေရန် */
+  #step4 > *:not(#cardBgImg) {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+
+  /* ငွေလွဲရန် QR ညွှန်ကြားချက် စာသားကို လုံးဝဖျောက်ရန် */
+  #lbl_qrHint {
+    display: none !important;
   }
 
   #cardQrImg {
@@ -313,7 +331,10 @@ function updateTexts() {
   if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
 
   if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
-  if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = d.qrHint;
+  if(document.getElementById('lbl_qrHint')) {
+    document.getElementById('lbl_qrHint').innerText = d.qrHint;
+    document.getElementById('lbl_qrHint').style.display = 'none';
+  }
   if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
   if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
   if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
@@ -512,6 +533,7 @@ function renderCardData(data) {
       bgEl.style.width = '100%';
       bgEl.style.height = '100%';
       bgEl.style.objectFit = 'cover';
+      bgEl.style.zIndex = '1';
     }
   }
 
