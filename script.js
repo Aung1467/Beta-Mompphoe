@@ -454,7 +454,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// 🌟 ပုံများ သေချာပေါ်စေရန် ေရးသားထားသော Render Card Data Function
+// 🌟 ပုံများ သေချာပေါ်စေရန် ရေးသားထားသော Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
@@ -708,7 +708,7 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်းနှင့် မျဉ်း 3 ကြောင်း Menu / Dropdown ထည့်သွင်းခြင်း
+// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်းနှင့် ဝိုင်းပြထားသောနေရာတွင် မိနစ် ၁၂၀ သက်တမ်း ဖော်ပြပေးခြင်း
 function renderHistoryList() {
   const container = document.getElementById('historyListContainer');
   if (!container) return;
@@ -723,9 +723,26 @@ function renderHistoryList() {
     const row = document.createElement('div');
     row.className = 'history-item-row';
 
+    // စာသားများနှင့် သက်တမ်းပြရန် Container
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.flex = '1';
+    contentWrapper.style.display = 'flex';
+    contentWrapper.style.flexDirection = 'column';
+
     const linkText = document.createElement('span');
     linkText.className = 'history-link-text';
     linkText.innerText = `${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${item.link}`;
+
+    // 🌟 ဝိုင်းပြထားသောနေရာတွင် 120 မိနစ် သက်တမ်းပြမည့် စာသား
+    const expireText = document.createElement('span');
+    expireText.style.fontSize = '10px';
+    expireText.style.color = '#00f2fe';
+    expireText.style.marginTop = '4px';
+    expireText.style.fontWeight = '600';
+    expireText.innerText = '⏳ ကတ်သက်တမ်း: မိနစ် 120';
+
+    contentWrapper.appendChild(linkText);
+    contentWrapper.appendChild(expireText);
 
     // မျဉ်း 3 ကြောင်း (3-Line Menu Button)
     const menuBtn = document.createElement('button');
@@ -754,7 +771,7 @@ function renderHistoryList() {
     dropdown.appendChild(viewItem);
     dropdown.appendChild(deleteItem);
 
-    row.appendChild(linkText);
+    row.appendChild(contentWrapper);
     row.appendChild(menuBtn);
     row.appendChild(dropdown);
 
