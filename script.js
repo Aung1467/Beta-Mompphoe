@@ -319,17 +319,13 @@ cardStyleInjected.innerHTML = `
 
   .top-card-timer {
     position: absolute;
-    top: 20px;
-    right: 145px;
+    top: 65px;
+    left: 50%;
+transform: translateX(-50%);
     z-index: 100;
     padding: 6px 14px;
     font-size: 14px;
     font-weight: 700;
-    border-radius: 12px;
-    border: 1.5px solid rgba(0, 242, 254, 0.6);
-    background: rgba(10, 12, 28, 0.95);
-    color: #00f2fe;
-    box-shadow: 0 0 10px var(--accent-glow);
     display: none;
     align-items: center;
     gap: 6px;
