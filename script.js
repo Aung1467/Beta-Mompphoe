@@ -38,7 +38,7 @@ const i18n = {
     optLogin: "အကောင့်ရှိပြီးသား",
     optSignup: "အကောင့်သစ်ဖွင့်ရန်",
     nameLabel: "နာမည်",
-    numLabel: "(ID နံပါတ်)",
+    numLabel: "ID နံပါတ်",
     numPlaceholder: "နှစ်သက်ရာထည့်နိုင်သည်",
     passLabel: "Password",
     passPlaceholder: "Password ရိုက်ပါ",
@@ -48,6 +48,7 @@ const i18n = {
     signupBtn: "အကောင့်အသစ်ဖွင့်မည်",
     profileTitle: "ကိုယ်ရေးအချက်အလက်",
     changeAvatar: "Profile ပုံပြောင်းရန်",
+    changeNickBtn: "နာမည်ပြောင်းရန်",
     reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
     historyBtn: "မှတ်တမ်းများ",
     step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
@@ -66,12 +67,12 @@ const i18n = {
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
     qrHint: "Scan or Pay to Send",
     saveBtn: "💾 Save QR",
-    shareBtn: "📤 Share",
+    shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
     modalTitle: "📤 မျှဝေရန်",
     modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
-    copyLinkBtn: "📋 လင့်ခ် ကူးယူရန်",
-    dl1to1Btn: "📥 1:1 ပုံ သိမ်းရန်",
+    copyLinkBtn: "📋 Link ယူမည်",
+    dl1to1Btn: "📥 Save QR",
     closeBtn: "ပိတ်မည်",
     alertNote: "❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။",
     alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။",
@@ -86,6 +87,30 @@ const i18n = {
   }
 };
 
+// 🌟 စာသားများအတွက် အရောင် ၃ မျိုး animated shadow နှင့် နေရာခြားပေးသည့် CSS ကို အလိုအလျောက်ထည့်သွင်းခြင်း
+const cardStyleInjected = document.createElement('style');
+cardStyleInjected.innerHTML = `
+  @keyframes textGlowAnimation {
+    0% { text-shadow: 0 0 6px #ff2a6d, 0 0 12px #ff2a6d; color: #ff2a6d; }
+    33% { text-shadow: 0 0 6px #05d9e8, 0 0 12px #05d9e8; color: #05d9e8; }
+    66% { text-shadow: 0 0 6px #ffde59, 0 0 12px #ffde59; color: #ffde59; }
+    100% { text-shadow: 0 0 6px #ff2a6d, 0 0 12px #ff2a6d; color: #ff2a6d; }
+  }
+  #outReason {
+    margin-bottom: 18px !important;
+    display: block !important;
+    animation: textGlowAnimation 3s infinite;
+    font-weight: bold;
+  }
+  #outNote {
+    margin-top: 10px !important;
+    display: block !important;
+    animation: textGlowAnimation 3s infinite 1.5s;
+    font-weight: bold;
+  }
+`;
+document.head.appendChild(cardStyleInjected);
+
 // HTML နေရာလပ်များသို့ စာသားများကို မြန်မာလို ထည့်သွင်းပေးသည့် Function
 function updateTexts() {
   const d = i18n.my;
@@ -93,12 +118,25 @@ function updateTexts() {
   if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
   if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
   if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = d.modeSelectLabel;
-  if(document.getElementById('authModeTriggerText')) document.getElementById('authModeTriggerText').innerText = d.optLogin;
-  if(document.getElementById('optLoginText')) document.getElementById('optLoginText').innerText = d.optLogin;
-  if(document.getElementById('optSignupText')) document.getElementById('optSignupText').innerText = d.optSignup;
+
+  const currentAuthMode = document.getElementById('authModeSelect') ? document.getElementById('authModeSelect').value : 'login';
+  if(document.getElementById('authModeTriggerText')) {
+    document.getElementById('authModeTriggerText').innerText = (currentAuthMode === 'signup') ? d.optSignup : d.optLogin;
+  }
+  
+  const optLoginEl = document.getElementById('optLoginText');
+  if(optLoginEl) {
+    optLoginEl.innerText = d.optLogin;
+    optLoginEl.onclick = () => selectAuthModeOption('login', d.optLogin);
+  }
+  
+  const optSignupEl = document.getElementById('optSignupText');
+  if(optSignupEl) {
+    optSignupEl.innerText = d.optSignup;
+    optSignupEl.onclick = () => selectAuthModeOption('signup', d.optSignup);
+  }
   
   if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = d.nameLabel;
-  if(document.getElementById('loginName')) document.getElementById('loginName').placeholder = d.namePlaceholder;
   if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = d.passLabel;
   if(document.getElementById('loginPass')) document.getElementById('loginPass').placeholder = d.passPlaceholder;
   if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = d.loginBtn;
@@ -115,12 +153,16 @@ function updateTexts() {
 
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
+  if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
+
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
 
   if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
   if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
-  if(document.getElementById('reasonTriggerText')) document.getElementById('reasonTriggerText').innerText = d.reasons[0].text;
+  if(document.getElementById('reasonTriggerText') && i18n.my.reasons.length > 0) {
+    document.getElementById('reasonTriggerText').innerText = i18n.my.reasons[0].text;
+  }
   if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
   if(document.getElementById('customReason')) document.getElementById('customReason').placeholder = d.customReasonPlaceholder;
   if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = d.customNoteLabel;
@@ -431,7 +473,7 @@ function handleLogin() {
 function setupProfileView() {
   if (!currentUser) return;
   document.getElementById('displayProfileName').innerText = currentUser.name;
-  document.getElementById('displayProfileNum').innerText = `ဂဏန်း: ${currentUser.num}`;
+  document.getElementById('displayProfileNum').innerText = `ID: ${currentUser.num}`;
   
   if (currentUser.avatar) {
     document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
@@ -665,7 +707,6 @@ function copyShareLink() {
 }
 
 function changeLanguage(lang) {
-  // မြန်မာဘာသာ တစ်မျိုးတည်းသာ ထားရှိသောကြောင့် ဒီ function ကို လိုအပ်သလို အသုံးပြုနိုင်ပါသည်
   currentLang = 'my';
   updateTexts();
 }
