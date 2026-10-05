@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Metallic CD Disc & Clean Static Background Styles (Animations Removed)
+// 🌟 Metallic CD Disc & Clean Static Background Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -313,7 +313,7 @@ function updateTexts() {
 }
 
 // Compress File to HD DataURL
-function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
+function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
     const reader = new FileReader();
@@ -1068,16 +1068,20 @@ function selectReasonOption(val, text) {
   toggleCustomReason();
 }
 
-function handleBgImage(input) {
+async function handleBgImage(input) {
   if (input.files && input.files[0]) {
     selectedBgFile = input.files[0];
+    document.getElementById('bgImgLabel').innerText = `⏳ နောက်ခံပုံ တင်နေပါပြီ...`;
+    savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
     document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
   }
 }
 
-function handleQrImage(input) {
+async function handleQrImage(input) {
   if (input.files && input.files[0]) {
     selectedQrFile = input.files[0];
+    document.getElementById('qrImgLabel').innerText = `⏳ QR ပုံ တင်နေပါပြီ...`;
+    savedQrImage = await compressFileToDataUrl(selectedQrFile, 700, 0.8);
     document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
   }
 }
@@ -1104,11 +1108,19 @@ async function generateAndSaveCard() {
     alert(d.alertNote);
     return;
   }
-  if (!selectedBgFile && !savedBgImage) {
+
+  if (selectedBgFile && !savedBgImage) {
+    savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
+  }
+  if (selectedQrFile && !savedQrImage) {
+    savedQrImage = await compressFileToDataUrl(selectedQrFile, 700, 0.8);
+  }
+
+  if (!savedBgImage) {
     alert(d.alertBg);
     return;
   }
-  if (!selectedQrFile && !savedQrImage) {
+  if (!savedQrImage) {
     alert(d.alertQr);
     return;
   }
@@ -1117,13 +1129,6 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
-    if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
-    }
-    if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
-    }
-
     const payload = {
       sender: currentUser ? currentUser.name : 'Aung',
       reason: finalReason,
