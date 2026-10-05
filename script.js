@@ -709,7 +709,7 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်း ("သက်တမ်း - mm: ss" ကို ညာဘက်သို့ရွေ့ပြီး မိနစ်/စက္ကန့် တိုက်ရိုက်ပြရန်)
+// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်း (သက်တမ်းကို Menu ၏ ဘယ်ဘက်ကပ်ပြီး စာအရောင် အနီရောင်ဖြင့်ပြရန်)
 function renderHistoryList() {
   if (historyTimerInterval) clearInterval(historyTimerInterval);
 
@@ -729,16 +729,27 @@ function renderHistoryList() {
     row.style.flexDirection = 'column';
     row.style.position = 'relative';
 
-    // ထိပ်ပိုင်း (လင့်ခ်စာသားနှင့် မီနူးခလုတ်)
+    // ထိပ်ပိုင်း (လင့်ခ်စာသား၊ သက်တမ်းနှင့် မီနူးခလုတ်)
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
-    topRow.style.alignItems = 'flex-start';
+    topRow.style.alignItems = 'center';
     topRow.style.width = '100%';
+    topRow.style.gap = '8px';
 
     const linkText = document.createElement('span');
     linkText.className = 'history-link-text';
     linkText.style.flex = '1';
     linkText.innerText = `${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${item.link}`;
+
+    // 🌟 သက်တမ်းပြမည့် စာသား (Menu ၏ ဘယ်ဘက်ကပ်၊ စာအရောင် အနီ - #ff4757)
+    const expireText = document.createElement('span');
+    expireText.className = 'history-timer-span';
+    expireText.style.fontSize = '11px';
+    expireText.style.color = '#ff4757';
+    expireText.style.fontWeight = '600';
+    expireText.style.flexShrink = '0';
+    expireText.dataset.cardId = item.id;
+    expireText.innerText = 'သက်တမ်း - 120:00';
 
     // မျဉ်း 3 ကြောင်း (3-Line Menu Button)
     const menuBtn = document.createElement('button');
@@ -750,24 +761,8 @@ function renderHistoryList() {
     };
 
     topRow.appendChild(linkText);
+    topRow.appendChild(expireText); // Menu ၏ ဘယ်ဘက်တွင် ထည့်သွင်းခြင်း
     topRow.appendChild(menuBtn);
-
-    // အောက်ပိုင်း (ညာဘက်သို့ရွေ့ထားပြီး "သက်တမ်း - မိနစ်:စက္ကန့်" တိုက်ရိုက်ပြမည့် နေရာ)
-    const bottomRow = document.createElement('div');
-    bottomRow.style.display = 'flex';
-    bottomRow.style.justifyContent = 'flex-end'; // ညာဘက်သို့ ကပ်ရန်
-    bottomRow.style.marginTop = '6px';
-    bottomRow.style.width = '100%';
-
-    const expireText = document.createElement('span');
-    expireText.className = 'history-timer-span';
-    expireText.style.fontSize = '11px';
-    expireText.style.color = '#00f2fe';
-    expireText.style.fontWeight = '600';
-    expireText.dataset.cardId = item.id;
-    expireText.innerText = 'သက်တမ်း - 120:00';
-
-    bottomRow.appendChild(expireText);
 
     // Dropdown Menu (ကြည့်ရန် နှင့် ဖျက်ပြစ်ရန်)
     const dropdown = document.createElement('div');
@@ -788,7 +783,6 @@ function renderHistoryList() {
     dropdown.appendChild(deleteItem);
 
     row.appendChild(topRow);
-    row.appendChild(bottomRow);
     row.appendChild(dropdown);
 
     container.appendChild(row);
