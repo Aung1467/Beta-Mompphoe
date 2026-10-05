@@ -90,7 +90,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (Swing Animation နှင့် ပုံများ သေချာပေါ်စေရန် Style များ)
+// 🌟 CSS Styles Injection
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   #outReason {
@@ -139,7 +139,6 @@ cardStyleInjected.innerHTML = `
     display: block !important;
   }
 
-  /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
   .top-card-timer {
     position: absolute;
     top: 20px;
@@ -413,7 +412,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const cardId = urlParams.get('id');
 
   if (cardId) {
-    isSharedLinkVisitor = true; // 🌟 Card Link ကနေ ဝင်လာသူဖြစ်ကြောင်း မှတ်သားခြင်း
+    isSharedLinkVisitor = true;
     const loader = document.getElementById('stepLoader');
     if (loader) loader.classList.add('show');
 
@@ -455,7 +454,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// 🌟 ပုံများ သေချာပေါ်စေရန် ရေးသားထားသော Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
@@ -509,7 +507,6 @@ function renderCardData(data) {
   }
 }
 
-// 🌟 ၁၂၀ မိနစ် Countdown Timer နှင့် ဒေတာဖျက်ဆီးသည့် လုပ်ဆောင်ချက်
 function startCardTimer(cardId) {
   if (cardTimerInterval) clearInterval(cardTimerInterval);
 
@@ -553,7 +550,6 @@ function startCardTimer(cardId) {
   }, 1000);
 }
 
-// 🌟 ကတ်အချက်အလက်များနှင့် လင့်ခ်များကို ဖျက်ဆီးခြင်း
 async function deleteCardDataAndClean(cardId, storageKey) {
   savedBgImage = '';
   savedQrImage = '';
@@ -703,13 +699,12 @@ function updateProfileAvatar(input) {
   }
 }
 
-// 🌟 ဝင်ရောက်ထားသော အကောင့်၏ မှတ်တမ်းများကို ပြသရန် (Step 5 သို့သွားခြင်း)
 function viewHistory() {
   renderHistoryList();
   goToStep(5);
 }
 
-// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်း (1, 2, 3 နံပါတ်စဉ်၊ my-pocket-money အထိသာပြပြီး ID ဖြောက်ရန်၊ သက်တမ်းနှင့် မီနူး အပေါ်တွင် အရှည်လိုက်ဆန့်စေရန်)
+// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (စာသားနှင့် တိုင်မာများကို အပေါ်သို့ ကပ်စေရန် padding နှင့် margin များကို ထပ်မံကျဉ်းမြောင်းထားသည်)
 function renderHistoryList() {
   if (historyTimerInterval) clearInterval(historyTimerInterval);
 
@@ -728,14 +723,20 @@ function renderHistoryList() {
     row.style.display = 'flex';
     row.style.flexDirection = 'column';
     row.style.position = 'relative';
+    row.style.padding = '4px 10px'; // 🌟 ဘောင်အတွင်း ပိုမိုကျဉ်းမြောင်းစေရန် padding ကို လျှော့ချထားသည်
+    row.style.marginBottom = '5px';
+    row.style.borderRadius = '8px';
+    row.style.background = 'rgba(15, 23, 42, 0.85)';
+    row.style.border = '1px solid rgba(255, 255, 255, 0.08)';
 
-    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ် ≡ ကို ညာ/ဘက် ချိန်၍ အပေါ်ဆုံးတွင် ထားရှိရန်)
+    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်ကို ဘေးချင်းတန်းတူ ဖြစ်စေရန်)
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.justifyContent = 'space-between';
     topRow.style.alignItems = 'center';
     topRow.style.width = '100%';
-    topRow.style.marginBottom = '6px';
+    topRow.style.position = 'relative'; 
+    topRow.style.marginBottom = '0px'; // 🌟 အပေါ်နှင့်အောက် ကွာဟချက်မရှိဘဲ အပေါ်သို့ ကပ်နေစေရန်
 
     const expireText = document.createElement('span');
     expireText.className = 'history-timer-span';
@@ -748,6 +749,12 @@ function renderHistoryList() {
     const menuBtn = document.createElement('button');
     menuBtn.className = 'history-menu-btn';
     menuBtn.innerHTML = '≡';
+    menuBtn.style.background = 'transparent';
+    menuBtn.style.border = 'none';
+    menuBtn.style.color = '#fff';
+    menuBtn.style.fontSize = '16px';
+    menuBtn.style.cursor = 'pointer';
+    menuBtn.style.padding = '0 4px';
     menuBtn.onclick = (e) => {
       e.stopPropagation();
       toggleHistoryDropdown(index);
@@ -756,14 +763,55 @@ function renderHistoryList() {
     topRow.appendChild(expireText);
     topRow.appendChild(menuBtn);
 
-    // 🌟 အောက်ပိုင်း (1, 2, 3 နံပါတ်စဉ်၊ my-pocket-money အထိသာပြပြီး ID ဖျောက်ကာ အရှည်လိုက် အပြည့်ပြရန်)
+    // 🌟 Dropdown Menu
+    const dropdown = document.createElement('div');
+    dropdown.className = 'history-dropdown-menu';
+    dropdown.id = `historyDropdown_${index}`;
+    dropdown.style.position = 'absolute';
+    dropdown.style.top = '24px';
+    dropdown.style.right = '0';
+    dropdown.style.zIndex = '9999';
+    dropdown.style.background = '#1e293b';
+    dropdown.style.border = '1px solid rgba(255,255,255,0.15)';
+    dropdown.style.borderRadius = '8px';
+    dropdown.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
+    dropdown.style.display = 'none';
+    dropdown.style.minWidth = '90px';
+
+    const viewItem = document.createElement('div');
+    viewItem.className = 'history-dropdown-item';
+    viewItem.innerText = 'ကြည့်ရန်';
+    viewItem.style.padding = '5px 10px';
+    viewItem.style.cursor = 'pointer';
+    viewItem.style.fontSize = '12px';
+    viewItem.style.color = '#fff';
+    viewItem.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+    viewItem.onclick = () => viewCardFromHistory(item.id);
+
+    const deleteItem = document.createElement('div');
+    deleteItem.className = 'history-dropdown-item';
+    deleteItem.innerText = 'ဖျက်ပြစ်ရန်';
+    deleteItem.style.padding = '5px 10px';
+    deleteItem.style.cursor = 'pointer';
+    deleteItem.style.fontSize = '12px';
+    deleteItem.style.color = '#ff4757';
+    deleteItem.onclick = () => deleteCardFromHistory(item.id, index);
+
+    dropdown.appendChild(viewItem);
+    dropdown.appendChild(deleteItem);
+    topRow.appendChild(dropdown);
+
+    // 🌟 အောက်ပိုင်း (လင့်ခ်စာသား)
     const bottomRow = document.createElement('div');
     bottomRow.style.width = '100%';
+    bottomRow.style.marginTop = '-2px'; // 🌟 စာသားကို အထက်သို့ ပိုကပ်စေရန်
 
     const linkText = document.createElement('span');
     linkText.className = 'history-link-text';
     linkText.style.display = 'block';
     linkText.style.width = '100%';
+    linkText.style.fontSize = '11.5px';
+    linkText.style.color = '#cbd5e1';
     linkText.style.wordBreak = 'break-all';
 
     let cleanLink = item.link || '';
@@ -777,37 +825,16 @@ function renderHistoryList() {
     linkText.innerText = `${index + 1}. ${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${cleanLink}`;
     bottomRow.appendChild(linkText);
 
-    // Dropdown Menu (ကြည့်ရန် နှင့် ဖျက်ပြစ်ရန်)
-    const dropdown = document.createElement('div');
-    dropdown.className = 'history-dropdown-menu';
-    dropdown.id = `historyDropdown_${index}`;
-
-    const viewItem = document.createElement('div');
-    viewItem.className = 'history-dropdown-item';
-    viewItem.innerText = 'ကြည့်ရန်';
-    viewItem.onclick = () => viewCardFromHistory(item.id);
-
-    const deleteItem = document.createElement('div');
-    deleteItem.className = 'history-dropdown-item';
-    deleteItem.innerText = 'ဖျက်ပြစ်ရန်';
-    deleteItem.onclick = () => deleteCardFromHistory(item.id, index);
-
-    dropdown.appendChild(viewItem);
-    dropdown.appendChild(deleteItem);
-
     row.appendChild(topRow);
     row.appendChild(bottomRow);
-    row.appendChild(dropdown);
 
     container.appendChild(row);
   });
 
-  // 🌟 တစ်စက္ကန့်တစ်ကြိမ် Timer များကို တိုက်ရိုက် update လုပ်ပေးခြင်း
   updateHistoryTimers();
   historyTimerInterval = setInterval(updateHistoryTimers, 1000);
 }
 
-// 🌟 မှတ်တမ်းကတ်တစ်ခုချင်းစီ၏ သက်တမ်းအချိန်ကို တစ်စက္ကန့်ချင်း update လုပ်ရန် Function
 function updateHistoryTimers() {
   const timerSpans = document.querySelectorAll('.history-timer-span');
   timerSpans.forEach(span => {
@@ -837,25 +864,33 @@ function updateHistoryTimers() {
   });
 }
 
-// 🌟 Dropdown Menu ကို Toggle လုပ်ရန်
 function toggleHistoryDropdown(index) {
   document.querySelectorAll('.history-dropdown-menu').forEach((el, idx) => {
-    if (idx !== index) el.classList.remove('show');
+    if (idx !== index) {
+      el.classList.remove('show');
+      el.style.display = 'none';
+    }
   });
   const target = document.getElementById(`historyDropdown_${index}`);
   if (target) {
     target.classList.toggle('show');
+    if (target.classList.contains('show')) {
+      target.style.display = 'block';
+    } else {
+      target.style.display = 'none';
+    }
   }
 }
 
-// နေရာလပ်တစ်ခုခုကို နှိပ်လျှင် Dropdown ကို ပိတ်ရန်
 window.addEventListener('click', function(e) {
   if (!e.target.closest('.history-menu-btn') && !e.target.closest('.history-dropdown-menu')) {
-    document.querySelectorAll('.history-dropdown-menu').forEach(el => el.classList.remove('show'));
+    document.querySelectorAll('.history-dropdown-menu').forEach(el => {
+      el.classList.remove('show');
+      el.style.display = 'none';
+    });
   }
 });
 
-// 🌟 မှတ်တမ်းထဲမှ Card ကို ကြည့်ရန် (Step 4 သို့ တင်ပြပေးခြင်း)
 async function viewCardFromHistory(cardId) {
   const loader = document.getElementById('stepLoader');
   if (loader) loader.classList.add('show');
@@ -893,7 +928,6 @@ async function viewCardFromHistory(cardId) {
   if (loader) loader.classList.remove('show');
 }
 
-// 🌟 မှတ်တမ်းထဲမှ Card ကို ဖျက်ပစ်ရန်
 async function deleteCardFromHistory(cardId, index) {
   if (!confirm('ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?')) return;
 
@@ -932,7 +966,6 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
-// 🌟 Card Link ဖြင့် ဝင်လာသူများ Profile သို့ပြန်ရန်ခလုတ်နှိပ်လျှင် Login နေရာသို့ သွားစေခြင်း
 function returnToProfileOrLogin() {
   if (isSharedLinkVisitor) {
     if (window.history && window.history.replaceState) {
@@ -1097,7 +1130,6 @@ async function generateAndSaveCard() {
       const generatedId = data[0].id;
       currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
       
-      // 🌟 ထွက်လာတဲ့ Card Link နှင့် အချက်အလက်များကို ဝင်ထားတဲ့ အကောင့်ရဲ့ မှတ်တမ်းထဲသို့ သိမ်းဆည်းရန်
       if (currentUser) {
         if (!currentUser.history) currentUser.history = [];
         currentUser.history.unshift({
