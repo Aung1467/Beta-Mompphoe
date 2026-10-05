@@ -72,7 +72,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "", // ဖျောက်ထားလိုက်ပါပြီ
+    qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Metallic CD Disc & Optimized Background / Faster Animation Styles
+// 🌟 4:3 Uniform Border & Stretch Background Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -134,12 +134,10 @@ cardStyleInjected.innerHTML = `
     z-index: 1;
   }
 
-  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း */
   .p-bar {
     display: none !important;
   }
 
-  /* သီချင်းစဖွင့်သောအခါ CD ပြား လည်ပတ်ခြင်း Animation */
   .preview-eq-bars.playing {
     animation: spinCdDisc 1.8s linear infinite !important;
   }
@@ -164,41 +162,32 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Swing Animation ကို ပိုမိုမြန်ဆန်စေရန် (8s မှ 4.5s သို့ ပြောင်းထားသည်) */
-  @keyframes smoothSwingAnimation {
-    0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-    25% { transform: scale(1.06) rotate(-1.5deg) translate(-3px, 2px); }
-    50% { transform: scale(1.06) rotate(1deg) translate(2px, 3px); }
-    75% { transform: scale(1.06) rotate(-1deg) translate(-2px, -2px); }
-    100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-  }
-
-  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း (3:4 အပါအဝင် အချိုးအစားအမျိုးမျိုးအတွက်) */
+  /* 4:3 Uniform Border & Strict Stretch Fix */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
+    border: 2.5px solid #00f2fe !important;
+    border-radius: 16px !important;
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.45), inset 0 0 12px rgba(0, 242, 254, 0.25) !important;
+    box-sizing: border-box !important;
   }
 
   #cardBgImg {
-    transform-origin: center center !important;
-    animation: smoothSwingAnimation 4.5s infinite ease-in-out !important;
     display: block !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: fill !important; /* 4:3 Stretch to fill container completely */
     z-index: 0 !important;
   }
 
-  /* ကတ်ပေါ်ရှိ အချက်အလက်များ နောက်ခံပုံအပေါ်မှ ပေါ်စေရန် */
   #step4 > *:not(#cardBgImg) {
     position: relative !important;
     z-index: 2 !important;
   }
 
-  /* ငွေလွဲရန် QR ညွှန်ကြားချက် စာသားကို လုံးဝဖျောက်ရန် */
   #lbl_qrHint {
     display: none !important;
   }
@@ -238,25 +227,6 @@ cardStyleInjected.innerHTML = `
     padding: 4px 0 !important;
     margin: 4px auto !important;
     height: auto !important;
-  }
-
-  @keyframes qrFloatAndSoftGlow {
-    0% {
-      transform: translateY(0px) scale(1);
-      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
-    }
-    50% {
-      transform: translateY(-5px) scale(1.01);
-      box-shadow: 0 0 12px rgba(255, 165, 0, 0.55);
-    }
-    100% {
-      transform: translateY(0px) scale(1);
-      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
-    }
-  }
-
-  #qrWrapper {
-    animation: qrFloatAndSoftGlow 3.5s infinite ease-in-out !important;
   }
 `;
 document.head.appendChild(cardStyleInjected);
@@ -348,7 +318,7 @@ function updateTexts() {
 }
 
 // Compress File to HD DataURL
-function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
+function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
     const reader = new FileReader();
@@ -533,7 +503,7 @@ function renderCardData(data) {
       bgEl.style.left = '0';
       bgEl.style.width = '100%';
       bgEl.style.height = '100%';
-      bgEl.style.objectFit = 'cover';
+      bgEl.style.objectFit = 'fill'; // 4:3 Stretch to display properly
       bgEl.style.zIndex = '0';
     }
   }
@@ -1103,16 +1073,20 @@ function selectReasonOption(val, text) {
   toggleCustomReason();
 }
 
-function handleBgImage(input) {
+async function handleBgImage(input) {
   if (input.files && input.files[0]) {
     selectedBgFile = input.files[0];
+    document.getElementById('bgImgLabel').innerText = `⏳ နောက်ခံပုံ တင်နေပါပြီ...`;
+    savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
     document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
   }
 }
 
-function handleQrImage(input) {
+async function handleQrImage(input) {
   if (input.files && input.files[0]) {
     selectedQrFile = input.files[0];
+    document.getElementById('qrImgLabel').innerText = `⏳ QR ပုံ တင်နေပါပြီ...`;
+    savedQrImage = await compressFileToDataUrl(selectedQrFile, 700, 0.8);
     document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
   }
 }
@@ -1139,11 +1113,19 @@ async function generateAndSaveCard() {
     alert(d.alertNote);
     return;
   }
-  if (!selectedBgFile && !savedBgImage) {
+
+  if (selectedBgFile && !savedBgImage) {
+    savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
+  }
+  if (selectedQrFile && !savedQrImage) {
+    savedQrImage = await compressFileToDataUrl(selectedQrFile, 700, 0.8);
+  }
+
+  if (!savedBgImage) {
     alert(d.alertBg);
     return;
   }
-  if (!selectedQrFile && !savedQrImage) {
+  if (!savedQrImage) {
     alert(d.alertQr);
     return;
   }
@@ -1152,13 +1134,6 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
-    if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
-    }
-    if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
-    }
-
     const payload = {
       sender: currentUser ? currentUser.name : 'Aung',
       reason: finalReason,
