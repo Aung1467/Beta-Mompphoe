@@ -474,38 +474,38 @@
       gap: 8px;
     }
 
-    /* 🌟 History List Styles (မျဉ်း 3 ကြောင်း Menu နှင့် Dropdown စတိုင်များ) */
+    /* 🌟 မှတ်တမ်းဘောင်များကို ပိုမိုကျယ်ဝန်းစေပြီး စာသားများ အပြည့်အစုံပေါ်စေရန် (Updated) */
     .history-list-container {
-      max-height: 260px;
+      max-height: 280px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 14px;
       padding-right: 4px;
     }
 
     .history-item-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(0, 242, 254, 0.3);
       border-radius: 12px;
-      padding: 8px 12px;
-      gap: 8px;
+      padding: 10px 14px;
+      gap: 10px;
       position: relative;
     }
 
     .history-link-text {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--accent);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      word-break: break-all;
       flex: 1;
       text-align: left;
       font-weight: 600;
+      line-height: 1.4;
     }
 
     .history-menu-btn {
@@ -516,6 +516,7 @@
       cursor: pointer;
       padding: 2px 6px;
       border-radius: 6px;
+      flex-shrink: 0;
       transition: background 0.2s;
     }
 
@@ -527,7 +528,7 @@
       display: none;
       position: absolute;
       right: 12px;
-      top: 42px;
+      top: 45px;
       background: #111326;
       border: 1.5px solid var(--accent);
       border-radius: 10px;
@@ -999,7 +1000,7 @@
       </div>
     </div>
 
-    <!-- 🌟 မတ်တမ်းများကြည့်ရန် သီးသန့် Step (Step 5 - History Section) -->
+    <!-- STEP 5: HISTORY SECTION -->
     <div class="step" id="step5">
       <h2 id="lbl_historyTitle">မှတ်တမ်းများ</h2>
       <div class="history-list-container" id="historyListContainer">
@@ -1123,7 +1124,7 @@
       </div>
       
       <div class="btn-group" style="margin-top: 8px;">
-        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="returnToProfileOrLogin()" style="padding: 10px; font-size: 13px;"></button>
       </div>
     </div>
 
