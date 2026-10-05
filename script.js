@@ -94,21 +94,23 @@ const i18n = {
   }
 };
 
-// 🌟 Spinning CD Disc Style (Equalizer နေရာတွင် လှပသော CD ပြားလည်သည့်ပုံစံဖြင့် အစားထိုးထားသည်)
+// 🌟 Realistic Metallic CD Disc Style
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
-    background: radial-gradient(circle, #1e293b 30%, #0f172a 70%);
-    border: 2.5px solid #00f2fe;
+    background: radial-gradient(circle, #000 0%, #111 18%, #333 20%, #777 24%, #222 28%, #aaa 32%, #111 38%, #333 60%, #000 100%),
+                conic-gradient(from 0deg, #111, #555, #aaa, #fff, #aaa, #555, #111);
+    background-blend-mode: overlay;
+    border: 2px solid #00f2fe;
     position: relative;
     margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    box-shadow: 0 0 14px rgba(0, 242, 254, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.4);
   }
 
   .preview-eq-bars::before {
@@ -123,23 +125,23 @@ cardStyleInjected.innerHTML = `
   }
 
   .preview-eq-bars::after {
-    content: '💿';
+    content: '';
     position: absolute;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
     z-index: 1;
   }
 
-  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း (ကုဒ်မပျက်စေရန်) */
+  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း */
   .p-bar {
     display: none !important;
   }
 
   /* သီချင်းစဖွင့်သောအခါ CD ပြား လည်ပတ်ခြင်း Animation */
   .preview-eq-bars.playing {
-    animation: spinCdDisc 2s linear infinite !important;
+    animation: spinCdDisc 1.8s linear infinite !important;
   }
 
   @keyframes spinCdDisc {
