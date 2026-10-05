@@ -34,7 +34,7 @@ const localMusicList = [
 // ဘာသာစကား စာသားများ (မြန်မာ / English)
 const i18n = {
   my: {
-    pageTitle: "မုန့်ဖိုးတောင်းလွှာ",
+    pageTitle: "🥺",
     introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
     authTitle: "အကောင့်ဝင်ရန်",
