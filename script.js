@@ -437,7 +437,8 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (loader) loader.classList.remove('show');
           showStep(4);
           
-          startCardTimer(cardId);
+          // 🌟 Supabase မှ ဖတ်လာသော created_at အချိန်ကို အခြေခံ၍ Timer စတင်မည် (ဘယ်သူဝင်ဝင် အချိန်တူကျန်နေမည်)
+          startCardTimer(cardId, data.created_at);
           return;
         }
       }
@@ -448,7 +449,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// 🌟 Render Card Data (ပုံများနှင့် undefined စာသားများကို သေချာစွာ ရှင်းလင်းပေးခြင်း)
+// Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
@@ -502,18 +503,25 @@ function renderCardData(data) {
   }
 }
 
-// 🌟 ၁၂၀ မိနစ် Countdown Timer နှင့် ဒေတာဖျက်ဆီးသည့် လုပ်ဆောင်ချက်
-function startCardTimer(cardId) {
+// 🌟 ၁၂၀ မိနစ် Real-time Countdown Timer (ဖန်တီးခဲ့သည့် created_at အချိန်ကို အခြေခံသည်)
+function startCardTimer(cardId, createdAt) {
   if (cardTimerInterval) clearInterval(cardTimerInterval);
 
-  const storageKey = `card_expire_${cardId || 'local_card'}`;
-  let expireTime = localStorage.getItem(storageKey);
-
-  if (!expireTime) {
-    expireTime = Date.now() + 120 * 60 * 1000;
-    localStorage.setItem(storageKey, expireTime);
+  let expireTime;
+  if (createdAt) {
+    // Supabase တွင် သိမ်းထားသည့် ဖန်တီးချိန်ကို အခြေခံ၍ ၁၂၀ မိနစ် (၇၂၀၀ စက္ကန့်) ဖြည့်တင်းတွက်ချက်သည်
+    expireTime = new Date(createdAt).getTime() + (120 * 60 * 1000);
   } else {
-    expireTime = parseInt(expireTime, 10);
+    // ဖန်တီးသူ၏ Localတွင်သာ ရှိသေးပါက localStorage ကိုသုံးမည်
+    const storageKey = `card_expire_${cardId || 'local_card'}`;
+    expireTime = localStorage.getItem(storageKey);
+
+    if (!expireTime) {
+      expireTime = Date.now() + (120 * 60 * 1000);
+      localStorage.setItem(storageKey, expireTime);
+    } else {
+      expireTime = parseInt(expireTime, 10);
+    }
   }
 
   let timerEl = document.getElementById('topCardTimer');
@@ -533,6 +541,7 @@ function startCardTimer(cardId) {
       clearInterval(cardTimerInterval);
       if (timerEl) timerEl.innerText = "⏳ အချိန်ကုန်သွားပါပြီ";
       
+      const storageKey = `card_expire_${cardId || 'local_card'}`;
       await deleteCardDataAndClean(cardId, storageKey);
       return;
     }
@@ -886,6 +895,7 @@ async function generateAndSaveCard() {
 
     if (data && data.length > 0) {
       const generatedId = data[0].id;
+      const createdTimestamp = data[0].created_at || new Date().toISOString();
       currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
       
       renderCardData({
@@ -900,7 +910,8 @@ async function generateAndSaveCard() {
       if (loader) loader.classList.remove('show');
       showStep(4);
 
-      startCardTimer(generatedId);
+      // 🌟 ဖန်တီးပြီးသည်နှင့် created_at အချိန်ကို အခြေခံ၍ Timer စတင်မည်
+      startCardTimer(generatedId, createdTimestamp);
 
       const cardPlayer = document.getElementById('cardAudioPlayer');
       const cardAudioGroup = document.getElementById('cardAudioGroup');
