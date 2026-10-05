@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 4:3 Uniform Border & Stretch Background Styles
+// 🌟 4:3 Aspect Ratio & Background Image Fixed Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -162,13 +162,12 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 4:3 Uniform Border & Strict Stretch Fix */
+  /* 4:3 Uniform Border & Background Stretch Fix */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
     border: 2.5px solid #00f2fe !important;
     border-radius: 16px !important;
-    box-shadow: 0 0 16px rgba(0, 242, 254, 0.45), inset 0 0 12px rgba(0, 242, 254, 0.25) !important;
     box-sizing: border-box !important;
   }
 
@@ -179,7 +178,7 @@ cardStyleInjected.innerHTML = `
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: fill !important; /* 4:3 Stretch to fill container completely */
+    object-fit: fill !important; /* 4:3 Aspect ratio stretch to fill completely */
     z-index: 0 !important;
   }
 
@@ -494,7 +493,16 @@ function renderCardData(data) {
   const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
   if (bgImgSrc) {
     savedBgImage = bgImgSrc;
-    const bgEl = document.getElementById('cardBgImg');
+    let bgEl = document.getElementById('cardBgImg');
+    
+    // HTML ထဲတွင် cardBgImg မရှိပါက အလိုအလျောက် ဖန်တီးပေးမည်
+    const step4El = document.getElementById('step4');
+    if (!bgEl && step4El) {
+      bgEl = document.createElement('img');
+      bgEl.id = 'cardBgImg';
+      step4El.insertBefore(bgEl, step4El.firstChild);
+    }
+
     if (bgEl) {
       bgEl.src = bgImgSrc;
       bgEl.style.display = 'block';
@@ -503,7 +511,7 @@ function renderCardData(data) {
       bgEl.style.left = '0';
       bgEl.style.width = '100%';
       bgEl.style.height = '100%';
-      bgEl.style.objectFit = 'fill'; // 4:3 Stretch to display properly
+      bgEl.style.objectFit = 'fill'; // 4:3 Stretch to fill container completely
       bgEl.style.zIndex = '0';
     }
   }
