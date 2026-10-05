@@ -38,6 +38,7 @@ const i18n = {
     optLogin: "အကောင့်ရှိပြီးသား",
     optSignup: "အကောင့်သစ်ဖွင့်ရန်",
     nameLabel: "နာမည်",
+    namePlaceholder: "နာမည်ရိုက်ပါ",
     numLabel: "ID နံပါတ်",
     numPlaceholder: "နှစ်သက်ရာထည့်နိုင်သည်",
     passLabel: "Password",
@@ -137,6 +138,7 @@ function updateTexts() {
   }
   
   if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = d.nameLabel;
+  if(document.getElementById('loginName')) document.getElementById('loginName').placeholder = d.namePlaceholder;
   if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = d.passLabel;
   if(document.getElementById('loginPass')) document.getElementById('loginPass').placeholder = d.passPlaceholder;
   if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = d.loginBtn;
