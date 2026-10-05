@@ -94,9 +94,77 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection
+// 🌟 CSS Styles Injection (Multi-color Spectrum Equalizer ပုံစံအသစ်)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
+  /* 🌟 Rainbow / Multi-color Spectrum Equalizer Animation */
+  .preview-eq-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 6px;
+    height: 35px;
+    position: relative;
+    padding-bottom: 4px;
+  }
+
+  /* အောက်ခြေမှာ တောက်ပနေတဲ့ Neon Line လေး */
+  .preview-eq-bars::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #00f2fe, #7f00ff, #ff007f, #ff4500, #ffff00, #00ff00);
+    box-shadow: 0 0 10px #00f2fe, 0 0 15px #ff007f, 0 0 15px #ffff00;
+  }
+
+  .preview-eq-bars.playing .p-bar {
+    animation: spectrumWave 0.4s ease-in-out infinite alternate;
+  }
+
+  .p-bar {
+    width: 5px;
+    height: 10px;
+    border-radius: 3px;
+    transform-origin: bottom;
+  }
+
+  /* တစ်ခုချင်းစီအတွက် အရောင်စုံ Rainbow Gradient များ[span_1](start_span)[span_1](end_span) */
+  .p-bar:nth-child(1) {
+    background: linear-gradient(to top, #00f2fe, #4facfe);
+    box-shadow: 0 0 8px #00f2fe;
+    animation-delay: 0.05s;
+  }
+  .p-bar:nth-child(2) {
+    background: linear-gradient(to top, #a18cd1, #fbc2eb);
+    box-shadow: 0 0 8px #b19cd9;
+    animation-delay: 0.20s;
+  }
+  .p-bar:nth-child(3) {
+    background: linear-gradient(to top, #ff0844, #ffb199);
+    box-shadow: 0 0 8px #ff0844;
+    animation-delay: 0.10s;
+  }
+  .p-bar:nth-child(4) {
+    background: linear-gradient(to top, #f6d365, #fda085);
+    box-shadow: 0 0 8px #f6d365;
+    animation-delay: 0.30s;
+  }
+  .p-bar:nth-child(5) {
+    background: linear-gradient(to top, #84fab0, #8fd3f4);
+    box-shadow: 0 0 8px #84fab0;
+    animation-delay: 0.15s;
+  }
+
+  @keyframes spectrumWave {
+    0% { transform: scaleY(0.3); opacity: 0.7; }
+    50% { transform: scaleY(2.2); opacity: 1; filter: brightness(1.4); }
+    100% { transform: scaleY(0.6); opacity: 0.9; }
+  }
+
   #outReason {
     margin-bottom: 18px !important;
     display: block !important;
@@ -158,12 +226,6 @@ cardStyleInjected.innerHTML = `
     display: none;
     align-items: center;
     gap: 6px;
-  }
-
-  @keyframes eqGlowWave {
-    0% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8); }
-    70% { box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0); }
   }
 
   .custom-preview-player {
