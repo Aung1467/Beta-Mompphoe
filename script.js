@@ -153,9 +153,15 @@ const i18n = {
   }
 };
 
-// 🌟 Injected CSS Styles
+// 🌟 Injected CSS Styles (Fixes applied here)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
+  /* Floating Animation Definition */
+  @keyframes float1to1 {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
   /* Preview EQ Bars for Step 3 Music Player */
   .preview-eq-bars {
     width: 52px;
@@ -227,12 +233,12 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
   }
 
-  /* 🌟 #exportCard (Card Box) Styling: Floating Animation, Glow & Composition Area */
+  /* 🌟 #exportCard (4:3 Card Box) - တည်ငြိမ်ပြီး မလှုပ်တော့အောင် animation ပိတ်ထားပါသည် */
   #exportCard {
     position: relative !important;
     overflow: hidden !important;
-    box-shadow: 0 0 20px rgba(0, 242, 254, 0.25), 0 10px 24px rgba(0, 0, 0, 0.8) !important;
-    animation: floatCard 3.5s ease-in-out infinite !important;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.4), 0 10px 24px rgba(0, 0, 0, 0.8) !important;
+    animation: none !important; /* ❌ 4:3 Card မလှုပ်တော့ပါ */
     width: 100% !important;
     max-width: 320px !important;
     aspect-ratio: 3 / 4 !important;
@@ -246,20 +252,16 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
-  @keyframes floatCard {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-  }
-
-  /* Composition Area Background Image (Stretch / Fit) */
+  /* 🌟 Composition Area Background Image - 4:3 နေရာတစ်ခုလုံး အပြည့် fill / stretch ဖြစ်စေရန် */
   #cardBgImg {
     display: block !important;
     position: absolute !important;
+    inset: 0 !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: fill !important; /* 🌟 4:3 Composition Area အပြည့် Stretch ဖြစ်စေရန် */
     z-index: 1 !important;
     pointer-events: none !important;
   }
@@ -283,12 +285,25 @@ cardStyleInjected.innerHTML = `
 
   #cardQrImg {
     display: block !important;
-    max-width: 100% !important;
-    height: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
   }
 
-  #qrWrapper {
+  /* 🌟 1:1 QR Box - Floating Animation အလုပ်လုပ်ရန် */
+  .qr-img-wrapper, #qrWrapper {
     display: block !important;
+    width: 100% !important;
+    max-width: 95px !important;
+    aspect-ratio: 1 / 1 !important;
+    margin: 0 auto !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    border: 2px solid #ff3838 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    z-index: 5 !important;
+    position: relative !important;
+    animation: float1to1 3.5s ease-in-out infinite, realisticFireGlow 2.2s infinite ease-in-out !important; /* 🌟 1:1 Border ကိုသာ လှုပ်ရှားစေရန် */
   }
 
   .top-card-timer {
@@ -809,7 +824,6 @@ function setupProfileView() {
   }
 }
 
-// နာမည်ပြောင်းသည့် UI ကို Custom Modern Glassmorphic Modal ဖြင့် ပြုလုပ်ထားပါသည်
 function changeNickname() {
   if (!currentUser) return;
   
