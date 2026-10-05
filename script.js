@@ -23,6 +23,14 @@ let cardTimerInterval = null;
 let historyTimerInterval = null; 
 let isSharedLinkVisitor = false; 
 
+// Animation Configuration State
+let currentAnimConfig = {
+  speed: 4.0,
+  height: 10,
+  rot: 2.0,
+  scale: 1.06
+};
+
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
   { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
@@ -72,7 +80,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "", // ဖျောက်ထားလိုက်ပါပြီ
+    qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -94,7 +102,7 @@ const i18n = {
   }
 };
 
-// 🌟 Metallic CD Disc & Optimized Background / Faster Animation Styles
+// 🌟 Custom Combined Animation & Bottom-Left Settings Panel Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -134,12 +142,10 @@ cardStyleInjected.innerHTML = `
     z-index: 1;
   }
 
-  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း */
   .p-bar {
     display: none !important;
   }
 
-  /* သီချင်းစဖွင့်သောအခါ CD ပြား လည်ပတ်ခြင်း Animation */
   .preview-eq-bars.playing {
     animation: spinCdDisc 1.8s linear infinite !important;
   }
@@ -164,16 +170,25 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Swing Animation ကို ပိုမိုမြန်ဆန်စေရန် (8s မှ 4.5s သို့ ပြောင်းထားသည်) */
-  @keyframes smoothSwingAnimation {
-    0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-    25% { transform: scale(1.06) rotate(-1.5deg) translate(-3px, 2px); }
-    50% { transform: scale(1.06) rotate(1deg) translate(2px, 3px); }
-    75% { transform: scale(1.06) rotate(-1deg) translate(-2px, -2px); }
-    100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
+  /* Combined Animation: Vertical translation + Center rotation swing */
+  @keyframes customCombinedAnim {
+    0% {
+      transform: scale(var(--anim-scale, 1.06)) translateY(0px) rotate(0deg);
+    }
+    25% {
+      transform: scale(var(--anim-scale, 1.06)) translateY(calc(var(--anim-height, 10px) * -1)) rotate(var(--anim-rot, 2deg));
+    }
+    50% {
+      transform: scale(var(--anim-scale, 1.06)) translateY(0px) rotate(0deg);
+    }
+    75% {
+      transform: scale(var(--anim-scale, 1.06)) translateY(var(--anim-height, 10px)) rotate(calc(var(--anim-rot, 2deg) * -1));
+    }
+    100% {
+      transform: scale(var(--anim-scale, 1.06)) translateY(0px) rotate(0deg);
+    }
   }
 
-  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း (3:4 အပါအဝင် အချိုးအစားအမျိုးမျိုးအတွက်) */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
@@ -181,7 +196,7 @@ cardStyleInjected.innerHTML = `
 
   #cardBgImg {
     transform-origin: center center !important;
-    animation: smoothSwingAnimation 4.5s infinite ease-in-out !important;
+    animation: customCombinedAnim var(--anim-speed, 4s) infinite ease-in-out !important;
     display: block !important;
     position: absolute !important;
     top: 0 !important;
@@ -192,13 +207,11 @@ cardStyleInjected.innerHTML = `
     z-index: 0 !important;
   }
 
-  /* ကတ်ပေါ်ရှိ အချက်အလက်များ နောက်ခံပုံအပေါ်မှ ပေါ်စေရန် */
   #step4 > *:not(#cardBgImg) {
     position: relative !important;
     z-index: 2 !important;
   }
 
-  /* ငွေလွဲရန် QR ညွှန်ကြားချက် စာသားကို လုံးဝဖျောက်ရန် */
   #lbl_qrHint {
     display: none !important;
   }
@@ -211,6 +224,64 @@ cardStyleInjected.innerHTML = `
 
   #qrWrapper {
     display: block !important;
+  }
+
+  /* Bottom-Left Settings Button & Panel */
+  .card-settings-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 30;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1.5px solid rgba(0, 242, 254, 0.7);
+    color: #00f2fe;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 15px;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+  }
+
+  .card-settings-panel {
+    position: absolute;
+    bottom: 52px;
+    left: 12px;
+    z-index: 35;
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    border-radius: 12px;
+    padding: 12px;
+    width: 210px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card-settings-panel.show {
+    display: flex;
+  }
+
+  .setting-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .setting-row label {
+    font-size: 10.5px;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+
+  .setting-row input[type="range"] {
+    width: 100%;
+    accent-color: #00f2fe;
+    cursor: pointer;
   }
 
   .top-card-timer {
@@ -260,6 +331,87 @@ cardStyleInjected.innerHTML = `
   }
 `;
 document.head.appendChild(cardStyleInjected);
+
+// Inject Settings Button and Panel into Step 4 Container dynamically if not present
+function ensureCardSettingsUI() {
+  const step4El = document.getElementById('step4');
+  if (!step4El) return;
+
+  if (!document.getElementById('cardSettingsBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'cardSettingsBtn';
+    btn.className = 'card-settings-btn';
+    btn.innerHTML = '⚙️';
+    btn.title = 'Animation Settings';
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const panel = document.getElementById('cardSettingsPanel');
+      if (panel) panel.classList.toggle('show');
+    };
+    step4El.appendChild(btn);
+  }
+
+  if (!document.getElementById('cardSettingsPanel')) {
+    const panel = document.createElement('div');
+    panel.id = 'cardSettingsPanel';
+    panel.className = 'card-settings-panel';
+    panel.innerHTML = `
+      <div class="setting-row">
+        <label>အမြန်နှုန်း (Speed): <span id="lblValSpeed">4.0s</span></label>
+        <input type="range" id="animSpeedRange" min="1" max="10" step="0.5" value="4.0" oninput="updateAnimSetting('speed', this.value)">
+      </div>
+      <div class="setting-row">
+        <label>အမြင့် (Height): <span id="lblValHeight">10px</span></label>
+        <input type="range" id="animHeightRange" min="2" max="30" step="1" value="10" oninput="updateAnimSetting('height', this.value)">
+      </div>
+      <div class="setting-row">
+        <label>ဘေးခါနှုန်း (Rotation): <span id="lblValRot">2.0°</span></label>
+        <input type="range" id="animRotRange" min="0.5" max="8" step="0.5" value="2.0" oninput="updateAnimSetting('rot', this.value)">
+      </div>
+      <div class="setting-row">
+        <label>ပုံအရွယ်အစား (Scale): <span id="lblValScale">1.06</span></label>
+        <input type="range" id="animScaleRange" min="1.0" max="1.3" step="0.02" value="1.06" oninput="updateAnimSetting('scale', this.value)">
+      </div>
+    `;
+    step4El.appendChild(panel);
+  }
+}
+
+function updateAnimSetting(key, val) {
+  currentAnimConfig[key] = parseFloat(val);
+  
+  if (key === 'speed') document.getElementById('lblValSpeed').innerText = `${val}s`;
+  if (key === 'height') document.getElementById('lblValHeight').innerText = `${val}px`;
+  if (key === 'rot') document.getElementById('lblValRot').innerText = `${val}°`;
+  if (key === 'scale') document.getElementById('lblValScale').innerText = val;
+
+  applyAnimConfigToDOM();
+}
+
+function applyAnimConfigToDOM() {
+  const bgEl = document.getElementById('cardBgImg');
+  if (bgEl) {
+    bgEl.style.setProperty('--anim-speed', `${currentAnimConfig.speed}s`);
+    bgEl.style.setProperty('--anim-height', `${currentAnimConfig.height}px`);
+    bgEl.style.setProperty('--anim-rot', `${currentAnimConfig.rot}deg`);
+    bgEl.style.setProperty('--anim-scale', currentAnimConfig.scale);
+  }
+}
+
+function setSettingsInteractive(isInteractive) {
+  const panelInputs = document.querySelectorAll('#cardSettingsPanel input');
+  panelInputs.forEach(inp => {
+    inp.disabled = !isInteractive;
+  });
+}
+
+// Close settings panel when clicking outside
+window.addEventListener('click', function(e) {
+  if (!e.target.closest('#cardSettingsBtn') && !e.target.closest('#cardSettingsPanel')) {
+    const panel = document.getElementById('cardSettingsPanel');
+    if (panel) panel.classList.remove('show');
+  }
+});
 
 // Text Localization Function
 function updateTexts() {
@@ -462,6 +614,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateTexts();
   populateReasonDropdown('my');
   populateMusicDropdown();
+  ensureCardSettingsUI();
 
   setTimeout(() => {
     const splash = document.getElementById('introSplash');
@@ -503,6 +656,8 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (loader) loader.classList.remove('show');
           showStep(4);
           
+          // Shared visitor: disable settings adjustment
+          setSettingsInteractive(false);
           startCardTimer(cardId);
           return;
         }
@@ -517,9 +672,38 @@ window.addEventListener('DOMContentLoaded', async () => {
 function renderCardData(data) {
   if (!data) return;
 
+  let rawNote = data.note || '';
+  // Check if animation config is embedded in note
+  if (rawNote.includes('|||ANIM_CONFIG:')) {
+    try {
+      const parts = rawNote.split('|||ANIM_CONFIG:');
+      rawNote = parts[0];
+      const cfg = JSON.parse(parts[1].split('|||')[0]);
+      currentAnimConfig = cfg;
+      
+      // Update UI sliders if present
+      if (document.getElementById('animSpeedRange')) {
+        document.getElementById('animSpeedRange').value = cfg.speed;
+        document.getElementById('lblValSpeed').innerText = `${cfg.speed}s`;
+      }
+      if (document.getElementById('animHeightRange')) {
+        document.getElementById('animHeightRange').value = cfg.height;
+        document.getElementById('lblValHeight').innerText = `${cfg.height}px`;
+      }
+      if (document.getElementById('animRotRange')) {
+        document.getElementById('animRotRange').value = cfg.rot;
+        document.getElementById('lblValRot').innerText = `${cfg.rot}°`;
+      }
+      if (document.getElementById('animScaleRange')) {
+        document.getElementById('animScaleRange').value = cfg.scale;
+        document.getElementById('lblValScale').innerText = cfg.scale;
+      }
+    } catch(e) { console.error('Parse anim config error:', e); }
+  }
+
   document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
   document.getElementById('outReason').innerText = data.reason || '';
-  document.getElementById('outNote').innerText = data.note || '';
+  document.getElementById('outNote').innerText = rawNote;
 
   const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
   if (bgImgSrc) {
@@ -537,6 +721,8 @@ function renderCardData(data) {
       bgEl.style.zIndex = '0';
     }
   }
+
+  applyAnimConfigToDOM();
 
   const qrImgSrc = data.qrImage || data.qr_image || savedQrImage;
   if (qrImgSrc) {
@@ -972,6 +1158,7 @@ async function viewCardFromHistory(cardId) {
         });
         if (loader) loader.classList.remove('show');
         showStep(4);
+        setSettingsInteractive(false);
         startCardTimer(cardId);
         return;
       } else {
@@ -1019,6 +1206,9 @@ function goToStep(stepNumber) {
   setTimeout(() => {
     loader.classList.remove('show');
     showStep(stepNumber);
+    if (stepNumber === 4 && !isSharedLinkVisitor) {
+      setSettingsInteractive(true);
+    }
   }, 800);
 }
 
@@ -1159,10 +1349,13 @@ async function generateAndSaveCard() {
       savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
     }
 
+    // Pack animation configuration into note safely
+    const finalNoteWithConfig = customNote + '|||ANIM_CONFIG:' + JSON.stringify(currentAnimConfig) + '|||';
+
     const payload = {
       sender: currentUser ? currentUser.name : 'Aung',
       reason: finalReason,
-      note: customNote,
+      note: finalNoteWithConfig,
       bg_image: savedBgImage,
       qr_image: savedQrImage,
       music_url: savedMusicUrl
@@ -1208,6 +1401,9 @@ async function generateAndSaveCard() {
 
       if (loader) loader.classList.remove('show');
       showStep(4);
+      
+      // Once saved by creator, disable interactive settings change on preview card
+      setSettingsInteractive(false);
 
       startCardTimer(generatedId);
 
