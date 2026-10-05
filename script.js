@@ -162,7 +162,7 @@ cardStyleInjected.innerHTML = `
     50% { transform: translateY(-6px); }
   }
 
-  /* 🌟 Faster Realistic Glow Animation (1.0s speed) */
+  /* 🌟 Fast Glow Animation (1.0s speed) */
   @keyframes realisticFireGlow {
     0% {
       border-color: #ff3838;
@@ -178,55 +178,45 @@ cardStyleInjected.innerHTML = `
     }
   }
 
-  /* Preview EQ Bars for Step 3 Music Player */
-  .preview-eq-bars {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #000 0%, #111 18%, #333 20%, #777 24%, #222 28%, #aaa 32%, #111 38%, #333 60%, #000 100%),
-                conic-gradient(from 0deg, #111, #555, #aaa, #fff, #aaa, #555, #111);
-    background-blend-mode: overlay;
-    border: 2px solid #00f2fe;
-    position: relative;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 14px rgba(0, 242, 254, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.4);
-  }
-
-  .preview-eq-bars::before {
-    content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    background: #090d16;
-    border: 2px solid #00f2fe;
-    border-radius: 50%;
-    z-index: 2;
-  }
-
-  .preview-eq-bars::after {
-    content: '';
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    border: 1px dashed rgba(255, 255, 255, 0.35);
-    border-radius: 50%;
-    z-index: 1;
-  }
-
-  .p-bar {
+  /* ❌ Hide CD Disc Completely */
+  .preview-eq-bars, #audioPreviewGroup .preview-eq-bars {
     display: none !important;
   }
 
-  .preview-eq-bars.playing {
-    animation: spinCdDisc 1.8s linear infinite !important;
+  /* 🌟 Mini Equalizer Wave Animation inside Music Select Box */
+  .mini-eq-container {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 14px;
+    margin-left: auto;
+    padding-right: 6px;
+    vertical-align: middle;
   }
 
-  @keyframes spinCdDisc {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  .mini-eq-bar {
+    width: 3px;
+    background: #00f2fe;
+    border-radius: 2px;
+    box-shadow: 0 0 6px #00f2fe;
+    animation: eqJump 0.8s ease-in-out infinite alternate;
+  }
+
+  .mini-eq-bar:nth-child(1) { height: 35%; animation-delay: 0.1s; }
+  .mini-eq-bar:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+  .mini-eq-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+  .mini-eq-bar:nth-child(4) { height: 85%; animation-delay: 0.4s; }
+
+  @keyframes eqJump {
+    0% { height: 20%; opacity: 0.5; }
+    100% { height: 100%; opacity: 1; }
+  }
+
+  /* Custom Select Trigger styling polish for Music */
+  #musicCustomSelect .custom-select-trigger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
 
   /* Card Content Text Styles */
@@ -249,7 +239,7 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
   }
 
-  /* 🌟 #exportCard Box (4:3 Card) */
+  /* 🌟 #exportCard Box (4:3 Card Area) */
   #exportCard {
     position: relative !important;
     overflow: hidden !important;
@@ -268,7 +258,7 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
-  /* 🌟 Composition Area Background Image */
+  /* Composition Area Background Image */
   #cardBgImg {
     display: block !important;
     position: absolute !important;
@@ -287,22 +277,22 @@ cardStyleInjected.innerHTML = `
     z-index: 5 !important;
   }
 
-  /* 🌟 "From: Aung" Tag Fix: ညာဘက်အပေါ်ထောင့်တွင် ကျစ်ကျစ်လစ်လစ် ကပ်ပေးခြင်း */
+  /* 🌟 "From: Aung" Tag: ညာဘက်အပေါ်သို့ ပိုမိုကပ်၍ သပ်ရပ်စွာ ပေါ်စေခြင်း */
   #outSender, .sender-tag {
     position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
+    top: 6px !important;     /* အပေါ်သို့ ပိုမိုမြင့်တင်ထားသည် */
+    right: 6px !important;   /* ညာဘက်သို့ ပိုမိုကပ်ထားသည် */
     left: auto !important;
     width: auto !important;
     max-width: fit-content !important;
     display: inline-block !important;
-    padding: 4px 10px !important;
-    font-size: 11px !important;
+    padding: 3px 9px !important;
+    font-size: 10.5px !important;
     font-weight: 700 !important;
     background: var(--primary, #ff0055) !important;
     color: #ffffff !important;
-    border-radius: 8px !important;
-    box-shadow: 0 3px 8px rgba(255, 0, 85, 0.5) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(255, 0, 85, 0.4) !important;
     z-index: 10 !important;
     white-space: nowrap !important;
   }
@@ -318,7 +308,7 @@ cardStyleInjected.innerHTML = `
     object-fit: cover !important;
   }
 
-  /* 🌟 1:1 QR Box - Floating + မြန်ဆန်သော Glow Animation (1.0s) */
+  /* 🌟 1:1 QR Box - Floating + Glow Animation (1.0s) */
   .qr-img-wrapper, #qrWrapper {
     display: block !important;
     width: 100% !important;
@@ -494,6 +484,18 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   });
 }
 
+// Helper: Render Mini Equalizer inside Music Trigger
+function getMiniEqHtml() {
+  return `
+    <div class="mini-eq-container">
+      <div class="mini-eq-bar"></div>
+      <div class="mini-eq-bar"></div>
+      <div class="mini-eq-bar"></div>
+      <div class="mini-eq-bar"></div>
+    </div>
+  `;
+}
+
 // Music Dropdown Functions
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
@@ -511,13 +513,13 @@ function populateMusicDropdown() {
     container.appendChild(div);
 
     if (song.url === currentVal) {
-      document.getElementById('musicTriggerText').innerText = song.name;
+      document.getElementById('musicTriggerText').innerHTML = `${song.name} ${getMiniEqHtml()}`;
       found = true;
     }
   });
 
   if (!found && localMusicList.length > 0) {
-    document.getElementById('musicTriggerText').innerText = localMusicList[0].name;
+    document.getElementById('musicTriggerText').innerHTML = `${localMusicList[0].name} ${getMiniEqHtml()}`;
     document.getElementById('musicDropdown').value = localMusicList[0].url;
     savedMusicUrl = localMusicList[0].url;
     
@@ -533,7 +535,7 @@ function populateMusicDropdown() {
 }
 
 function selectMusicOption(url, name) {
-  document.getElementById('musicTriggerText').innerText = name;
+  document.getElementById('musicTriggerText').innerHTML = `${name} ${getMiniEqHtml()}`;
   document.getElementById('musicDropdown').value = url;
   document.getElementById('musicCustomSelect').classList.remove('open');
   
@@ -546,10 +548,7 @@ function selectMusicOption(url, name) {
     player.load();
     player.loop = true;
     
-    player.play().then(() => {
-      const eqContainer = document.querySelector('.preview-eq-bars');
-      if(eqContainer) eqContainer.classList.add('playing');
-    }).catch(e => console.log("Auto-play error:", e));
+    player.play().catch(e => console.log("Auto-play error:", e));
   }
 }
 
@@ -1233,10 +1232,6 @@ function showStep(stepNumber) {
       previewPlayer.pause();
       previewPlayer.currentTime = 0;
     }
-    const eqContainer = document.querySelector('.preview-eq-bars');
-    if (eqContainer) {
-      eqContainer.classList.remove('playing');
-    }
   }
 }
 
@@ -1297,10 +1292,6 @@ async function generateAndSaveCard() {
   if (previewPlayer) {
     previewPlayer.pause();
     previewPlayer.currentTime = 0;
-  }
-  const eqContainer = document.querySelector('.preview-eq-bars');
-  if (eqContainer) {
-    eqContainer.classList.remove('playing');
   }
 
   const reasonVal = document.getElementById('reasonDropdownVal').value;
