@@ -28,13 +28,16 @@ const localMusicList = [
   { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
   { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
   { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
-  { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
+  { name: '🎵 song4.mp3', url: 'music/song4.mp3' },
+  { name: '🎵 song5.mp3', url: 'music/song4.mp3' },
+  { name: '🎵 song6.mp3', url: 'music/song4.mp3' },
+  { name: '🎵 song7.mp3', url: 'music/song4.mp3' }
 ];
 
 // ဘာသာစကား စာသားများ (မြန်မာ / English)
 const i18n = {
   my: {
-    pageTitle: "🥺",
+    pageTitle: "Beta Monpphoe",
     introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
     authTitle: "အကောင့်ဝင်ရန်",
