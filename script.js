@@ -89,7 +89,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (အပြင်ဘောင် ငြိမ်စေပြီး အထဲက ပုံကို Swing ဖြင့် ညင်သာစွာ လွှဲယမ်းလှုပ်ရှားစေခြင်း)
+// 🌟 CSS Styles Injection (Swing Animation နှင့် ပုံများ သေချာပေါ်စေရန် Style များ)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   #outReason {
@@ -107,7 +107,7 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 4:3 ပုံ (Background Image) ကို scale ပုံသေထားကာ အလယ်ဗဟိုကိုအခြေခံ၍ Swing (လွှဲယမ်း) ပုံစံ ညင်သာစွာ ရွေ့လျားခြင်း */
+  /* 🌟 4:3 ပုံ (Background Image) Swing Animation */
   @keyframes smoothSwingAnimation {
     0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
     25% { transform: scale(1.06) rotate(-1.2deg) translate(-4px, 3px); }
@@ -119,6 +119,23 @@ cardStyleInjected.innerHTML = `
   #cardBgImg {
     transform-origin: center center !important;
     animation: smoothSwingAnimation 8s infinite ease-in-out !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  #cardQrImg {
+    display: block !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  #qrWrapper {
+    display: block !important;
   }
 
   /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
@@ -437,7 +454,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Render Card Data Function
+// 🌟 ပုံများ သေချာပေါ်စေရန် ေရးသားထားသော Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
@@ -452,6 +469,9 @@ function renderCardData(data) {
     if (bgEl) {
       bgEl.src = bgImgSrc;
       bgEl.style.display = 'block';
+      bgEl.style.position = 'absolute';
+      bgEl.style.top = '0';
+      bgEl.style.left = '0';
       bgEl.style.width = '100%';
       bgEl.style.height = '100%';
       bgEl.style.objectFit = 'cover';
@@ -466,6 +486,8 @@ function renderCardData(data) {
     if (qrEl) {
       qrEl.src = qrImgSrc;
       qrEl.style.display = 'block';
+      qrEl.style.maxWidth = '100%';
+      qrEl.style.height = 'auto';
     }
     if (qrWr) {
       qrWr.style.display = 'block';
@@ -697,17 +719,15 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
-// 🌟 Card Link ဖြင့် ဝင်လာသူများ Profile သို့ပြန်ရန်ခလုတ်နှိပ်လျှင် Login/Auth နေရာသို့ သွားစေခြင်း
+// 🌟 Card Link ဖြင့် ဝင်လာသူများ Profile သို့ပြန်ရန်ခလုတ်နှိပ်လျှင် Login နေရာသို့ သွားစေခြင်း
 function returnToProfileOrLogin() {
   if (isSharedLinkVisitor) {
-    // URL ထဲမှ ?id=... ကို ဖယ်ရှားပြီး မူလ စာမျက်နှာ (သို့မဟုတ် Login/Step 1) သို့ ပို့ဆောင်ခြင်း
     if (window.history && window.history.replaceState) {
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.replaceState({path: cleanUrl}, '', cleanUrl);
     }
     isSharedLinkVisitor = false;
     
-    // Audio Player များကို ရပ်တန့်ရန်
     const cardPlayer = document.getElementById('cardAudioPlayer');
     if (cardPlayer) {
       cardPlayer.pause();
@@ -716,10 +736,8 @@ function returnToProfileOrLogin() {
     const timerEl = document.getElementById('topCardTimer');
     if (timerEl) timerEl.style.display = 'none';
 
-    // Step 1 (သို့မဟုတ် Login / Auth မျက်နှာပြင်) သို့ ပြန်သွားရန်
     goToStep(1);
   } else {
-    // ပုံမှန် ဖန်တီးသူအတွက်မူ Profile သို့ (Step 2) သို့ ပြန်သွားမည်
     goToStep(2);
   }
 }
