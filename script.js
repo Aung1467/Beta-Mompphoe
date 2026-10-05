@@ -709,7 +709,7 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်း (သက်တမ်းကို Menu ၏ ဘယ်ဘက်ကပ်ပြီး စာအရောင် အနီရောင်ဖြင့်ပြရန်)
+// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်း (1, 2, 3 နံပါတ်စဉ်၊ my-pocket-money အထိသာပြပြီး ID ဖြောက်ရန်၊ သက်တမ်းနှင့် မီနူး အပေါ်တွင် အရှည်လိုက်ဆန့်စေရန်)
 function renderHistoryList() {
   if (historyTimerInterval) clearInterval(historyTimerInterval);
 
@@ -729,29 +729,22 @@ function renderHistoryList() {
     row.style.flexDirection = 'column';
     row.style.position = 'relative';
 
-    // ထိပ်ပိုင်း (လင့်ခ်စာသား၊ သက်တမ်းနှင့် မီနူးခလုတ်)
+    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ် ≡ ကို ညာ/ဘက် ချိန်၍ အပေါ်ဆုံးတွင် ထားရှိရန်)
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
+    topRow.style.justifyContent = 'space-between';
     topRow.style.alignItems = 'center';
     topRow.style.width = '100%';
-    topRow.style.gap = '8px';
+    topRow.style.marginBottom = '6px';
 
-    const linkText = document.createElement('span');
-    linkText.className = 'history-link-text';
-    linkText.style.flex = '1';
-    linkText.innerText = `${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${item.link}`;
-
-    // 🌟 သက်တမ်းပြမည့် စာသား (Menu ၏ ဘယ်ဘက်ကပ်၊ စာအရောင် အနီ - #ff4757)
     const expireText = document.createElement('span');
     expireText.className = 'history-timer-span';
     expireText.style.fontSize = '11px';
     expireText.style.color = '#ff4757';
     expireText.style.fontWeight = '600';
-    expireText.style.flexShrink = '0';
     expireText.dataset.cardId = item.id;
     expireText.innerText = 'သက်တမ်း - 120:00';
 
-    // မျဉ်း 3 ကြောင်း (3-Line Menu Button)
     const menuBtn = document.createElement('button');
     menuBtn.className = 'history-menu-btn';
     menuBtn.innerHTML = '≡';
@@ -760,9 +753,29 @@ function renderHistoryList() {
       toggleHistoryDropdown(index);
     };
 
-    topRow.appendChild(linkText);
-    topRow.appendChild(expireText); // Menu ၏ ဘယ်ဘက်တွင် ထည့်သွင်းခြင်း
+    topRow.appendChild(expireText);
     topRow.appendChild(menuBtn);
+
+    // 🌟 အောက်ပိုင်း (1, 2, 3 နံပါတ်စဉ်၊ my-pocket-money အထိသာပြပြီး ID ဖျောက်ကာ အရှည်လိုက် အပြည့်ပြရန်)
+    const bottomRow = document.createElement('div');
+    bottomRow.style.width = '100%';
+
+    const linkText = document.createElement('span');
+    linkText.className = 'history-link-text';
+    linkText.style.display = 'block';
+    linkText.style.width = '100%';
+    linkText.style.wordBreak = 'break-all';
+
+    let cleanLink = item.link || '';
+    if (cleanLink.includes('my-pocket-money')) {
+      const pmIdx = cleanLink.indexOf('my-pocket-money');
+      cleanLink = cleanLink.substring(0, pmIdx + 'my-pocket-money'.length);
+    } else {
+      cleanLink = cleanLink.split('?')[0];
+    }
+
+    linkText.innerText = `${index + 1}. ${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${cleanLink}`;
+    bottomRow.appendChild(linkText);
 
     // Dropdown Menu (ကြည့်ရန် နှင့် ဖျက်ပြစ်ရန်)
     const dropdown = document.createElement('div');
@@ -783,6 +796,7 @@ function renderHistoryList() {
     dropdown.appendChild(deleteItem);
 
     row.appendChild(topRow);
+    row.appendChild(bottomRow);
     row.appendChild(dropdown);
 
     container.appendChild(row);
