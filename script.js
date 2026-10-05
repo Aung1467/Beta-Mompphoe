@@ -19,7 +19,7 @@ let selectedBgFile = null;
 let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
-let emojiIntervalId = null; // 🌟 Emoji ဖန်တီးသည့် interval ကို ထိန်းချုပ်ရန်
+let emojiIntervalId = null;
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
@@ -89,7 +89,7 @@ const i18n = {
   }
 };
 
-// 🌟 စာသားများ animation နှင့် အလယ်က Anime GIF ပုံကိုသာ ကြီးပေးပြီး ပတ်လည် Equalizer Effect ထည့်သွင်းခြင်း
+// 🌟 စာသားများ animation, GIF နှင့် Audio Preview ၏ Background ဖယ်ရှားခြင်းနှင့် Equalizer သက်သက်ထားရှိခြင်း CSS
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -111,16 +111,14 @@ cardStyleInjected.innerHTML = `
     font-weight: bold;
   }
 
-  /* 🌟 Music border ကို မူလအရွယ်အစားအတိုင်းထားပြီး၊ အလယ်က Anime GIF ပုံကိုသာ ကြီးပေးခြင်း */
   .player-controls-row > div:nth-child(2) img,
   .media-center-btn img,
   .anime-circle-container img {
-    transform: scale(1.45); /* GIF ပုံကို ပိုကြီးစေရန် */
+    transform: scale(1.45);
     transform-origin: center;
     border-radius: 50%;
   }
 
-  /* ပတ်လည် Equalizer glowing wave animation effect */
   @keyframes eqGlowWave {
     0% {
       box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8);
@@ -138,6 +136,16 @@ cardStyleInjected.innerHTML = `
   .anime-circle-container {
     animation: eqGlowWave 2s infinite ease-in-out;
     border-radius: 50%;
+  }
+
+  /* 🌟 Audio Preview Box ၏ Background နှင့် Border များကို ဖယ်ရှားပြီး Equalizer သက်သက်သာ ပြသခြင်း */
+  .custom-preview-player {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 4px 0 !important;
+    margin: 4px auto !important;
+    height: auto !important;
   }
 `;
 document.head.appendChild(cardStyleInjected);
@@ -201,7 +209,6 @@ function updateTexts() {
   if(document.getElementById('customNote')) document.getElementById('customNote').placeholder = d.customNotePlaceholder;
 
   if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = d.musicLabel;
-  if(document.getElementById('lbl_audioPreview')) document.getElementById('lbl_audioPreview').innerText = d.audioPreview;
   if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = d.bgLabel;
   if(document.getElementById('bgImgLabel')) document.getElementById('bgImgLabel').innerText = d.bgBtn;
   if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = d.qrLabel;
@@ -537,7 +544,6 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
-// 🌟 Step 4 ပေါ်လာလျှင် အီမိုဂျီများ အလိုအလျောက် ပျံဝဲပေါ်ထွက်လာစေရန် Function
 function startEmojiRain() {
   if (emojiIntervalId) clearInterval(emojiIntervalId);
   const overlay = document.getElementById('emojiOverlay');
@@ -556,7 +562,6 @@ function startEmojiRain() {
     span.className = 'floating-emoji';
     span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
     
-    // 4:3 ကဒ်အတွင်း နေရာအတိုင်းအတာအဝန်းအဝိုင်းအတွင်းကျပန်းပေါ်စေရန်
     span.style.left = Math.random() * 88 + '%';
     span.style.fontSize = (Math.random() * 12 + 16) + 'px';
     
@@ -590,7 +595,7 @@ function showStep(stepNumber) {
     if (eqContainer) {
       eqContainer.classList.remove('playing');
     }
-    startEmojiRain(); // 🌟 Step 4 ရောက်ပါက Emoji မိုးရွာသကဲ့သို့ ပျံဝဲခြင်းကို စတင်ရန်
+    startEmojiRain();
   } else {
     if (emojiIntervalId) clearInterval(emojiIntervalId);
   }
