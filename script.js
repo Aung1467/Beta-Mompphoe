@@ -592,7 +592,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     }
   }
 
-  alert('⚠️️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  alert('⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
   goToStep(2);
 }
 
@@ -704,14 +704,13 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (မှတ်တမ်းများ နှင့် နောက်သို့ ခလုတ်ကြား ကွာဟချက်ကို ပိုကျယ်စေပြီး မီနူးနှိပ်လျှင် စာမကွယ်စေရန် space ချဲ့ပေးထားသည်)
+// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (ဘောင်ကျဉ်း၍ မီနူးနှင့် တန်းတူညီညာစေပြီး Dropdown အောက်သို့ ဆင်းစေရန်)
 function renderHistoryList() {
   if (historyTimerInterval) clearInterval(historyTimerInterval);
 
   const container = document.getElementById('historyListContainer');
   if (!container) return;
   container.innerHTML = '';
-  container.style.paddingBottom = '50px'; // 🌟 အောက်ခြေခလုတ်နှင့် ကွာဟချက် လွတ်လပ်စေရန်
 
   if (!currentUser || !currentUser.history || currentUser.history.length === 0) {
     container.innerHTML = '<p style="text-align: center; color: #cbd5e1; font-size: 13px; padding: 20px;">မှတ်တမ်းများ မရှိသေးပါ။</p>';
@@ -724,19 +723,19 @@ function renderHistoryList() {
     row.style.display = 'flex';
     row.style.flexDirection = 'column';
     row.style.position = 'relative';
-    row.style.padding = '6px 12px';
-    row.style.marginBottom = '12px'; // 🌟 တစ်ခုနှင့်တစ်ခု အကွာအဝေးကို ပိုချဲ့ပေးထား၍ မီနူးနှိပ်လျှင် စာမကွယ်ပါ
-    row.style.borderRadius = '8px';
+    row.style.padding = '8px 12px'; // 🌟 ဘောင်ကို ပိုကျဉ်းစေပြီး ကျစ်လစ်စေရန်
+    row.style.marginBottom = '6px';
+    row.style.borderRadius = '10px';
     row.style.background = 'rgba(15, 23, 42, 0.85)';
     row.style.border = '1px solid rgba(255, 255, 255, 0.08)';
 
-    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်)
+    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်ကို ဘေးချင်းတန်းတူ ဖြစ်စေရန်)
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.justifyContent = 'space-between';
     topRow.style.alignItems = 'center';
     topRow.style.width = '100%';
-    topRow.style.position = 'relative'; 
+    topRow.style.position = 'relative'; // 🌟 Dropdown နေရာချရန် 
     topRow.style.marginBottom = '2px';
 
     const expireText = document.createElement('span');
@@ -764,12 +763,12 @@ function renderHistoryList() {
     topRow.appendChild(expireText);
     topRow.appendChild(menuBtn);
 
-    // 🌟 Dropdown Menu
+    // 🌟 Dropdown Menu (မီနူးကို နှိပ်လျှင် အောက်သို့ သပ်ရပ်စွာ ဆင်းကျလာစေရန်၊ နောက်သို့ခလုတ်ကို မကွယ်စေရန်)
     const dropdown = document.createElement('div');
     dropdown.className = 'history-dropdown-menu';
     dropdown.id = `historyDropdown_${index}`;
     dropdown.style.position = 'absolute';
-    dropdown.style.top = '24px';
+    dropdown.style.top = '26px';
     dropdown.style.right = '0';
     dropdown.style.zIndex = '9999';
     dropdown.style.background = '#1e293b';
@@ -782,7 +781,7 @@ function renderHistoryList() {
     const viewItem = document.createElement('div');
     viewItem.className = 'history-dropdown-item';
     viewItem.innerText = 'ကြည့်ရန်';
-    viewItem.style.padding = '5px 10px';
+    viewItem.style.padding = '6px 12px';
     viewItem.style.cursor = 'pointer';
     viewItem.style.fontSize = '12px';
     viewItem.style.color = '#fff';
@@ -792,7 +791,7 @@ function renderHistoryList() {
     const deleteItem = document.createElement('div');
     deleteItem.className = 'history-dropdown-item';
     deleteItem.innerText = 'ဖျက်ပြစ်ရန်';
-    deleteItem.style.padding = '5px 10px';
+    deleteItem.style.padding = '6px 12px';
     deleteItem.style.cursor = 'pointer';
     deleteItem.style.fontSize = '12px';
     deleteItem.style.color = '#ff4757';

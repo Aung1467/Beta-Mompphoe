@@ -1,1208 +1,1137 @@
-// Supabase Credentials
-const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
-
-let supabaseClient = null;
-
-function getSupabase() {
-  if (!supabaseClient && window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-  return supabaseClient;
-}
-
-let currentUser = null;
-let savedBgImage = '';
-let savedQrImage = '';
-let savedMusicUrl = '';
-let selectedBgFile = null;
-let selectedQrFile = null;
-let currentShareableLink = '';
-let currentLang = 'my';
-let cardTimerInterval = null;
-let historyTimerInterval = null; // 🌟 မှတ်တမ်းများအတွက် Timer Interval
-let isSharedLinkVisitor = false; // 🌟 Card Link ကနေ ဝင်လာသူ ဟုတ်မဟုတ် မှတ်သားရန်
-
-// Music Folder ထဲရှိ သီချင်းစာရင်း
-const localMusicList = [
-  { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
-  { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
-  { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
-  { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
-];
-
-// မြန်မာဘာသာစာသားများ သီးသန့်
-const i18n = {
-  my: {
-    introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
-    loaderMsg: "ခဏစောင့်ပါ...",
-    authTitle: "အကောင့်ဝင်ရန်",
-    modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
-    optLogin: "အကောင့်ရှိပြီးသား",
-    optSignup: "အကောင့်သစ်ဖွင့်ရန်",
-    nameLabel: "နာမည်",
-    namePlaceholder: "နာမည်ရိုက်ပါ",
-    numLabel: "ID နံပါတ်",
-    numPlaceholder: "နှစ်သက်ရာထည့်နိုင်သည်",
-    passLabel: "Password",
-    passPlaceholder: "Password ရိုက်ပါ",
-    pass2Label: "Password ထပ်မံရိုက်ပါ",
-    pass2Placeholder: "Password ကို ထပ်ရိုက်ပါ",
-    loginBtn: "အကောင့်ဝင်မည်",
-    signupBtn: "အကောင့်အသစ်ဖွင့်မည်",
-    profileTitle: "ကိုယ်ရေးအချက်အလက်",
-    changeAvatar: "Profile ပုံပြောင်းရန်",
-    changeNickBtn: "နာမည်ပြောင်းရန်",
-    reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
-    historyBtn: "မှတ်တမ်းများ",
-    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
-    dropdownLabel: "အကြောင်းအရာ ရွေးချယ်ရန်",
-    customReasonLabel: "ကိုယ်တိုင်စာရေးရန်",
-    customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
-    customNoteLabel: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
-    customNotePlaceholder: "စာစီပါ...",
-    musicLabel: "သီချင်း ရွေးချယ်ရန်",
-    bgLabel: "နောက်ခံပုံ",
-    bgBtn: "📸 နောက်ခံပုံ ရွေးရန်",
-    qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
-    qrBtn: "💳 QR Code / ပုံ ရွေးရန်",
-    backBtn: "⬅ နောက်သို့",
-    genCardBtn: "ကတ်ဖန်တီးမည် ✨",
-    step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    saveBtn: "💾 Save QR",
-    shareBtn: "📤 မျှဝေရန်",
-    profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
-    modalTitle: "📤 မျှဝေရန်",
-    modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
-    copyLinkBtn: "📋 Link ယူမည်",
-    dl1to1Btn: "📥 Save QR",
-    closeBtn: "ပိတ်မည်",
-    alertNote: "❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။",
-    alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။",
-    alertQr: "❌ ကျေးဇူးပြု၍ QR Code / အချက်အလက်ပုံ ထည့်ပါ။",
-    reasons: [
-      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "သတင်းကျွတ်မုန့်ဖိုး" },
-      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "ရည်းစားနဲ့လျှောက်လည်ရန်" },
-      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်" },
-      { val: "သုံးစရာမရှိတော့လို့", text: "သုံးစရာမရှိတော့လို့" },
-      { val: "အခြား", text: "အခြား (ကိုယ်တိုင်ရေးမည်)" }
-    ]
-  }
-};
-
-// 🌟 CSS Styles Injection
-const cardStyleInjected = document.createElement('style');
-cardStyleInjected.innerHTML = `
-  #outReason {
-    margin-bottom: 18px !important;
-    display: block !important;
-    font-weight: bold;
-    color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
-  }
-  #outNote {
-    margin-top: 10px !important;
-    display: block !important;
-    font-weight: bold;
-    color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
-  }
-
-  /* 🌟 4:3 ပုံ (Background Image) Swing Animation */
-  @keyframes smoothSwingAnimation {
-    0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-    25% { transform: scale(1.06) rotate(-1.2deg) translate(-4px, 3px); }
-    50% { transform: scale(1.06) rotate(0.8deg) translate(3px, 4px); }
-    75% { transform: scale(1.06) rotate(-0.8deg) translate(-3px, -3px); }
-    100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-  }
-
-  #cardBgImg {
-    transform-origin: center center !important;
-    animation: smoothSwingAnimation 8s infinite ease-in-out !important;
-    display: block !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
-  #cardQrImg {
-    display: block !important;
-    max-width: 100% !important;
-    height: auto !important;
-  }
-
-  #qrWrapper {
-    display: block !important;
-  }
-
-  .top-card-timer {
-    position: absolute;
-    top: 20px;
-    right: 145px;
-    z-index: 100;
-    padding: 6px 14px;
-    font-size: 14px;
-    font-weight: 700;
-    border-radius: 12px;
-    border: 1.5px solid rgba(0, 242, 254, 0.6);
-    background: rgba(10, 12, 28, 0.95);
-    color: #00f2fe;
-    box-shadow: 0 0 10px var(--accent-glow);
-    display: none;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .player-controls-row > div:nth-child(2) img,
-  .media-center-btn img,
-  .anime-circle-container img {
-    transform: scale(1.45);
-    transform-origin: center;
-    border-radius: 50%;
-  }
-
-  @keyframes eqGlowWave {
-    0% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8); }
-    70% { box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0); }
-  }
-
-  .player-controls-row > div:nth-child(2),
-  .media-center-btn,
-  .anime-circle-container {
-    animation: eqGlowWave 2s infinite ease-in-out;
-    border-radius: 50%;
-  }
-
-  .custom-preview-player {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 4px 0 !important;
-    margin: 4px auto !important;
-    height: auto !important;
-  }
-
-  @keyframes qrFloatAndSoftGlow {
-    0% {
-      transform: translateY(0px) scale(1);
-      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
-    }
-    50% {
-      transform: translateY(-5px) scale(1.01);
-      box-shadow: 0 0 12px rgba(255, 165, 0, 0.55);
-    }
-    100% {
-      transform: translateY(0px) scale(1);
-      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
-    }
-  }
-
-  #qrWrapper {
-    animation: qrFloatAndSoftGlow 3.5s infinite ease-in-out !important;
-  }
-`;
-document.head.appendChild(cardStyleInjected);
-
-// Text Localization Function
-function updateTexts() {
-  const d = i18n.my;
-  if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
-  if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
-  if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
-  if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = d.modeSelectLabel;
-
-  const currentAuthMode = document.getElementById('authModeSelect') ? document.getElementById('authModeSelect').value : 'login';
-  if(document.getElementById('authModeTriggerText')) {
-    document.getElementById('authModeTriggerText').innerText = (currentAuthMode === 'signup') ? d.optSignup : d.optLogin;
-  }
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>မုန့်ဖိုးတောင်းလွှာ Web App</title>
   
-  const optLoginEl = document.getElementById('optLoginText');
-  if(optLoginEl) {
-    optLoginEl.innerText = d.optLogin;
-    optLoginEl.onclick = () => selectAuthModeOption('login', d.optLogin);
-  }
-  
-  const optSignupEl = document.getElementById('optSignupText');
-  if(optSignupEl) {
-    optSignupEl.innerText = d.optSignup;
-    optSignupEl.onclick = () => selectAuthModeOption('signup', d.optSignup);
-  }
-  
-  if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = d.nameLabel;
-  if(document.getElementById('loginName')) document.getElementById('loginName').placeholder = d.namePlaceholder;
-  if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = d.passLabel;
-  if(document.getElementById('loginPass')) document.getElementById('loginPass').placeholder = d.passPlaceholder;
-  if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = d.loginBtn;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  if(document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = d.nameLabel;
-  if(document.getElementById('signupName')) document.getElementById('signupName').placeholder = d.namePlaceholder;
-  if(document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = d.numLabel;
-  if(document.getElementById('signupNum')) document.getElementById('signupNum').placeholder = d.numPlaceholder;
-  if(document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = d.passLabel;
-  if(document.getElementById('signupPass1')) document.getElementById('signupPass1').placeholder = d.passPlaceholder;
-  if(document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = d.pass2Label;
-  if(document.getElementById('signupPass2')) document.getElementById('signupPass2').placeholder = d.pass2Placeholder;
-  if(document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = d.signupBtn;
-
-  if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
-  if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
-  if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
-
-  if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
-  if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
-
-  if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
-  if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
-  if(document.getElementById('reasonTriggerText') && i18n.my.reasons.length > 0) {
-    document.getElementById('reasonTriggerText').innerText = i18n.my.reasons[0].text;
-  }
-  if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
-  if(document.getElementById('customReason')) document.getElementById('customReason').placeholder = d.customReasonPlaceholder;
-  if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = d.customNoteLabel;
-  if(document.getElementById('customNote')) document.getElementById('customNote').placeholder = d.customNotePlaceholder;
-
-  if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = d.musicLabel;
-  if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = d.bgLabel;
-  if(document.getElementById('bgImgLabel')) document.getElementById('bgImgLabel').innerText = d.bgBtn;
-  if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = d.qrLabel;
-  if(document.getElementById('qrImgLabel')) document.getElementById('qrImgLabel').innerText = d.qrBtn;
-
-  if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = d.backBtn;
-  if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
-
-  if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
-  if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
-  if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
-  if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
-
-  if(document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = d.modalTitle;
-  if(document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = d.modalSub;
-  if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = d.copyLinkBtn;
-  if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = d.dl1to1Btn;
-  if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
-}
-
-// Compress File to HD DataURL
-function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
-  return new Promise((resolve) => {
-    if (!file) return resolve('');
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        } catch (err) {
-          resolve(e.target.result);
-        }
-      };
-      img.onerror = () => resolve(e.target.result);
-      img.src = e.target.result;
-    };
-    reader.onerror = () => resolve('');
-    reader.readAsDataURL(file);
-  });
-}
-
-// Music Dropdown Functions
-function populateMusicDropdown() {
-  const container = document.getElementById('musicCustomOptions');
-  if (!container) return;
-  container.innerHTML = '';
-
-  const currentVal = document.getElementById('musicDropdown').value;
-  let found = false;
-
-  localMusicList.forEach(song => {
-    const div = document.createElement('div');
-    div.className = 'custom-option';
-    div.innerText = song.name;
-    div.onclick = () => selectMusicOption(song.url, song.name);
-    container.appendChild(div);
-
-    if (song.url === currentVal) {
-      document.getElementById('musicTriggerText').innerText = song.name;
-      found = true;
-    }
-  });
-
-  if (!found && localMusicList.length > 0) {
-    document.getElementById('musicTriggerText').innerText = localMusicList[0].name;
-    document.getElementById('musicDropdown').value = localMusicList[0].url;
-    savedMusicUrl = localMusicList[0].url;
-    
-    const previewGroup = document.getElementById('audioPreviewGroup');
-    const player = document.getElementById('audioPreviewPlayer');
-    if (previewGroup && player) {
-      previewGroup.style.display = 'block';
-      player.src = localMusicList[0].url;
-      player.load();
-      player.loop = true;
-    }
-  }
-}
-
-function selectMusicOption(url, name) {
-  document.getElementById('musicTriggerText').innerText = name;
-  document.getElementById('musicDropdown').value = url;
-  document.getElementById('musicCustomSelect').classList.remove('open');
-  
-  savedMusicUrl = url;
-  const previewGroup = document.getElementById('audioPreviewGroup');
-  const player = document.getElementById('audioPreviewPlayer');
-  if (previewGroup && player) {
-    previewGroup.style.display = 'block';
-    player.src = url;
-    player.load();
-    player.loop = true;
-    
-    player.play().then(() => {
-      const eqContainer = document.querySelector('.preview-eq-bars');
-      if(eqContainer) eqContainer.classList.add('playing');
-    }).catch(e => console.log("Auto-play error:", e));
-  }
-}
-
-function toggleCustomDropdown(wrapperId) {
-  document.querySelectorAll('.custom-select-wrapper').forEach(el => {
-    if (el.id !== wrapperId) el.classList.remove('open');
-  });
-  document.getElementById(wrapperId).classList.toggle('open');
-}
-
-window.addEventListener('click', function(e) {
-  if (!e.target.closest('.custom-select-wrapper')) {
-    document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
-  }
-});
-
-window.addEventListener('DOMContentLoaded', async () => {
-  updateTexts();
-  populateReasonDropdown('my');
-  populateMusicDropdown();
-
-  setTimeout(() => {
-    const splash = document.getElementById('introSplash');
-    if (splash) splash.classList.add('fade-out');
-  }, 1500);
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const cardId = urlParams.get('id');
-
-  if (cardId) {
-    isSharedLinkVisitor = true;
-    const loader = document.getElementById('stepLoader');
-    if (loader) loader.classList.add('show');
-
-    const previewPlayer = document.getElementById('audioPreviewPlayer');
-    if (previewPlayer) {
-      previewPlayer.pause();
-      previewPlayer.currentTime = 0;
+  <style>
+    :root {
+      --primary: #ff0055;
+      --primary-hover: #ff3377;
+      --accent: #00f2fe;
+      --accent-glow: rgba(0, 242, 254, 0.4);
+      --bg-glass: rgba(10, 12, 28, 0.96);
+      --radius-custom: 26px;
+      --text-color: #ffffff;
     }
 
-    try {
-      const sb = getSupabase();
-      if (sb) {
-        const { data, error } = await sb
-          .from('cards')
-          .select('*')
-          .eq('id', cardId)
-          .single();
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Padauk', 'Poppins', sans-serif;
+    }
 
-        if (data && !error) {
-          renderCardData({
-            sender: data.sender,
-            reason: data.reason,
-            note: data.note,
-            bgImage: data.bg_image || data.bgImage,
-            qrImage: data.qr_image || data.qrImage,
-            musicUrl: data.music_url || data.musicUrl
-          });
-          if (loader) loader.classList.remove('show');
-          showStep(4);
-          
-          startCardTimer(cardId);
-          return;
-        }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #131238, #05030f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: var(--text-color);
+    }
+
+    /* Intro Splash Screen */
+    #introSplash {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .intro-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(10, 12, 28, 0.95);
+      padding: 12px 20px;
+      border-radius: 18px;
+      border: 1.5px solid rgba(0, 242, 254, 0.5);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    #introSplash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Ocean Waves Background */
+    .ocean {
+      height: 160px;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .wave {
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(0, 242, 254, 0.15)"/></svg>');
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      animation: waveMove 10s linear infinite;
+    }
+
+    .wave:nth-of-type(2) {
+      bottom: -10px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(255, 0, 85, 0.15)"/></svg>');
+      animation: waveMove 6s linear infinite, waveSwell 4s ease-in-out infinite;
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes waveSwell {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Top Language Switcher */
+    .top-lang-switcher {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .top-lang-switcher select {
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 242, 254, 0.6);
+      background: rgba(10, 12, 28, 0.95);
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Step Loader */
+    #stepLoader {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    #stepLoader.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .blue-white-spinner {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #00f2fe;
+      border-right-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main App Container */
+    .app-card {
+      width: 90%;
+      max-width: 410px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--bg-glass);
+      backdrop-filter: blur(25px);
+      border-radius: var(--radius-custom);
+      border: 2px solid rgba(0, 242, 254, 0.6);
+      box-shadow: 0 0 25px var(--accent-glow), inset 0 0 15px rgba(255, 0, 85, 0.15);
+      padding: 22px;
+      position: relative;
+      z-index: 10;
+      animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes cardEntrance {
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .step {
+      display: none;
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .step.active {
+      display: block;
+      animation: stepFadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes stepFadeSlideIn {
+      0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    h2 {
+      color: var(--accent);
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      text-shadow: 0 0 8px var(--accent-glow);
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 13px;
+      text-shadow: 0 0 6px rgba(0, 242, 254, 0.3);
+    }
+
+    /* Custom Select Component */
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+      user-select: none;
+    }
+
+    .custom-select-trigger {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 242, 254, 0.4);
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .custom-select-trigger:hover, .custom-select-wrapper.open .custom-select-trigger {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .custom-select-trigger svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--accent);
+      transition: transform 0.4s ease;
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger svg {
+      transform: rotate(180deg);
+    }
+
+    .custom-options {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+      opacity: 0;
+      background: #0e1124;
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      margin-top: 0;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 99;
+    }
+
+    .custom-select-wrapper.open .custom-options {
+      max-height: 250px;
+      overflow-y: auto;
+      opacity: 1;
+      border-color: rgba(0, 242, 254, 0.6);
+      margin-top: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 10px var(--accent-glow);
+    }
+
+    .custom-option {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s ease, padding-left 0.2s ease, color 0.2s ease;
+    }
+
+    .custom-option:last-child {
+      border-bottom: none;
+    }
+
+    .custom-option:hover {
+      background: rgba(0, 242, 254, 0.15);
+      padding-left: 18px;
+      color: var(--accent);
+    }
+
+    input[type="text"], input[type="password"], textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 242, 254, 0.35);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      outline: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    select option {
+      background: #1e272e;
+      color: #ffffff;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .profile-action-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .profile-small-btn, .file-btn {
+      flex: 1;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid rgba(0, 242, 254, 0.4);
+      border-radius: 12px;
+      color: #ffffff;
+      cursor: pointer;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .profile-small-btn:hover, .file-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 242, 254, 0.12);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), #ff3377);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 0, 85, 0.4);
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255, 0, 85, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      box-shadow: none;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Profile Section */
+    .profile-container {
+      text-align: center;
+      background: transparent;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+
+    .profile-avatar-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      border: 2px solid var(--accent);
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .profile-avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffeaa7;
+      margin-bottom: 2px;
+      text-shadow: 0 0 6px rgba(255,234,167,0.4);
+    }
+
+    .profile-id {
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* 🌟 မှတ်တမ်းဘောင်များကို ပိုမိုကျယ်ဝန်းစေပြီး စာသားများ အပြည့်အစုံပေါ်စေရန် (Updated) */
+    .history-list-container {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-right: 4px;
+    }
+
+    .history-item-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      gap: 10px;
+      position: relative;
+    }
+
+    .history-link-text {
+      font-size: 11px;
+      color: var(--accent);
+      white-space: normal;
+      word-break: break-all;
+      flex: 1;
+      text-align: left;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .history-menu-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .history-menu-btn:hover {
+      background: rgba(0, 242, 254, 0.2);
+    }
+
+    .history-dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 12px;
+      top: 45px;
+      background: #111326;
+      border: 1.5px solid var(--accent);
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+      z-index: 100;
+      min-width: 110px;
+      overflow: hidden;
+    }
+
+    .history-dropdown-menu.show {
+      display: block;
+    }
+
+    .history-dropdown-item {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffffff;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: left;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .history-dropdown-item:last-child {
+      border-bottom: none;
+      color: #ff4757;
+    }
+
+    .history-dropdown-item:hover {
+      background: rgba(0, 242, 254, 0.15);
+      color: var(--accent);
+    }
+    .history-dropdown-item:last-child:hover {
+      color: #ff6b81;
+      background: rgba(255, 71, 87, 0.15);
+    }
+
+    /* Export Card Preview (4:3 Card) */
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(0.4deg); }
+    }
+
+    #exportCard {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 3 / 4;
+      margin: 0 auto 12px auto;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 25px var(--accent-glow), 0 10px 24px rgba(0, 0, 0, 0.8);
+      background: #0f1123;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      animation: cardFloat 4s ease-in-out infinite, cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .card-full-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(1.06) contrast(1.06) saturate(1.05);
+      z-index: 1;
+      display: none;
+    }
+
+    .sender-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 11px;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(255, 71, 87, 0.5);
+      z-index: 5;
+    }
+
+    .card-header-content {
+      position: relative;
+      z-index: 2;
+      margin: auto;
+      padding: 12px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .card-header-content h3 {
+      font-size: 17px;
+      color: #ffeaa7;
+      margin-bottom: 4px;
+      font-weight: 700;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+    }
+
+    .card-header-content p {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #ffffff;
+      font-weight: 600;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+    }
+
+    .card-qr-overlay {
+      position: relative;
+      z-index: 4;
+      padding: 6px;
+      text-align: center;
+    }
+
+    .card-qr-overlay p {
+      font-size: 9px;
+      color: #00d2d3;
+      margin-bottom: 3px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    @keyframes realisticFireGlow {
+      0% {
+        border-color: #ff3838;
+        box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff9f1a, inset 0 0 10px #ff3838;
       }
-    } catch (err) {
-      console.error('Supabase load error:', err);
+      33% {
+        border-color: #ff9f1a;
+        box-shadow: 0 0 16px #ffb142, 0 0 28px #ff5252, inset 0 0 14px #ff9f1a;
+      }
+      66% {
+        border-color: #ff5252;
+        box-shadow: 0 0 20px #ff3838, 0 0 35px #ffb142, inset 0 0 16px #ff5252;
+      }
+      100% {
+        border-color: #ff3838;
+        box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff9f1a, inset 0 0 10px #ff3838;
+      }
     }
-    if (loader) loader.classList.remove('show');
-  }
-});
 
-function renderCardData(data) {
-  if (!data) return;
-
-  document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
-  document.getElementById('outReason').innerText = data.reason || '';
-  document.getElementById('outNote').innerText = data.note || '';
-
-  const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
-  if (bgImgSrc) {
-    savedBgImage = bgImgSrc;
-    const bgEl = document.getElementById('cardBgImg');
-    if (bgEl) {
-      bgEl.src = bgImgSrc;
-      bgEl.style.display = 'block';
-      bgEl.style.position = 'absolute';
-      bgEl.style.top = '0';
-      bgEl.style.left = '0';
-      bgEl.style.width = '100%';
-      bgEl.style.height = '100%';
-      bgEl.style.objectFit = 'cover';
+    .qr-img-wrapper {
+      width: 100%;
+      max-width: 95px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #ff3838;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      animation: realisticFireGlow 2.2s infinite ease-in-out;
+      z-index: 5;
+      position: relative;
     }
-  }
 
-  const qrImgSrc = data.qrImage || data.qr_image || savedQrImage;
-  if (qrImgSrc) {
-    savedQrImage = qrImgSrc;
-    const qrEl = document.getElementById('cardQrImg');
-    const qrWr = document.getElementById('qrWrapper');
-    if (qrEl) {
-      qrEl.src = qrImgSrc;
-      qrEl.style.display = 'block';
-      qrEl.style.maxWidth = '100%';
-      qrEl.style.height = 'auto';
+    .qr-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
     }
-    if (qrWr) {
-      qrWr.style.display = 'block';
+
+    .emoji-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 3;
     }
-  }
 
-  const mUrl = data.musicUrl || data.music_url || savedMusicUrl;
-  if (mUrl) {
-    savedMusicUrl = mUrl;
-    const cardPlayer = document.getElementById('cardAudioPlayer');
-    const cardAudioGroup = document.getElementById('cardAudioGroup');
-    if (cardPlayer && cardAudioGroup) {
-      cardPlayer.src = mUrl;
-      cardPlayer.load();
-      cardPlayer.play().catch(e => console.log("Autoplay prevented:", e));
-      cardAudioGroup.style.display = 'flex';
+    .floating-emoji {
+      position: absolute;
+      bottom: -20px;
+      animation: floatUpEmoji 3.5s linear infinite;
+      opacity: 0.9;
+      user-select: none;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
-  }
-}
 
-function startCardTimer(cardId) {
-  if (cardTimerInterval) clearInterval(cardTimerInterval);
+    @keyframes floatUpEmoji {
+      0% { transform: translateY(0px) scale(0.7) rotate(0deg); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(-380px) scale(1.3) rotate(360deg); opacity: 0; }
+    }
 
-  const storageKey = `card_expire_${cardId || 'local_card'}`;
-  let expireTime = localStorage.getItem(storageKey);
+    /* Minimal Animated Music Player */
+    .custom-music-player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(14, 17, 36, 0.9);
+      border: 1.5px solid var(--accent);
+      border-radius: 16px;
+      padding: 5px 12px !important;
+      max-height: 52px !important;
+      margin-bottom: 12px;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
 
-  if (!expireTime) {
-    expireTime = Date.now() + 120 * 60 * 1000;
-    localStorage.setItem(storageKey, expireTime);
-  } else {
-    expireTime = parseInt(expireTime, 10);
-  }
+    .spinning-disc {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff0055, #00f2fe, #ff0055);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinDisc 3s linear infinite;
+      box-shadow: 0 0 8px var(--accent-glow);
+      flex-shrink: 0;
+    }
 
-  let timerEl = document.getElementById('topCardTimer');
-  if (!timerEl) {
-    timerEl = document.createElement('div');
-    timerEl.id = 'topCardTimer';
-    timerEl.className = 'top-card-timer';
-    document.body.appendChild(timerEl);
-  }
-  timerEl.style.display = 'flex';
+    .spinning-disc-inner {
+      width: 12px;
+      height: 12px;
+      background: #05030f;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
 
-  cardTimerInterval = setInterval(async () => {
-    const now = Date.now();
-    const distance = expireTime - now;
+    @keyframes spinDisc {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-    if (distance <= 0) {
-      clearInterval(cardTimerInterval);
-      if (timerEl) timerEl.innerText = "⏳ အချိန်ကုန်သွားပါပြီ";
+    .anime-dancer-free {
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 50%;
+      border: none !important;
+      overflow: hidden !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+      margin: 0 8px;
+    }
+
+    .anime-dancer-free img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .equalizer-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 8px; }
+    .eq-bar:nth-child(2) { animation-delay: 0.4s; height: 15px; }
+    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 11px; }
+    .eq-bar:nth-child(4) { animation-delay: 0.5s; height: 16px; }
+
+    @keyframes eqBounce {
+      0% { transform: scaleY(0.3); }
+      100% { transform: scaleY(1); }
+    }
+
+    .custom-preview-player {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 10px 16px;
+      box-shadow: none !important;
+      height: 48px;
+    }
+
+    .preview-eq-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      height: 20px;
+    }
+
+    .preview-eq-bars.playing .p-bar {
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+    }
+
+    .p-bar {
+      width: 4px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 3px;
+      box-shadow: 0 0 6px var(--accent);
+      transition: height 0.3s ease;
+    }
+
+    .preview-eq-bars.playing .p-bar:nth-child(1) { animation-delay: 0.1s; }
+    .preview-eq-bars.playing .p-bar:nth-child(2) { animation-delay: 0.4s; }
+    .preview-eq-bars.playing .p-bar:nth-child(3) { animation-delay: 0.2s; }
+    .preview-eq-bars.playing .p-bar:nth-child(4) { animation-delay: 0.5s; }
+    .preview-eq-bars.playing .p-bar:nth-child(5) { animation-delay: 0.3s; }
+
+    .save-btn { background: linear-gradient(135deg, #2ed573, #26af5f); box-shadow: 0 4px 10px rgba(46, 213, 115, 0.25); }
+    .share-btn { background: linear-gradient(135deg, #3742fa, #2f3542); box-shadow: 0 4px 10px rgba(55, 66, 250, 0.25); }
+
+    /* Share Modal */
+    #shareModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 995;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #111326;
+      padding: 20px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 310px;
+      text-align: center;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro Splash Screen -->
+  <div id="introSplash">
+    <div class="intro-box">
+      <div class="blue-white-spinner"></div>
+      <div id="introMsg" style="font-size: 13px; font-weight: 700; color: var(--accent); margin: 0; text-shadow: 0 0 6px var(--accent-glow);"></div>
+    </div>
+  </div>
+
+  <!-- Ocean Waves Background -->
+  <div class="ocean">
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+
+  <!-- Language Switcher -->
+  <div class="top-lang-switcher">
+    <select id="userLang" onchange="changeLanguage(this.value)">
+      <option value="my" selected>🇲🇲 မြန်မာ</option>
+      <option value="en">🇬🇧 English</option>
+    </select>
+  </div>
+
+  <div id="stepLoader">
+    <div class="blue-white-spinner"></div>
+    <p id="lbl_loaderMsg" style="margin-top: 12px; color: var(--accent); font-weight: 700; font-size: 13px; text-shadow: 0 0 6px var(--accent-glow);"></p>
+  </div>
+
+  <div id="shareModal">
+    <div class="modal-content">
+      <h3 id="lbl_modalTitle" style="color:var(--accent); font-size: 17px; margin-bottom:8px; text-shadow: 0 0 6px var(--accent-glow);"></h3>
+      <p id="lbl_modalSub" style="font-size:12px; font-weight:600; margin-bottom:14px; color:#cbd5e1;"></p>
+      <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()"></button>
+      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadSingleQrFromModal()"></button>
+      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()"></button>
+    </div>
+  </div>
+
+  <div class="app-card">
+
+    <!-- STEP 1: LOGIN / SIGNUP -->
+    <div class="step active" id="step1">
+      <h2 id="lbl_authTitle"></h2>
       
-      await deleteCardDataAndClean(cardId, storageKey);
-      return;
-    }
-
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    if (timerEl) {
-      timerEl.innerHTML = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-  }, 1000);
-}
-
-async function deleteCardDataAndClean(cardId, storageKey) {
-  savedBgImage = '';
-  savedQrImage = '';
-  savedMusicUrl = '';
-  currentShareableLink = '';
-  localStorage.removeItem(storageKey);
-
-  const timerEl = document.getElementById('topCardTimer');
-  if (timerEl) timerEl.style.display = 'none';
-
-  const bgEl = document.getElementById('cardBgImg');
-  if (bgEl) bgEl.style.display = 'none';
-  const qrWr = document.getElementById('qrWrapper');
-  if (qrWr) qrWr.style.display = 'none';
-  document.getElementById('outSender').innerText = '';
-  document.getElementById('outReason').innerText = '';
-  document.getElementById('outNote').innerText = '';
-  
-  const cardAudioGroup = document.getElementById('cardAudioGroup');
-  if (cardAudioGroup) cardAudioGroup.style.display = 'none';
-  const cardPlayer = document.getElementById('cardAudioPlayer');
-  if (cardPlayer) {
-    cardPlayer.pause();
-    cardPlayer.src = '';
-  }
-
-  if (cardId) {
-    try {
-      const sb = getSupabase();
-      if (sb) {
-        await sb.from('cards').delete().eq('id', cardId);
-      }
-    } catch (err) {
-      console.error('Supabase Delete Error:', err);
-    }
-
-    if (window.history && window.history.replaceState) {
-      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-      window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-    }
-  }
-
-  alert('⚠️️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
-  goToStep(2);
-}
-
-function switchAuthMode(mode) {
-  const loginSec = document.getElementById('loginFormSection');
-  const signupSec = document.getElementById('signupFormSection');
-
-  if (mode === 'login') {
-    loginSec.style.display = 'block';
-    signupSec.style.display = 'none';
-  } else {
-    loginSec.style.display = 'none';
-    signupSec.style.display = 'block';
-  }
-}
-
-function selectAuthModeOption(val, text) {
-  document.getElementById('authModeTriggerText').innerText = text;
-  document.getElementById('authModeSelect').value = val;
-  document.getElementById('authModeCustomSelect').classList.remove('open');
-  switchAuthMode(val);
-}
-
-function handleSignup() {
-  const name = document.getElementById('signupName').value.trim();
-  const num = document.getElementById('signupNum').value.trim();
-  const p1 = document.getElementById('signupPass1').value;
-  const p2 = document.getElementById('signupPass2').value;
-
-  if (!name || !num || !p1 || !p2) {
-    alert('အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
-    return;
-  }
-  if (p1 !== p2) {
-    alert('Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
-    return;
-  }
-
-  const userData = { name, num, pass: p1, avatar: '', history: [] };
-  localStorage.setItem(`user_${num}`, JSON.stringify(userData));
-  
-  alert('✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
-  currentUser = userData;
-  setupProfileView();
-  goToStep(2);
-}
-
-function handleLogin() {
-  const name = document.getElementById('loginName').value.trim();
-  const pass = document.getElementById('loginPass').value;
-
-  if (!name || !pass) {
-    alert('နာမည်နှင့် Password ဖြည့်ပါ။');
-    return;
-  }
-
-  let foundUser = null;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('user_')) {
-      const u = JSON.parse(localStorage.getItem(key));
-      if (u.name === name) {
-        foundUser = u;
-        break;
-      }
-    }
-  }
-
-  if (!foundUser) {
-    alert('ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။ အကောင့်သစ်ဖွင့်ပါ။');
-    return;
-  }
-
-  if (foundUser.pass !== pass) {
-    alert('Password မှားယွင်းနေပါသည်။');
-    return;
-  }
-
-  if (!foundUser.history) foundUser.history = [];
-  currentUser = foundUser;
-  setupProfileView();
-  goToStep(2);
-}
-
-function setupProfileView() {
-  if (!currentUser) return;
-  document.getElementById('displayProfileName').innerText = currentUser.name;
-  document.getElementById('displayProfileNum').innerText = `ID: ${currentUser.num}`;
-  
-  if (currentUser.avatar) {
-    document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
-  }
-}
-
-function updateProfileAvatar(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      currentUser.avatar = e.target.result;
-      localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
-      document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-function viewHistory() {
-  renderHistoryList();
-  goToStep(5);
-}
-
-// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (မှတ်တမ်းများ နှင့် နောက်သို့ ခလုတ်ကြား ကွာဟချက်ကို ပိုကျယ်စေပြီး မီနူးနှိပ်လျှင် စာမကွယ်စေရန် space ချဲ့ပေးထားသည်)
-function renderHistoryList() {
-  if (historyTimerInterval) clearInterval(historyTimerInterval);
-
-  const container = document.getElementById('historyListContainer');
-  if (!container) return;
-  container.innerHTML = '';
-  container.style.paddingBottom = '50px'; // 🌟 အောက်ခြေခလုတ်နှင့် ကွာဟချက် လွတ်လပ်စေရန်
-
-  if (!currentUser || !currentUser.history || currentUser.history.length === 0) {
-    container.innerHTML = '<p style="text-align: center; color: #cbd5e1; font-size: 13px; padding: 20px;">မှတ်တမ်းများ မရှိသေးပါ။</p>';
-    return;
-  }
-
-  currentUser.history.forEach((item, index) => {
-    const row = document.createElement('div');
-    row.className = 'history-item-row';
-    row.style.display = 'flex';
-    row.style.flexDirection = 'column';
-    row.style.position = 'relative';
-    row.style.padding = '6px 12px';
-    row.style.marginBottom = '12px'; // 🌟 တစ်ခုနှင့်တစ်ခု အကွာအဝေးကို ပိုချဲ့ပေးထား၍ မီနူးနှိပ်လျှင် စာမကွယ်ပါ
-    row.style.borderRadius = '8px';
-    row.style.background = 'rgba(15, 23, 42, 0.85)';
-    row.style.border = '1px solid rgba(255, 255, 255, 0.08)';
-
-    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်)
-    const topRow = document.createElement('div');
-    topRow.style.display = 'flex';
-    topRow.style.justifyContent = 'space-between';
-    topRow.style.alignItems = 'center';
-    topRow.style.width = '100%';
-    topRow.style.position = 'relative'; 
-    topRow.style.marginBottom = '2px';
-
-    const expireText = document.createElement('span');
-    expireText.className = 'history-timer-span';
-    expireText.style.fontSize = '11px';
-    expireText.style.color = '#ff4757';
-    expireText.style.fontWeight = '600';
-    expireText.dataset.cardId = item.id;
-    expireText.innerText = 'သက်တမ်း - 120:00';
-
-    const menuBtn = document.createElement('button');
-    menuBtn.className = 'history-menu-btn';
-    menuBtn.innerHTML = '≡';
-    menuBtn.style.background = 'transparent';
-    menuBtn.style.border = 'none';
-    menuBtn.style.color = '#fff';
-    menuBtn.style.fontSize = '16px';
-    menuBtn.style.cursor = 'pointer';
-    menuBtn.style.padding = '0 4px';
-    menuBtn.onclick = (e) => {
-      e.stopPropagation();
-      toggleHistoryDropdown(index);
-    };
-
-    topRow.appendChild(expireText);
-    topRow.appendChild(menuBtn);
-
-    // 🌟 Dropdown Menu
-    const dropdown = document.createElement('div');
-    dropdown.className = 'history-dropdown-menu';
-    dropdown.id = `historyDropdown_${index}`;
-    dropdown.style.position = 'absolute';
-    dropdown.style.top = '24px';
-    dropdown.style.right = '0';
-    dropdown.style.zIndex = '9999';
-    dropdown.style.background = '#1e293b';
-    dropdown.style.border = '1px solid rgba(255,255,255,0.15)';
-    dropdown.style.borderRadius = '8px';
-    dropdown.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
-    dropdown.style.display = 'none';
-    dropdown.style.minWidth = '90px';
-
-    const viewItem = document.createElement('div');
-    viewItem.className = 'history-dropdown-item';
-    viewItem.innerText = 'ကြည့်ရန်';
-    viewItem.style.padding = '5px 10px';
-    viewItem.style.cursor = 'pointer';
-    viewItem.style.fontSize = '12px';
-    viewItem.style.color = '#fff';
-    viewItem.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
-    viewItem.onclick = () => viewCardFromHistory(item.id);
-
-    const deleteItem = document.createElement('div');
-    deleteItem.className = 'history-dropdown-item';
-    deleteItem.innerText = 'ဖျက်ပြစ်ရန်';
-    deleteItem.style.padding = '5px 10px';
-    deleteItem.style.cursor = 'pointer';
-    deleteItem.style.fontSize = '12px';
-    deleteItem.style.color = '#ff4757';
-    deleteItem.onclick = () => deleteCardFromHistory(item.id, index);
-
-    dropdown.appendChild(viewItem);
-    dropdown.appendChild(deleteItem);
-    topRow.appendChild(dropdown);
-
-    // 🌟 အောက်ပိုင်း (လင့်ခ်စာသား)
-    const bottomRow = document.createElement('div');
-    bottomRow.style.width = '100%';
-
-    const linkText = document.createElement('span');
-    linkText.className = 'history-link-text';
-    linkText.style.display = 'block';
-    linkText.style.width = '100%';
-    linkText.style.fontSize = '11.5px';
-    linkText.style.color = '#cbd5e1';
-    linkText.style.wordBreak = 'break-all';
-
-    let cleanLink = item.link || '';
-    if (cleanLink.includes('my-pocket-money')) {
-      const pmIdx = cleanLink.indexOf('my-pocket-money');
-      cleanLink = cleanLink.substring(0, pmIdx + 'my-pocket-money'.length);
-    } else {
-      cleanLink = cleanLink.split('?')[0];
-    }
-
-    linkText.innerText = `${index + 1}. ${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${cleanLink}`;
-    bottomRow.appendChild(linkText);
-
-    row.appendChild(topRow);
-    row.appendChild(bottomRow);
-
-    container.appendChild(row);
-  });
-
-  updateHistoryTimers();
-  historyTimerInterval = setInterval(updateHistoryTimers, 1000);
-}
-
-function updateHistoryTimers() {
-  const timerSpans = document.querySelectorAll('.history-timer-span');
-  timerSpans.forEach(span => {
-    const cardId = span.dataset.cardId;
-    const storageKey = `card_expire_${cardId || 'local_card'}`;
-    let expireTime = localStorage.getItem(storageKey);
-
-    if (!expireTime) {
-      expireTime = Date.now() + 120 * 60 * 1000;
-      localStorage.setItem(storageKey, expireTime);
-    } else {
-      expireTime = parseInt(expireTime, 10);
-    }
-
-    const now = Date.now();
-    const distance = expireTime - now;
-
-    if (distance <= 0) {
-      span.innerText = "သက်တမ်း - အချိန်ကုန်သွားပါပြီ";
-      return;
-    }
-
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    span.innerText = `သက်တမ်း - ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  });
-}
-
-function toggleHistoryDropdown(index) {
-  document.querySelectorAll('.history-dropdown-menu').forEach((el, idx) => {
-    if (idx !== index) {
-      el.classList.remove('show');
-      el.style.display = 'none';
-    }
-  });
-  const target = document.getElementById(`historyDropdown_${index}`);
-  if (target) {
-    target.classList.toggle('show');
-    if (target.classList.contains('show')) {
-      target.style.display = 'block';
-    } else {
-      target.style.display = 'none';
-    }
-  }
-}
-
-window.addEventListener('click', function(e) {
-  if (!e.target.closest('.history-menu-btn') && !e.target.closest('.history-dropdown-menu')) {
-    document.querySelectorAll('.history-dropdown-menu').forEach(el => {
-      el.classList.remove('show');
-      el.style.display = 'none';
-    });
-  }
-});
-
-async function viewCardFromHistory(cardId) {
-  const loader = document.getElementById('stepLoader');
-  if (loader) loader.classList.add('show');
-
-  try {
-    const sb = getSupabase();
-    if (sb) {
-      const { data, error } = await sb
-        .from('cards')
-        .select('*')
-        .eq('id', cardId)
-        .single();
-
-      if (data && !error) {
-        currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${cardId}`;
-        renderCardData({
-          sender: data.sender,
-          reason: data.reason,
-          note: data.note,
-          bgImage: data.bg_image || data.bgImage,
-          qrImage: data.qr_image || data.qrImage,
-          musicUrl: data.music_url || data.musicUrl
-        });
-        if (loader) loader.classList.remove('show');
-        showStep(4);
-        startCardTimer(cardId);
-        return;
-      } else {
-        alert('❌ ဤကတ်သည် သက်တမ်းကုန်သွားပြီ (သို့) မရှိတော့ပါ။');
-      }
-    }
-  } catch (err) {
-    console.error('View history card error:', err);
-  }
-  if (loader) loader.classList.remove('show');
-}
-
-async function deleteCardFromHistory(cardId, index) {
-  if (!confirm('ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?')) return;
-
-  const loader = document.getElementById('stepLoader');
-  if (loader) loader.classList.add('show');
-
-  try {
-    const sb = getSupabase();
-    if (sb) {
-      await sb.from('cards').delete().eq('id', cardId);
-    }
-  } catch (err) {
-    console.error('Delete card error:', err);
-  }
-
-  if (currentUser && currentUser.history) {
-    currentUser.history.splice(index, 1);
-    localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
-  }
-
-  if (loader) loader.classList.remove('show');
-  renderHistoryList();
-}
-
-function goToStep(stepNumber) {
-  const timerEl = document.getElementById('topCardTimer');
-  if (timerEl && stepNumber !== 4) {
-    timerEl.style.display = 'none';
-  }
-
-  const loader = document.getElementById('stepLoader');
-  loader.classList.add('show');
-  setTimeout(() => {
-    loader.classList.remove('show');
-    showStep(stepNumber);
-  }, 800);
-}
-
-function returnToProfileOrLogin() {
-  if (isSharedLinkVisitor) {
-    if (window.history && window.history.replaceState) {
-      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-      window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-    }
-    isSharedLinkVisitor = false;
-    
-    const cardPlayer = document.getElementById('cardAudioPlayer');
-    if (cardPlayer) {
-      cardPlayer.pause();
-      cardPlayer.currentTime = 0;
-    }
-    const timerEl = document.getElementById('topCardTimer');
-    if (timerEl) timerEl.style.display = 'none';
-
-    goToStep(1);
-  } else {
-    goToStep(2);
-  }
-}
-
-function showStep(stepNumber) {
-  const steps = document.querySelectorAll('.step');
-  steps.forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  const target = document.getElementById(`step${stepNumber}`);
-  if (target) {
-    target.style.display = 'block';
-    setTimeout(() => target.classList.add('active'), 50);
-  }
-
-  if (stepNumber === 4) {
-    const previewPlayer = document.getElementById('audioPreviewPlayer');
-    if (previewPlayer) {
-      previewPlayer.pause();
-      previewPlayer.currentTime = 0;
-    }
-    const eqContainer = document.querySelector('.preview-eq-bars');
-    if (eqContainer) {
-      eqContainer.classList.remove('playing');
-    }
-  }
-}
-
-function toggleCustomReason() {
-  const dropdownVal = document.getElementById('reasonDropdownVal').value;
-  const customGroup = document.getElementById('customReasonGroup');
-  customGroup.style.display = (dropdownVal === 'အခြား') ? 'block' : 'none';
-}
-
-function populateReasonDropdown(lang) {
-  const container = document.getElementById('reasonDropdown');
-  if (!container) return;
-  container.innerHTML = '';
-  
-  const reasonsList = i18n.my.reasons;
-  reasonsList.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'custom-option';
-    div.innerText = item.text;
-    div.onclick = () => selectReasonOption(item.val, item.text);
-    container.appendChild(div);
-  });
-
-  if (reasonsList.length > 0) {
-    document.getElementById('reasonTriggerText').innerText = reasonsList[0].text;
-    document.getElementById('reasonDropdownVal').value = reasonsList[0].val;
-  }
-  toggleCustomReason();
-}
-
-function selectReasonOption(val, text) {
-  document.getElementById('reasonTriggerText').innerText = text;
-  document.getElementById('reasonDropdownVal').value = val;
-  document.getElementById('reasonCustomSelect').classList.remove('open');
-  toggleCustomReason();
-}
-
-function handleBgImage(input) {
-  if (input.files && input.files[0]) {
-    selectedBgFile = input.files[0];
-    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
-  }
-}
-
-function handleQrImage(input) {
-  if (input.files && input.files[0]) {
-    selectedQrFile = input.files[0];
-    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
-  }
-}
-
-async function generateAndSaveCard() {
-  const previewPlayer = document.getElementById('audioPreviewPlayer');
-  if (previewPlayer) {
-    previewPlayer.pause();
-    previewPlayer.currentTime = 0;
-  }
-  const eqContainer = document.querySelector('.preview-eq-bars');
-  if (eqContainer) {
-    eqContainer.classList.remove('playing');
-  }
-
-  const reasonVal = document.getElementById('reasonDropdownVal').value;
-  const customReason = document.getElementById('customReason').value.trim();
-  const customNote = document.getElementById('customNote').value.trim();
-  const finalReason = (reasonVal === 'အခြား' && customReason) ? customReason : reasonVal;
-
-  const d = i18n.my;
-
-  if (!customNote) {
-    alert(d.alertNote);
-    return;
-  }
-  if (!selectedBgFile && !savedBgImage) {
-    alert(d.alertBg);
-    return;
-  }
-  if (!selectedQrFile && !savedQrImage) {
-    alert(d.alertQr);
-    return;
-  }
-
-  const loader = document.getElementById('stepLoader');
-  if (loader) loader.classList.add('show');
-
-  try {
-    if (selectedBgFile) {
-      savedBgImage = await compressFileToDataUrl(selectedBgFile, 1200, 0.85);
-    }
-    if (selectedQrFile) {
-      savedQrImage = await compressFileToDataUrl(selectedQrFile, 900, 0.85);
-    }
-
-    const payload = {
-      sender: currentUser ? currentUser.name : 'Aung',
-      reason: finalReason,
-      note: customNote,
-      bg_image: savedBgImage,
-      qr_image: savedQrImage,
-      music_url: savedMusicUrl
-    };
-
-    const sb = getSupabase();
-    if (!sb) {
-      throw new Error('Supabase SDK မတက်ပါ။');
-    }
-
-    const { data, error } = await sb
-      .from('cards')
-      .insert([payload])
-      .select();
-
-    if (error) {
-      throw error;
-    }
-
-    if (data && data.length > 0) {
-      const generatedId = data[0].id;
-      currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
+      <div class="form-group">
+        <label id="lbl_modeSelect"></label>
+        <div class="custom-select-wrapper" id="authModeCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('authModeCustomSelect')">
+            <span id="authModeTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="authModeCustomOptions">
+            <div class="custom-option" onclick="selectAuthModeOption('login', '')" id="optLoginText"></div>
+            <div class="custom-option" onclick="selectAuthModeOption('signup', '')" id="optSignupText"></div>
+          </div>
+        </div>
+        <input type="hidden" id="authModeSelect" value="login">
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="loginFormSection">
+        <div class="form-group">
+          <label id="lbl_loginName"></label>
+          <input type="text" id="loginName">
+        </div>
+        <div class="form-group">
+          <label id="lbl_loginPass"></label>
+          <input type="password" id="loginPass">
+        </div>
+        <button class="btn" id="btn_login" onclick="handleLogin()"></button>
+      </div>
+
+      <!-- SIGNUP FORM -->
+      <div id="signupFormSection" style="display: none;">
+        <div class="form-group">
+          <label id="lbl_signupName"></label>
+          <input type="text" id="signupName">
+        </div>
+        <div class="form-group">
+          <label id="lbl_signupNum"></label>
+          <input type="text" id="signupNum" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="form-group">
+          <label id="lbl_signupPass1"></label>
+          <input type="password" id="signupPass1">
+        </div>
+        <div class="form-group">
+          <label id="lbl_signupPass2"></label>
+          <input type="password" id="signupPass2">
+        </div>
+        <button class="btn" id="btn_signup" onclick="handleSignup()"></button>
+      </div>
+    </div>
+
+    <!-- STEP 2: PROFILE DASHBOARD -->
+    <div class="step" id="step2">
+      <h2 id="lbl_profileTitle"></h2>
       
-      if (currentUser) {
-        if (!currentUser.history) currentUser.history = [];
-        currentUser.history.unshift({
-          id: generatedId,
-          link: currentShareableLink,
-          reason: finalReason,
-          createdAt: new Date().toLocaleString()
-        });
-        localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
-      }
+      <div class="profile-container">
+        <div class="profile-avatar-box" id="profileAvatarBox">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="#a4b0be">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
 
-      renderCardData({
-        sender: payload.sender,
-        reason: payload.reason,
-        note: payload.note,
-        bgImage: payload.bg_image,
-        qrImage: payload.qr_image,
-        musicUrl: payload.music_url
-      });
+        <div class="profile-action-row">
+          <div class="file-input-wrapper profile-small-btn">
+            <span id="lbl_changeAvatar"></span>
+            <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
+          </div>
+          <button class="profile-small-btn" id="lbl_changeNick" onclick="changeNickname()">
+            <span>✏</span>
+          </button>
+        </div>
 
-      if (loader) loader.classList.remove('show');
-      showStep(4);
+        <div class="profile-name" id="displayProfileName"></div>
+        <div class="profile-id" id="displayProfileNum"></div>
 
-      startCardTimer(generatedId);
+        <div class="dashboard-actions">
+          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;"></button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;"></button>
+        </div>
+      </div>
+    </div>
 
-      const cardPlayer = document.getElementById('cardAudioPlayer');
-      const cardAudioGroup = document.getElementById('cardAudioGroup');
-      if (cardPlayer && cardAudioGroup && savedMusicUrl) {
-        cardPlayer.src = savedMusicUrl;
-        cardPlayer.load();
-        cardPlayer.play().catch(e => console.log("Card audio play error:", e));
-        cardAudioGroup.style.display = 'flex';
-      }
-    }
-  } catch (err) {
-    console.error('Supabase Save Error:', err);
-    if (loader) loader.classList.remove('show');
-    alert('Error: ' + (err.message || JSON.stringify(err)));
-  }
-}
+    <!-- STEP 5: HISTORY SECTION -->
+    <div class="step" id="step5">
+      <h2 id="lbl_historyTitle">မှတ်တမ်းများ</h2>
+      <div class="history-list-container" id="historyListContainer">
+        <!-- Javascript ဖြင့် မှတ်တမ်း Link များနှင့် Dropdown များကို ဤနေရာတွင် ထည့်သွင်းမည် -->
+      </div>
+      <button class="btn btn-secondary" onclick="goToStep(2)" style="width: 100%; padding: 10px; font-size: 13px;">⬅ နောက်သို့</button>
+    </div>
 
-function downloadSingleQr() {
-  if (!savedQrImage) {
-    alert('QR ပုံ မထည့်ရသေးပါ။');
-    return;
-  }
-  const link = document.createElement('a');
-  link.download = 'Payment_QR_HD.png';
-  link.href = savedQrImage;
-  link.click();
-}
+    <!-- STEP 3: REQUEST REASON & MESSAGE -->
+    <div class="step" id="step3">
+      <h2 id="lbl_step3Title"></h2>
 
-function downloadSingleQrFromModal() {
-  downloadSingleQr();
-  closeShareModal();
-}
+      <div class="form-group">
+        <label for="reasonDropdown" id="lbl_dropdown"></label>
+        <div class="custom-select-wrapper" id="reasonCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
+            <span id="reasonTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="reasonDropdown"></div>
+        </div>
+        <input type="hidden" id="reasonDropdownVal" value="">
+      </div>
 
-function openShareModal() {
-  document.getElementById('shareModal').style.display = 'flex';
-}
+      <div class="form-group" id="customReasonGroup" style="display: none;">
+        <label for="customReason" id="lbl_customReason"></label>
+        <input type="text" id="customReason">
+      </div>
 
-function closeShareModal() {
-  document.getElementById('shareModal').style.display = 'none';
-}
+      <div class="form-group">
+        <label for="customNote" id="lbl_customNote"></label>
+        <textarea id="customNote" rows="2"></textarea>
+      </div>
 
-function copyShareLink() {
-  navigator.clipboard.writeText(currentShareableLink).then(() => {
-    alert('✅ လင့်ခ်ကူးယူပြီးပါပြီ!');
-    closeShareModal();
-  });
-}
+      <div class="form-group">
+        <label id="lbl_musicLabel"></label>
+        <div class="custom-select-wrapper" id="musicCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
+            <span id="musicTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="musicCustomOptions"></div>
+        </div>
+        <input type="hidden" id="musicDropdown" value="">
+      </div>
 
-function changeLanguage(lang) {
-  currentLang = 'my';
-  updateTexts();
-}
+      <div class="form-group" id="audioPreviewGroup" style="display: none;">
+        <div class="custom-preview-player">
+          <div class="preview-eq-bars">
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+          </div>
+        </div>
+        <audio id="audioPreviewPlayer" style="display: none;"></audio>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl_bgLabel"></label>
+        <div class="file-input-wrapper">
+          <div class="file-btn" id="bgImgLabel"></div>
+          <input type="file" accept="image/*" onchange="handleBgImage(this)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl_qrLabel"></label>
+        <div class="file-input-wrapper">
+          <div class="file-btn" id="qrImgLabel"></div>
+          <input type="file" accept="image/*" onchange="handleQrImage(this)">
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()" style="padding: 10px; font-size: 13px;"></button>
+      </div>
+    </div>
+
+    <!-- STEP 4: RESULT CARD -->
+    <div class="step" id="step4">
+      <h2 id="lbl_step4Title"></h2>
+
+      <div id="exportCard">
+        <img id="cardBgImg" class="card-full-bg" alt="Card Background">
+        <span class="sender-tag" id="outSender"></span>
+        <div class="emoji-overlay" id="emojiOverlay"></div>
+        <div class="card-header-content">
+          <h3 id="outReason"></h3>
+          <p id="outNote"></p>
+        </div>
+        <div class="card-qr-overlay">
+          <p id="lbl_qrHint"></p>
+          <div class="qr-img-wrapper" id="qrWrapper">
+            <img id="cardQrImg" alt="QR">
+          </div>
+        </div>
+      </div>
+
+      <div class="custom-music-player" id="cardAudioGroup" style="display: none;">
+        <div class="spinning-disc">
+          <div class="spinning-disc-inner"></div>
+        </div>
+        <div class="anime-dancer-free">
+          <img src="gif/anime.gif" alt="Custom GIF">
+        </div>
+        <div class="equalizer-bars">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <audio id="cardAudioPlayer" autoplay loop style="display: none;"></audio>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;"></button>
+      </div>
+      
+      <div class="btn-group" style="margin-top: 8px;">
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="returnToProfileOrLogin()" style="padding: 10px; font-size: 13px;"></button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
+</body>
+</html>
