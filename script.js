@@ -87,7 +87,7 @@ const i18n = {
   }
 };
 
-// 🌟 စာသားများအတွက် အရောင် ၃ မျိုး animated shadow နှင့် နေရာခြားပေးသည့် CSS ကို အလိုအလျောက်ထည့်သွင်းခြင်း
+// 🌟 စာသားအလှနှင့် From: Aung border loading animation CSS ထည့်သွင်းခြင်း
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -96,17 +96,43 @@ cardStyleInjected.innerHTML = `
     66% { text-shadow: 0 0 6px #ffde59, 0 0 12px #ffde59; color: #ffde59; }
     100% { text-shadow: 0 0 6px #ff2a6d, 0 0 12px #ff2a6d; color: #ff2a6d; }
   }
+
+  @keyframes borderSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* From: Aung box border rotating loading effect (2 colors) */
+  #outSender {
+    position: relative !important;
+    border: 2px solid transparent !important;
+    background-clip: padding-box !important;
+    overflow: hidden;
+  }
+  #outSender::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: conic-gradient(from 0deg, #05d9e8 0deg, #05d9e8 180deg, #ffde59 180deg, #ffde59 360deg);
+    animation: borderSpin 2s linear infinite;
+    z-index: -1;
+  }
+
+  /* Title and note styling with black stroke and glow */
   #outReason {
     margin-bottom: 18px !important;
     display: block !important;
     animation: textGlowAnimation 3s infinite;
     font-weight: bold;
+    -webkit-text-stroke: 1px #000;
   }
   #outNote {
     margin-top: 10px !important;
     display: block !important;
     animation: textGlowAnimation 3s infinite 1.5s;
     font-weight: bold;
+    -webkit-text-stroke: 1px #000;
   }
 `;
 document.head.appendChild(cardStyleInjected);
