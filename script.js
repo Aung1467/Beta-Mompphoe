@@ -31,7 +31,7 @@ const localMusicList = [
   { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
 ];
 
-// မြန်မာဘာသာစာသားများ သီးသန့်
+// ဘာသာစကား စာသားများ (မြန်မာ / English)
 const i18n = {
   my: {
     pageTitle: "မုန့်ဖိုးတောင်းလွှာ Web App",
@@ -91,10 +91,69 @@ const i18n = {
       { val: "သုံးစရာမရှိတော့လို့", text: "သုံးစရာမရှိတော့လို့" },
       { val: "အခြား", text: "အခြား (ကိုယ်တိုင်ရေးမည်)" }
     ]
+  },
+  en: {
+    pageTitle: "Pocket Money Request Web App",
+    introMsg: "Welcome! Please wait...",
+    loaderMsg: "Please wait...",
+    authTitle: "Account Auth",
+    modeSelectLabel: "Select Option",
+    optLogin: "Login Existing Account",
+    optSignup: "Create New Account",
+    nameLabel: "Name",
+    namePlaceholder: "Enter your name",
+    numLabel: "ID Number",
+    numPlaceholder: "Enter any ID",
+    passLabel: "Password",
+    passPlaceholder: "Enter password",
+    pass2Label: "Confirm Password",
+    pass2Placeholder: "Re-enter password",
+    loginBtn: "Login",
+    signupBtn: "Sign Up",
+    profileTitle: "User Profile",
+    changeAvatar: "Change Avatar",
+    changeNickBtn: "Edit Name",
+    reqPocketBtn: "🧧 Request Pocket Money",
+    historyBtn: "History",
+    historyTitle: "Request History",
+    backHistoryBtn: "⬅ Back",
+    step3Title: "Request Details",
+    dropdownLabel: "Select Reason",
+    customReasonLabel: "Custom Reason",
+    customReasonPlaceholder: "Enter your reason",
+    customNoteLabel: "Custom Note / Message",
+    customNotePlaceholder: "Type your note here...",
+    musicLabel: "Select Music",
+    bgLabel: "Background Image",
+    bgBtn: "📸 Choose BG Image",
+    qrLabel: "QR Code / Payment Info (HD)",
+    qrBtn: "💳 Choose QR Image",
+    backBtn: "⬅ Back",
+    genCardBtn: "Create Card ✨",
+    step4Title: " 😌 Pocket Money Request 😌 ",
+    qrHint: "", 
+    saveBtn: "💾 Save QR",
+    shareBtn: "📤 Share Request",
+    profileReturnBtn: "🏠 Return to Profile",
+    modalTitle: "📤 Share Link",
+    modalSub: "Send your request card and link to:",
+    copyLinkBtn: "📋 Copy Link",
+    dl1to1Btn: "📥 Save QR",
+    closeBtn: "Close",
+    alertNote: "❌ Please fill in the custom note field.",
+    alertBg: "❌ Please upload a background image.",
+    alertQr: "❌ Please upload a QR code / Payment image.",
+    reasons: [
+      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "Thadingyut Pocket Money" },
+      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "Go out with lover" },
+      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "Hang out with friends" },
+      { val: "သုံးစရာမရှိတော့လို့", text: "Out of pocket money" },
+      { val: "အခြား", text: "Other (Custom)" }
+    ]
   }
 };
 
-// 🌟 Metallic CD Disc & Clean Static Background Styles
+// 🌟 Injected CSS Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -228,7 +287,7 @@ document.head.appendChild(cardStyleInjected);
 
 // Text Localization Function
 function updateTexts() {
-  const d = i18n.my;
+  const d = i18n[currentLang] || i18n.my;
   if(document.getElementById('page_title')) document.getElementById('page_title').innerText = d.pageTitle;
   if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
   if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
@@ -270,7 +329,6 @@ function updateTexts() {
 
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
-  if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
 
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
@@ -279,9 +337,7 @@ function updateTexts() {
 
   if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
   if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
-  if(document.getElementById('reasonTriggerText') && i18n.my.reasons.length > 0) {
-    document.getElementById('reasonTriggerText').innerText = i18n.my.reasons[0].text;
-  }
+  
   if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
   if(document.getElementById('customReason')) document.getElementById('customReason').placeholder = d.customReasonPlaceholder;
   if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = d.customNoteLabel;
@@ -289,9 +345,9 @@ function updateTexts() {
 
   if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = d.musicLabel;
   if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = d.bgLabel;
-  if(document.getElementById('bgImgLabel')) document.getElementById('bgImgLabel').innerText = d.bgBtn;
+  if(document.getElementById('bgImgLabel') && !selectedBgFile) document.getElementById('bgImgLabel').innerText = d.bgBtn;
   if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = d.qrLabel;
-  if(document.getElementById('qrImgLabel')) document.getElementById('qrImgLabel').innerText = d.qrBtn;
+  if(document.getElementById('qrImgLabel') && !selectedQrFile) document.getElementById('qrImgLabel').innerText = d.qrBtn;
 
   if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = d.backBtn;
   if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
@@ -310,6 +366,13 @@ function updateTexts() {
   if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = d.copyLinkBtn;
   if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = d.dl1to1Btn;
   if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
+}
+
+// Language Switcher Function
+function changeLanguage(lang) {
+  currentLang = lang || 'my';
+  updateTexts();
+  populateReasonDropdown(currentLang);
 }
 
 // Compress File to HD DataURL
@@ -425,7 +488,7 @@ window.addEventListener('click', function(e) {
 
 window.addEventListener('DOMContentLoaded', async () => {
   updateTexts();
-  populateReasonDropdown('my');
+  populateReasonDropdown(currentLang);
   populateMusicDropdown();
 
   setTimeout(() => {
@@ -533,8 +596,17 @@ function renderCardData(data) {
   }
 }
 
+function stopCardTimer() {
+  if (cardTimerInterval) {
+    clearInterval(cardTimerInterval);
+    cardTimerInterval = null;
+  }
+  const timerEl = document.getElementById('topCardTimer');
+  if (timerEl) timerEl.style.display = 'none';
+}
+
 function startCardTimer(cardId) {
-  if (cardTimerInterval) clearInterval(cardTimerInterval);
+  stopCardTimer();
 
   const storageKey = `card_expire_${cardId || 'local_card'}`;
   let expireTime = localStorage.getItem(storageKey);
@@ -560,9 +632,7 @@ function startCardTimer(cardId) {
     const distance = expireTime - now;
 
     if (distance <= 0) {
-      clearInterval(cardTimerInterval);
-      if (timerEl) timerEl.innerText = "⏳ အချိန်ကုန်သွားပါပြီ";
-      
+      stopCardTimer();
       await deleteCardDataAndClean(cardId, storageKey);
       return;
     }
@@ -583,8 +653,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
   currentShareableLink = '';
   localStorage.removeItem(storageKey);
 
-  const timerEl = document.getElementById('topCardTimer');
-  if (timerEl) timerEl.style.display = 'none';
+  stopCardTimer();
 
   const bgEl = document.getElementById('cardBgImg');
   if (bgEl) bgEl.style.display = 'none';
@@ -618,7 +687,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     }
   }
 
-  alert('⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  alert(currentLang === 'en' ? '⚠️ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
   goToStep(2);
 }
 
@@ -649,18 +718,18 @@ function handleSignup() {
   const p2 = document.getElementById('signupPass2').value;
 
   if (!name || !num || !p1 || !p2) {
-    alert('အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
+    alert(currentLang === 'en' ? 'Please fill in all fields.' : 'အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
     return;
   }
   if (p1 !== p2) {
-    alert('Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
+    alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
     return;
   }
 
   const userData = { name, num, pass: p1, avatar: '', history: [] };
   localStorage.setItem(`user_${num}`, JSON.stringify(userData));
   
-  alert('✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
+  alert(currentLang === 'en' ? '✅ Account created successfully!' : '✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
   currentUser = userData;
   setupProfileView();
   goToStep(2);
@@ -671,7 +740,7 @@ function handleLogin() {
   const pass = document.getElementById('loginPass').value;
 
   if (!name || !pass) {
-    alert('နာမည်နှင့် Password ဖြည့်ပါ။');
+    alert(currentLang === 'en' ? 'Please enter name and password.' : 'နာမည်နှင့် Password ဖြည့်ပါ။');
     return;
   }
 
@@ -688,12 +757,12 @@ function handleLogin() {
   }
 
   if (!foundUser) {
-    alert('ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။ အကောင့်သစ်ဖွင့်ပါ။');
+    alert(currentLang === 'en' ? 'Account not found. Please sign up.' : 'ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။ အကောင့်သစ်ဖွင့်ပါ။');
     return;
   }
 
   if (foundUser.pass !== pass) {
-    alert('Password မှားယွင်းနေပါသည်။');
+    alert(currentLang === 'en' ? 'Incorrect password.' : 'Password မှားယွင်းနေပါသည်။');
     return;
   }
 
@@ -710,6 +779,19 @@ function setupProfileView() {
   
   if (currentUser.avatar) {
     document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
+  }
+}
+
+// 🌟 Added changeNickname Function
+function changeNickname() {
+  if (!currentUser) return;
+  const currentName = currentUser.name || '';
+  const newName = prompt(currentLang === 'en' ? 'Enter new name:' : 'နာမည်အသစ် ရိုက်ထည့်ပါ:', currentName);
+  if (newName && newName.trim() !== '') {
+    currentUser.name = newName.trim();
+    localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+    setupProfileView();
+    alert(currentLang === 'en' ? '✅ Name updated successfully!' : '✅ နာမည် ပြောင်းလဲပြီးပါပြီ!');
   }
 }
 
@@ -738,7 +820,7 @@ function renderHistoryList() {
   container.innerHTML = '';
 
   if (!currentUser || !currentUser.history || currentUser.history.length === 0) {
-    container.innerHTML = '<p style="text-align: center; color: #cbd5e1; font-size: 13px; padding: 20px;">မှတ်တမ်းများ မရှိသေးပါ။</p>';
+    container.innerHTML = `<p style="text-align: center; color: #cbd5e1; font-size: 13px; padding: 20px;">${currentLang === 'en' ? 'No history records found.' : 'မှတ်တမ်းများ မရှိသေးပါ။'}</p>`;
     return;
   }
 
@@ -768,7 +850,7 @@ function renderHistoryList() {
     expireText.style.color = '#ff4757';
     expireText.style.fontWeight = '600';
     expireText.dataset.cardId = item.id;
-    expireText.innerText = 'သက်တမ်း - 120:00';
+    expireText.innerText = '120:00';
 
     const menuBtn = document.createElement('button');
     menuBtn.className = 'history-menu-btn';
@@ -803,7 +885,7 @@ function renderHistoryList() {
 
     const viewItem = document.createElement('div');
     viewItem.className = 'history-dropdown-item';
-    viewItem.innerText = 'ကြည့်ရန်';
+    viewItem.innerText = currentLang === 'en' ? 'View' : 'ကြည့်ရန်';
     viewItem.style.padding = '6px 12px';
     viewItem.style.cursor = 'pointer';
     viewItem.style.fontSize = '12px';
@@ -813,7 +895,7 @@ function renderHistoryList() {
 
     const deleteItem = document.createElement('div');
     deleteItem.className = 'history-dropdown-item';
-    deleteItem.innerText = 'ဖျက်ပြစ်ရန်';
+    deleteItem.innerText = currentLang === 'en' ? 'Delete' : 'ဖျက်ပြစ်ရန်';
     deleteItem.style.padding = '6px 12px';
     deleteItem.style.cursor = 'pointer';
     deleteItem.style.fontSize = '12px';
@@ -874,14 +956,14 @@ function updateHistoryTimers() {
     const distance = expireTime - now;
 
     if (distance <= 0) {
-      span.innerText = "သက်တမ်း - အချိန်ကုန်သွားပါပြီ";
+      span.innerText = currentLang === 'en' ? 'Expired' : 'သက်တမ်း - အချိန်ကုန်သွားပါပြီ';
       return;
     }
 
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    span.innerText = `သက်တမ်း - ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    span.innerText = `${currentLang === 'en' ? 'Expires' : 'သက်တမ်း'} - ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   });
 }
 
@@ -895,11 +977,7 @@ function toggleHistoryDropdown(index) {
   const target = document.getElementById(`historyDropdown_${index}`);
   if (target) {
     target.classList.toggle('show');
-    if (target.classList.contains('show')) {
-      target.style.display = 'block';
-    } else {
-      target.style.display = 'none';
-    }
+    target.style.display = target.classList.contains('show') ? 'block' : 'none';
   }
 }
 
@@ -940,7 +1018,7 @@ async function viewCardFromHistory(cardId) {
         startCardTimer(cardId);
         return;
       } else {
-        alert('❌ ဤကတ်သည် သက်တမ်းကုန်သွားပြီ (သို့) မရှိတော့ပါ။');
+        alert(currentLang === 'en' ? '❌ Card has expired or been removed.' : '❌ ဤကတ်သည် သက်တမ်းကုန်သွားပြီ (သို့) မရှိတော့ပါ။');
       }
     }
   } catch (err) {
@@ -950,7 +1028,7 @@ async function viewCardFromHistory(cardId) {
 }
 
 async function deleteCardFromHistory(cardId, index) {
-  if (!confirm('ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?')) return;
+  if (!confirm(currentLang === 'en' ? 'Are you sure you want to delete this record?' : 'ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?')) return;
 
   const loader = document.getElementById('stepLoader');
   if (loader) loader.classList.add('show');
@@ -974,20 +1052,21 @@ async function deleteCardFromHistory(cardId, index) {
 }
 
 function goToStep(stepNumber) {
-  const timerEl = document.getElementById('topCardTimer');
-  if (timerEl && stepNumber !== 4) {
-    timerEl.style.display = 'none';
+  if (stepNumber !== 4) {
+    stopCardTimer();
   }
 
   const loader = document.getElementById('stepLoader');
-  loader.classList.add('show');
+  if (loader) loader.classList.add('show');
   setTimeout(() => {
-    loader.classList.remove('show');
+    if (loader) loader.classList.remove('show');
     showStep(stepNumber);
   }, 800);
 }
 
 function returnToProfileOrLogin() {
+  stopCardTimer();
+  
   if (isSharedLinkVisitor) {
     if (window.history && window.history.replaceState) {
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -1000,8 +1079,6 @@ function returnToProfileOrLogin() {
       cardPlayer.pause();
       cardPlayer.currentTime = 0;
     }
-    const timerEl = document.getElementById('topCardTimer');
-    if (timerEl) timerEl.style.display = 'none';
 
     goToStep(1);
   } else {
@@ -1045,7 +1122,7 @@ function populateReasonDropdown(lang) {
   if (!container) return;
   container.innerHTML = '';
   
-  const reasonsList = i18n.my.reasons;
+  const reasonsList = (i18n[lang] || i18n.my).reasons;
   reasonsList.forEach(item => {
     const div = document.createElement('div');
     div.className = 'custom-option';
@@ -1071,18 +1148,18 @@ function selectReasonOption(val, text) {
 async function handleBgImage(input) {
   if (input.files && input.files[0]) {
     selectedBgFile = input.files[0];
-    document.getElementById('bgImgLabel').innerText = `⏳ နောက်ခံပုံ တင်နေပါပြီ...`;
+    document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ နောက်ခံပုံ တင်နေပါပြီ...`;
     savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
-    document.getElementById('bgImgLabel').innerText = `✅ HD ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
+    document.getElementById('bgImgLabel').innerText = `✅ HD (${input.files[0].name})`;
   }
 }
 
 async function handleQrImage(input) {
   if (input.files && input.files[0]) {
     selectedQrFile = input.files[0];
-    document.getElementById('qrImgLabel').innerText = `⏳ QR ပုံ တင်နေပါပြီ...`;
+    document.getElementById('qrImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ QR ပုံ တင်နေပါပြီ...`;
     savedQrImage = await compressFileToDataUrl(selectedQrFile, 700, 0.8);
-    document.getElementById('qrImgLabel').innerText = `✅ QR ပုံရွေးပြီးပါပြီ (${input.files[0].name})`;
+    document.getElementById('qrImgLabel').innerText = `✅ QR (${input.files[0].name})`;
   }
 }
 
@@ -1102,7 +1179,7 @@ async function generateAndSaveCard() {
   const customNote = document.getElementById('customNote').value.trim();
   const finalReason = (reasonVal === 'အခြား' && customReason) ? customReason : reasonVal;
 
-  const d = i18n.my;
+  const d = i18n[currentLang] || i18n.my;
 
   if (!customNote) {
     alert(d.alertNote);
@@ -1140,7 +1217,7 @@ async function generateAndSaveCard() {
 
     const sb = getSupabase();
     if (!sb) {
-      throw new Error('Supabase SDK မတက်ပါ။');
+      throw new Error('Supabase SDK client error.');
     }
 
     const { data, error } = await sb
@@ -1199,7 +1276,7 @@ async function generateAndSaveCard() {
 
 function downloadSingleQr() {
   if (!savedQrImage) {
-    alert('QR ပုံ မထည့်ရသေးပါ။');
+    alert(currentLang === 'en' ? 'No QR image uploaded.' : 'QR ပုံ မထည့်ရသေးပါ။');
     return;
   }
   const link = document.createElement('a');
@@ -1223,12 +1300,7 @@ function closeShareModal() {
 
 function copyShareLink() {
   navigator.clipboard.writeText(currentShareableLink).then(() => {
-    alert('✅ လင့်ခ်ကူးယူပြီးပါပြီ!');
+    alert(currentLang === 'en' ? '✅ Link copied to clipboard!' : '✅ လင့်ခ်ကူးယူပြီးပါပြီ!');
     closeShareModal();
   });
-}
-
-function changeLanguage(lang) {
-  currentLang = 'my';
-  updateTexts();
 }
