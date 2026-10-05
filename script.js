@@ -87,7 +87,7 @@ const i18n = {
   }
 };
 
-// 🌟 စာသားအလှနှင့် From: Aung border loading animation CSS ထည့်သွင်းခြင်း
+// 🌟 စာသားအလှနှင့် From: Aung ဘောက်စ်အနားစွန်းတွင် ထောင့်မှန်အတိုင်း အရောင်လည်ပတ်သည့် Animation CSS
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -102,20 +102,22 @@ cardStyleInjected.innerHTML = `
     100% { transform: rotate(360deg); }
   }
 
-  /* From: Aung box border rotating loading effect (2 colors) */
+  /* From: Aung box border rotating gradient animation along rounded corners */
   #outSender {
     position: relative !important;
+    border-radius: 20px !important;
+    background: #ff2a6d !important;
     border: 2px solid transparent !important;
     background-clip: padding-box !important;
-    overflow: hidden;
+    overflow: hidden !important;
   }
   #outSender::before {
     content: '';
     position: absolute;
     inset: -3px;
     border-radius: inherit;
-    background: conic-gradient(from 0deg, #05d9e8 0deg, #05d9e8 180deg, #ffde59 180deg, #ffde59 360deg);
-    animation: borderSpin 2s linear infinite;
+    background: conic-gradient(from 0deg, #05d9e8, #ffde59, #ffffff, #05d9e8);
+    animation: borderSpin 2.5s linear infinite;
     z-index: -1;
   }
 
