@@ -20,6 +20,7 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 let cardTimerInterval = null;
+let historyTimerInterval = null; // 🌟 မှတ်တမ်းများအတွက် Timer Interval
 let isSharedLinkVisitor = false; // 🌟 Card Link ကနေ ဝင်လာသူ ဟုတ်မဟုတ် မှတ်သားရန်
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
@@ -708,8 +709,10 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်းနှင့် ဝိုင်းပြထားသောနေရာတွင် မိနစ် ၁၂၀ သက်တမ်း ဖော်ပြပေးခြင်း
+// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်း ("သက်တမ်း - mm: ss" ကို ညာဘက်သို့ရွေ့ပြီး မိနစ်/စက္ကန့် တိုက်ရိုက်ပြရန်)
 function renderHistoryList() {
+  if (historyTimerInterval) clearInterval(historyTimerInterval);
+
   const container = document.getElementById('historyListContainer');
   if (!container) return;
   container.innerHTML = '';
@@ -722,27 +725,20 @@ function renderHistoryList() {
   currentUser.history.forEach((item, index) => {
     const row = document.createElement('div');
     row.className = 'history-item-row';
+    row.style.display = 'flex';
+    row.style.flexDirection = 'column';
+    row.style.position = 'relative';
 
-    // စာသားများနှင့် သက်တမ်းပြရန် Container
-    const contentWrapper = document.createElement('div');
-    contentWrapper.style.flex = '1';
-    contentWrapper.style.display = 'flex';
-    contentWrapper.style.flexDirection = 'column';
+    // ထိပ်ပိုင်း (လင့်ခ်စာသားနှင့် မီနူးခလုတ်)
+    const topRow = document.createElement('div');
+    topRow.style.display = 'flex';
+    topRow.style.alignItems = 'flex-start';
+    topRow.style.width = '100%';
 
     const linkText = document.createElement('span');
     linkText.className = 'history-link-text';
+    linkText.style.flex = '1';
     linkText.innerText = `${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${item.link}`;
-
-    // 🌟 ဝိုင်းပြထားသောနေရာတွင် 120 မိနစ် သက်တမ်းပြမည့် စာသား
-    const expireText = document.createElement('span');
-    expireText.style.fontSize = '10px';
-    expireText.style.color = '#00f2fe';
-    expireText.style.marginTop = '4px';
-    expireText.style.fontWeight = '600';
-    expireText.innerText = '⏳ ကတ်သက်တမ်း: မိနစ် 120';
-
-    contentWrapper.appendChild(linkText);
-    contentWrapper.appendChild(expireText);
 
     // မျဉ်း 3 ကြောင်း (3-Line Menu Button)
     const menuBtn = document.createElement('button');
@@ -752,6 +748,26 @@ function renderHistoryList() {
       e.stopPropagation();
       toggleHistoryDropdown(index);
     };
+
+    topRow.appendChild(linkText);
+    topRow.appendChild(menuBtn);
+
+    // အောက်ပိုင်း (ညာဘက်သို့ရွေ့ထားပြီး "သက်တမ်း - မိနစ်:စက္ကန့်" တိုက်ရိုက်ပြမည့် နေရာ)
+    const bottomRow = document.createElement('div');
+    bottomRow.style.display = 'flex';
+    bottomRow.style.justifyContent = 'flex-end'; // ညာဘက်သို့ ကပ်ရန်
+    bottomRow.style.marginTop = '6px';
+    bottomRow.style.width = '100%';
+
+    const expireText = document.createElement('span');
+    expireText.className = 'history-timer-span';
+    expireText.style.fontSize = '11px';
+    expireText.style.color = '#00f2fe';
+    expireText.style.fontWeight = '600';
+    expireText.dataset.cardId = item.id;
+    expireText.innerText = 'သက်တမ်း - 120:00';
+
+    bottomRow.appendChild(expireText);
 
     // Dropdown Menu (ကြည့်ရန် နှင့် ဖျက်ပြစ်ရန်)
     const dropdown = document.createElement('div');
@@ -771,11 +787,45 @@ function renderHistoryList() {
     dropdown.appendChild(viewItem);
     dropdown.appendChild(deleteItem);
 
-    row.appendChild(contentWrapper);
-    row.appendChild(menuBtn);
+    row.appendChild(topRow);
+    row.appendChild(bottomRow);
     row.appendChild(dropdown);
 
     container.appendChild(row);
+  });
+
+  // 🌟 တစ်စက္ကန့်တစ်ကြိမ် Timer များကို တိုက်ရိုက် update လုပ်ပေးခြင်း
+  updateHistoryTimers();
+  historyTimerInterval = setInterval(updateHistoryTimers, 1000);
+}
+
+// 🌟 မှတ်တမ်းကတ်တစ်ခုချင်းစီ၏ သက်တမ်းအချိန်ကို တစ်စက္ကန့်ချင်း update လုပ်ရန် Function
+function updateHistoryTimers() {
+  const timerSpans = document.querySelectorAll('.history-timer-span');
+  timerSpans.forEach(span => {
+    const cardId = span.dataset.cardId;
+    const storageKey = `card_expire_${cardId || 'local_card'}`;
+    let expireTime = localStorage.getItem(storageKey);
+
+    if (!expireTime) {
+      expireTime = Date.now() + 120 * 60 * 1000;
+      localStorage.setItem(storageKey, expireTime);
+    } else {
+      expireTime = parseInt(expireTime, 10);
+    }
+
+    const now = Date.now();
+    const distance = expireTime - now;
+
+    if (distance <= 0) {
+      span.innerText = "သက်တမ်း - အချိန်ကုန်သွားပါပြီ";
+      return;
+    }
+
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    span.innerText = `သက်တမ်း - ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   });
 }
 
