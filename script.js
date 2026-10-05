@@ -221,11 +221,20 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
+  /* 🌟 Step4 Card Box: Glow လျှော့ထားပြီး Floating Animation ထည့်သွင်းထားသည် */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
+    box-shadow: 0 4px 18px rgba(0, 242, 254, 0.22) !important; /* Glow Effect လျှော့ထားသည် */
+    animation: floatCard 3.5s ease-in-out infinite !important; /* Floating Animation */
   }
 
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-7px); }
+  }
+
+  /* 🌟 ပုံပါဝင်သည့် Composition Area အတွက် Stretch ဖြစ်စေရန် */
   #cardBgImg {
     display: block !important;
     position: absolute !important;
@@ -233,7 +242,7 @@ cardStyleInjected.innerHTML = `
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: cover !important; /* Stretch to composition area */
     z-index: 0 !important;
   }
 
@@ -330,8 +339,8 @@ function updateTexts() {
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
 
-  // နာမည်ပြောင်းရန် ခလုတ်တွင် ခဲတံသင်္ကေတ + စာသား အတူတူပေါ်စေရန် ထည့်သွင်းထားပါသည်
-  if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerHTML = `<span>✏ ${d.changeNickBtn}</span>`;
+  // 🌟 ခဲတံ Emoji ကို ဖျက်ထားပြီး နာမည်ပြောင်းရန် စာသား သီးသန့် ဖော်ပြထားပါသည်
+  if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
 
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
@@ -785,16 +794,77 @@ function setupProfileView() {
   }
 }
 
+// 🌟 နာမည်ပြောင်းသည့် UI ကို Custom Modern Glassmorphic Modal ဖြင့် အစားထိုးပြင်ဆင်ထားပါသည်
 function changeNickname() {
   if (!currentUser) return;
-  const currentName = currentUser.name || '';
-  const newName = prompt(currentLang === 'en' ? 'Enter new name:' : 'နာမည်အသစ် ရိုက်ထည့်ပါ:', currentName);
-  if (newName && newName.trim() !== '') {
-    currentUser.name = newName.trim();
-    localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
-    setupProfileView();
-    alert(currentLang === 'en' ? '✅ Name updated successfully!' : '✅ နာမည် ပြောင်းလဲပြီးပါပြီ!');
+  
+  let modal = document.getElementById('customNickModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'customNickModal';
+    modal.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 99999; opacity: 0; transition: opacity 0.3s ease;
+    `;
+    modal.innerHTML = `
+      <div style="
+        background: rgba(15, 23, 42, 0.95);
+        border: 1.5px solid rgba(0, 242, 254, 0.5);
+        box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+        border-radius: 16px; padding: 22px 20px; width: 88%; max-width: 320px;
+        text-align: center; color: #fff; transform: scale(0.9); transition: transform 0.3s ease;
+      ">
+        <h3 style="margin: 0 0 14px 0; font-size: 16px; color: #00f2fe; font-weight: 600;">
+          ${currentLang === 'en' ? 'Change Name' : 'နာမည်ပြောင်းရန်'}
+        </h3>
+        <input type="text" id="customNickInput" placeholder="${currentLang === 'en' ? 'Enter new name' : 'နာမည်အသစ် ရိုက်ထည့်ပါ'}" style="
+          width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(0, 242, 254, 0.4);
+          background: rgba(255,255,255,0.07); color: #fff; font-size: 14px; outline: none; margin-bottom: 18px; box-sizing: border-box; text-align: center;
+        "/>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button id="customNickCancel" style="
+            flex: 1; padding: 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1); color: #ccc; cursor: pointer; font-size: 13px;
+          ">${currentLang === 'en' ? 'Cancel' : 'မလုပ်တော့ပါ'}</button>
+          <button id="customNickOk" style="
+            flex: 1; padding: 9px; border-radius: 8px; border: none;
+            background: linear-gradient(135deg, #00f2fe, #4facfe); color: #090d16; font-weight: bold; cursor: pointer; font-size: 13px; box-shadow: 0 0 10px rgba(0,242,254,0.4);
+          ">OK</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
   }
+
+  const input = modal.querySelector('#customNickInput');
+  input.value = currentUser.name || '';
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.style.opacity = '1';
+    modal.children[0].style.transform = 'scale(1)';
+    input.focus();
+  }, 10);
+
+  const closeModal = () => {
+    modal.style.opacity = '0';
+    modal.children[0].style.transform = 'scale(0.9)';
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+  };
+
+  modal.querySelector('#customNickCancel').onclick = closeModal;
+
+  modal.querySelector('#customNickOk').onclick = () => {
+    const newName = input.value.trim();
+    if (newName) {
+      currentUser.name = newName;
+      localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+      setupProfileView();
+      alert("Update Name");
+    }
+    closeModal();
+  };
 }
 
 function updateProfileAvatar(input) {
