@@ -88,7 +88,7 @@ const i18n = {
   }
 };
 
-// 🌟 စာသားများအတွက် အရောင် ၃ မျိုး animated shadow နှင့် နေရာခြားပေးသည့် CSS ကို အလိုအလျောက်ထည့်သွင်းခြင်း
+// 🌟 စာသားများနှင့် အလယ်က Anime အဝိုင်း border ကြီးခြင်း၊ ပတ်ပတ်လည် Music Equalizer Animation Effect များထည့်သွင်းခြင်း
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -108,6 +108,36 @@ cardStyleInjected.innerHTML = `
     display: block !important;
     animation: textGlowAnimation 3s infinite 1.5s;
     font-weight: bold;
+  }
+
+  /* 🌟 အလယ်က Anime အဝိုင်း border အရွယ်အစားကို Music border များနှင့်အညီ ကြီးပေးခြင်းနှင့် Equalizer Effect ပတ်ပတ်လည်လုပ်ခြင်း */
+  .player-controls-row > div:nth-child(2),
+  .media-center-btn,
+  .anime-circle-container {
+    transform: scale(1.25);
+    margin: 0 15px;
+    position: relative;
+  }
+
+  /* ပတ်လည် Equalizer glowing wave animation ring */
+  @keyframes eqRingPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.7), 0 0 0 0 rgba(255, 42, 109, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(5, 217, 232, 0), 0 0 0 20px rgba(255, 42, 109, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0);
+    }
+  }
+
+  /* အလယ်က Anime အဝိုင်းကို တိုက်ရိုက် သို့မဟုတ် ၎င်း၏ မိဘကွန်တိန်နာကို Equalizer ring ထည့်ခြင်း */
+  .player-controls-row > div:nth-child(2) img,
+  .media-center-btn img,
+  .anime-circle-container img {
+    animation: eqRingPulse 2s infinite ease-in-out;
+    border-radius: 50%;
   }
 `;
 document.head.appendChild(cardStyleInjected);
