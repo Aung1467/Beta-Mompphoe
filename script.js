@@ -89,7 +89,7 @@ const i18n = {
   }
 };
 
-// 🌟 စာသားများ animation, GIF နှင့် Audio Preview ၏ Background ဖယ်ရှားခြင်းနှင့် Equalizer သက်သက်ထားရှိခြင်း CSS
+// CSS Styles Injection
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -120,15 +120,9 @@ cardStyleInjected.innerHTML = `
   }
 
   @keyframes eqGlowWave {
-    0% {
-      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8);
-    }
-    70% {
-      box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8); }
+    70% { box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0); }
   }
 
   .player-controls-row > div:nth-child(2),
@@ -138,7 +132,6 @@ cardStyleInjected.innerHTML = `
     border-radius: 50%;
   }
 
-  /* 🌟 Audio Preview Box ၏ Background နှင့် Border များကို ဖယ်ရှားပြီး Equalizer သက်သက်သာ ပြသခြင်း */
   .custom-preview-player {
     background: transparent !important;
     border: none !important;
@@ -150,7 +143,7 @@ cardStyleInjected.innerHTML = `
 `;
 document.head.appendChild(cardStyleInjected);
 
-// HTML နေရာလပ်များသို့ စာသားများကို မြန်မာလို ထည့်သွင်းပေးသည့် Function
+// Text Localization Function
 function updateTexts() {
   const d = i18n.my;
   if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
@@ -230,7 +223,7 @@ function updateTexts() {
   if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
 }
 
-// ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85)
+// Compress File to HD DataURL
 function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
@@ -269,7 +262,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// Music Folder Dropdown Populate & Selection Functions
+// Music Dropdown Functions
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
   if (!container) return;
@@ -378,9 +371,9 @@ window.addEventListener('DOMContentLoaded', async () => {
             sender: data.sender,
             reason: data.reason,
             note: data.note,
-            bgImage: data.bg_image,
-            qrImage: data.qr_image,
-            musicUrl: data.music_url
+            bgImage: data.bg_image || data.bgImage,
+            qrImage: data.qr_image || data.qrImage,
+            musicUrl: data.music_url || data.musicUrl
           });
           if (loader) loader.classList.remove('show');
           showStep(4);
@@ -394,34 +387,46 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+// 🌟 Bulletproof Render Card Data Function (ပုံများနှင့် ဒေတာများ 100% ပေါ်စေရန်)
 function renderCardData(data) {
+  if (!data) return;
+
   document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
   document.getElementById('outReason').innerText = data.reason || '';
   document.getElementById('outNote').innerText = data.note || '';
 
-  if (data.bgImage) {
-    savedBgImage = data.bgImage;
+  // Background Image Handling
+  const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
+  if (bgImgSrc) {
+    savedBgImage = bgImgSrc;
     const bgEl = document.getElementById('cardBgImg');
-    bgEl.src = data.bgImage;
-    bgEl.style.display = 'block';
-    bgEl.style.width = '100%';
-    bgEl.style.height = '100%';
-    bgEl.style.objectFit = 'cover';
+    if (bgEl) {
+      bgEl.src = bgImgSrc;
+      bgEl.style.display = 'block';
+      bgEl.style.width = '100%';
+      bgEl.style.height = '100%';
+      bgEl.style.objectFit = 'cover';
+    }
   }
-  if (data.qrImage) {
-    savedQrImage = data.qrImage;
+
+  // QR / Payment Image Handling
+  const qrImgSrc = data.qrImage || data.qr_image || savedQrImage;
+  if (qrImgSrc) {
+    savedQrImage = qrImgSrc;
     const qrEl = document.getElementById('cardQrImg');
     const qrWr = document.getElementById('qrWrapper');
-    qrEl.src = data.qrImage;
-    qrWr.style.display = 'block';
+    if (qrEl) qrEl.src = qrImgSrc;
+    if (qrWr) qrWr.style.display = 'block';
   }
-  if (data.musicUrl) {
-    savedMusicUrl = data.musicUrl;
 
+  // Music Audio Handling
+  const mUrl = data.musicUrl || data.music_url || savedMusicUrl;
+  if (mUrl) {
+    savedMusicUrl = mUrl;
     const cardPlayer = document.getElementById('cardAudioPlayer');
     const cardAudioGroup = document.getElementById('cardAudioGroup');
     if (cardPlayer && cardAudioGroup) {
-      cardPlayer.src = data.musicUrl;
+      cardPlayer.src = mUrl;
       cardPlayer.load();
       cardPlayer.play().catch(e => console.log("Autoplay prevented:", e));
       cardAudioGroup.style.display = 'flex';
@@ -544,6 +549,7 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
+// 🌟 Emoji Rain Animation for Step 4
 function startEmojiRain() {
   if (emojiIntervalId) clearInterval(emojiIntervalId);
   const overlay = document.getElementById('emojiOverlay');
