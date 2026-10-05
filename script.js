@@ -19,7 +19,6 @@ let selectedBgFile = null;
 let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
-let heartIntervalId = null;
 let cardTimerInterval = null;
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
@@ -89,7 +88,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (အပြင်ဘောင် ငြိမ်စေပြီး အထဲက ပုံကိုသာ Random smooth ဖြစ်ဖြစ် လှုပ်ရှားစေခြင်း)
+// 🌟 CSS Styles Injection (အပြင်ဘောင် ငြိမ်စေပြီး အထဲက ပုံအရွယ်အစား မပြောင်းဘဲ ဘောင်ပတ်ပတ်လည် ညင်သာစွာ ရွေ့လျားစေခြင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   #outReason {
@@ -107,45 +106,18 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 အထဲရှိ 4:3 ပုံ (Background Image) ကိုသာ အလယ်ဗဟိုကို margin ယူ၍ Random smooth ဖြစ်ဖြစ် ညင်သာစွာ လှုပ်ရှားစေခြင်း */
-  @keyframes smoothRandomImageMove {
-    0% { transform: scale(1) translate(0px, 0px); }
-    20% { transform: scale(1.03) translate(-4px, 3px); }
-    40% { transform: scale(1.02) translate(3px, -3px); }
-    60% { transform: scale(1.04) translate(-2px, -4px); }
-    80% { transform: scale(1.01) translate(4px, 2px); }
-    100% { transform: scale(1) translate(0px, 0px); }
+  /* 🌟 4:3 ပုံ (Background Image) အရွယ်အစား (scale) ကို ပုံသေထားပြီး အလယ်ကိုအခြေခံကာ ဘောင်ပတ်ပတ်လည် ညင်သာစွာ ရွေ့လျားခြင်း */
+  @keyframes smoothBorderPan {
+    0% { transform: scale(1.06) translate(0px, 0px); }
+    25% { transform: scale(1.06) translate(-5px, 4px); }
+    50% { transform: scale(1.06) translate(4px, 5px); }
+    75% { transform: scale(1.06) translate(-4px, -4px); }
+    100% { transform: scale(1.06) translate(0px, 0px); }
   }
 
   #cardBgImg {
     transform-origin: center center !important;
-    animation: smoothRandomImageMove 7s infinite ease-in-out !important;
-  }
-
-  /* 🌟 Neon Heart Bubble Animation styles */
-  @keyframes neonFloatUp {
-    0% {
-      transform: translateY(0px) scale(0.6);
-      opacity: 0;
-    }
-    30% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-380px) scale(1.3);
-      opacity: 0;
-    }
-  }
-
-  .neon-heart-bubble {
-    position: absolute;
-    bottom: 20px;
-    font-size: 26px;
-    color: #ff2a6d;
-    text-shadow: 0 0 8px #ff2a6d, 0 0 16px #ff2a6d, 0 0 24px #05d9e8;
-    animation: neonFloatUp 3.2s infinite ease-in-out;
-    pointer-events: none;
-    z-index: 50;
+    animation: smoothBorderPan 8s infinite ease-in-out !important;
   }
 
   /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
@@ -723,36 +695,6 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
-// 🌟 Neon Heart Bubble Animation for Step 4
-function startNeonHeartAnimation() {
-  if (heartIntervalId) clearInterval(heartIntervalId);
-  const overlay = document.getElementById('emojiOverlay');
-  if (!overlay) return;
-  
-  const hearts = ['💖', '💗', '💓', '💘', '💕', '💞', '✨'];
-  
-  heartIntervalId = setInterval(() => {
-    const step4El = document.getElementById('step4');
-    if (!step4El || !step4El.classList.contains('active')) {
-      clearInterval(heartIntervalId);
-      return;
-    }
-    
-    const span = document.createElement('span');
-    span.className = 'neon-heart-bubble';
-    span.innerText = hearts[Math.floor(Math.random() * hearts.length)];
-    
-    span.style.left = Math.random() * 85 + '%';
-    span.style.fontSize = (Math.random() * 10 + 20) + 'px';
-    
-    const duration = Math.random() * 1.2 + 2.4;
-    span.style.animationDuration = duration + 's';
-    
-    overlay.appendChild(span);
-    setTimeout(() => { span.remove(); }, duration * 1000);
-  }, 300);
-}
-
 function showStep(stepNumber) {
   const steps = document.querySelectorAll('.step');
   steps.forEach(s => {
@@ -775,9 +717,6 @@ function showStep(stepNumber) {
     if (eqContainer) {
       eqContainer.classList.remove('playing');
     }
-    startNeonHeartAnimation();
-  } else {
-    if (heartIntervalId) clearInterval(heartIntervalId);
   }
 }
 
