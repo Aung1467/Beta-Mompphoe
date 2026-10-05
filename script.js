@@ -156,6 +156,7 @@ const i18n = {
 // 🌟 Injected CSS Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
+  /* Preview EQ Bars for Step 3 Music Player */
   .preview-eq-bars {
     width: 52px;
     height: 52px;
@@ -206,27 +207,43 @@ cardStyleInjected.innerHTML = `
     100% { transform: rotate(360deg); }
   }
 
+  /* Card Content Text Styles */
   #outReason {
-    margin-bottom: 18px !important;
+    margin-bottom: 12px !important;
     display: block !important;
-    font-weight: bold;
+    font-weight: 700 !important;
     color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
-  }
-  #outNote {
-    margin-top: 10px !important;
-    display: block !important;
-    font-weight: bold;
-    color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
+    font-size: 16px !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
   }
 
-  /* 🌟 Step4 Card Frame: Floating Animation & Glow လျှော့ထားခြင်း */
-  #step4 {
+  #outNote {
+    margin-top: 6px !important;
+    display: block !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  /* 🌟 #exportCard (Card Box) Styling: Floating Animation, Glow & Composition Area */
+  #exportCard {
     position: relative !important;
     overflow: hidden !important;
-    box-shadow: 0 4px 18px rgba(0, 242, 254, 0.25) !important;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.25), 0 10px 24px rgba(0, 0, 0, 0.8) !important;
     animation: floatCard 3.5s ease-in-out infinite !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    aspect-ratio: 3 / 4 !important;
+    margin: 0 auto 14px auto !important;
+    border-radius: 20px !important;
+    border: 2px solid var(--accent) !important;
+    background: #0f1123 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 14px !important;
   }
 
   @keyframes floatCard {
@@ -234,7 +251,7 @@ cardStyleInjected.innerHTML = `
     50% { transform: translateY(-6px); }
   }
 
-  /* 🌟 Composition Area တွင် Background Image ကို Stretch/Cover ဖြစ်စေရန် */
+  /* Composition Area Background Image (Stretch / Fit) */
   #cardBgImg {
     display: block !important;
     position: absolute !important;
@@ -243,18 +260,21 @@ cardStyleInjected.innerHTML = `
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    z-index: 0 !important;
+    z-index: 1 !important;
     pointer-events: none !important;
   }
 
-  /* 🌟 Card အတွင်းရှိ အချက်အလက်များ Background ၏ အပေါ်တွင် ရှင်းလင်းစွာ ပေါ်စေရန် */
-  #step4 > * {
-    position: relative;
-    z-index: 1;
+  /* Ensure Card Contents display over Background Image */
+  #exportCard > *:not(#cardBgImg) {
+    position: relative !important;
+    z-index: 5 !important;
   }
 
   #outSender {
-    z-index: 5 !important;
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 6 !important;
   }
 
   #lbl_qrHint {
@@ -345,7 +365,6 @@ function updateTexts() {
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
 
-  // ခဲတံ Emoji မပါဘဲ နာမည်ပြောင်းရန် စာသား သီးသန့်
   if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
 
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
@@ -574,13 +593,6 @@ function renderCardData(data) {
     if (bgEl) {
       bgEl.src = bgImgSrc;
       bgEl.style.display = 'block';
-      bgEl.style.position = 'absolute';
-      bgEl.style.top = '0';
-      bgEl.style.left = '0';
-      bgEl.style.width = '100%';
-      bgEl.style.height = '100%';
-      bgEl.style.objectFit = 'cover';
-      bgEl.style.zIndex = '0';
     }
   }
 
@@ -591,9 +603,6 @@ function renderCardData(data) {
     const qrWr = document.getElementById('qrWrapper');
     if (qrEl) {
       qrEl.src = qrImgSrc;
-      qrEl.style.display = 'block';
-      qrEl.style.maxWidth = '100%';
-      qrEl.style.height = 'auto';
     }
     if (qrWr) {
       qrWr.style.display = 'block';
