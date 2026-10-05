@@ -72,7 +72,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "", // ဖျောက်ထားလိုက်ပါပြီ
+    qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Metallic CD Disc & Optimized Background / Faster Animation Styles
+// 🌟 Metallic CD Disc & Clean Static Background Styles (Animations Removed)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -134,12 +134,10 @@ cardStyleInjected.innerHTML = `
     z-index: 1;
   }
 
-  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း */
   .p-bar {
     display: none !important;
   }
 
-  /* သီချင်းစဖွင့်သောအခါ CD ပြား လည်ပတ်ခြင်း Animation */
   .preview-eq-bars.playing {
     animation: spinCdDisc 1.8s linear infinite !important;
   }
@@ -164,24 +162,12 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* Swing Animation ကို ပိုမိုမြန်ဆန်စေရန် (8s မှ 4.5s သို့ ပြောင်းထားသည်) */
-  @keyframes smoothSwingAnimation {
-    0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-    25% { transform: scale(1.06) rotate(-1.5deg) translate(-3px, 2px); }
-    50% { transform: scale(1.06) rotate(1deg) translate(2px, 3px); }
-    75% { transform: scale(1.06) rotate(-1deg) translate(-2px, -2px); }
-    100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-  }
-
-  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း (3:4 အပါအဝင် အချိုးအစားအမျိုးမျိုးအတွက်) */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
   }
 
   #cardBgImg {
-    transform-origin: center center !important;
-    animation: smoothSwingAnimation 4.5s infinite ease-in-out !important;
     display: block !important;
     position: absolute !important;
     top: 0 !important;
@@ -192,13 +178,11 @@ cardStyleInjected.innerHTML = `
     z-index: 0 !important;
   }
 
-  /* ကတ်ပေါ်ရှိ အချက်အလက်များ နောက်ခံပုံအပေါ်မှ ပေါ်စေရန် */
   #step4 > *:not(#cardBgImg) {
     position: relative !important;
     z-index: 2 !important;
   }
 
-  /* ငွေလွဲရန် QR ညွှန်ကြားချက် စာသားကို လုံးဝဖျောက်ရန် */
   #lbl_qrHint {
     display: none !important;
   }
@@ -238,25 +222,6 @@ cardStyleInjected.innerHTML = `
     padding: 4px 0 !important;
     margin: 4px auto !important;
     height: auto !important;
-  }
-
-  @keyframes qrFloatAndSoftGlow {
-    0% {
-      transform: translateY(0px) scale(1);
-      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
-    }
-    50% {
-      transform: translateY(-5px) scale(1.01);
-      box-shadow: 0 0 12px rgba(255, 165, 0, 0.55);
-    }
-    100% {
-      transform: translateY(0px) scale(1);
-      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
-    }
-  }
-
-  #qrWrapper {
-    animation: qrFloatAndSoftGlow 3.5s infinite ease-in-out !important;
   }
 `;
 document.head.appendChild(cardStyleInjected);
