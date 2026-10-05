@@ -634,7 +634,7 @@ function handleSignup() {
     return;
   }
 
-  const userData = { name, num, pass: p1, avatar: '' };
+  const userData = { name, num, pass: p1, avatar: '', history: [] };
   localStorage.setItem(`user_${num}`, JSON.stringify(userData));
   
   alert('✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
@@ -674,6 +674,7 @@ function handleLogin() {
     return;
   }
 
+  if (!foundUser.history) foundUser.history = [];
   currentUser = foundUser;
   setupProfileView();
   goToStep(2);
@@ -701,8 +702,145 @@ function updateProfileAvatar(input) {
   }
 }
 
+// 🌟 ဝင်ရောက်ထားသော အကောင့်၏ မှတ်တမ်းများကို ပြသရန် (Step 5 သို့သွားခြင်း)
 function viewHistory() {
-  alert('မှတ်တမ်းများ မရှိသေးပါ။');
+  renderHistoryList();
+  goToStep(5);
+}
+
+// 🌟 မှတ်တမ်းစာရင်းများကို Render လုပ်ခြင်းနှင့် မျဉ်း 3 ကြောင်း Menu / Dropdown ထည့်သွင်းခြင်း
+function renderHistoryList() {
+  const container = document.getElementById('historyListContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!currentUser || !currentUser.history || currentUser.history.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: #cbd5e1; font-size: 13px; padding: 20px;">မှတ်တမ်းများ မရှိသေးပါ။</p>';
+    return;
+  }
+
+  currentUser.history.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'history-item-row';
+
+    const linkText = document.createElement('span');
+    linkText.className = 'history-link-text';
+    linkText.innerText = `${item.reason || 'မုန့်ဖိုးတောင်းလွှာ'} - ${item.link}`;
+
+    // မျဉ်း 3 ကြောင်း (3-Line Menu Button)
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'history-menu-btn';
+    menuBtn.innerHTML = '≡';
+    menuBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleHistoryDropdown(index);
+    };
+
+    // Dropdown Menu (ကြည့်ရန် နှင့် ဖျက်ပြစ်ရန်)
+    const dropdown = document.createElement('div');
+    dropdown.className = 'history-dropdown-menu';
+    dropdown.id = `historyDropdown_${index}`;
+
+    const viewItem = document.createElement('div');
+    viewItem.className = 'history-dropdown-item';
+    viewItem.innerText = 'ကြည့်ရန်';
+    viewItem.onclick = () => viewCardFromHistory(item.id);
+
+    const deleteItem = document.createElement('div');
+    deleteItem.className = 'history-dropdown-item';
+    deleteItem.innerText = 'ဖျက်ပြစ်ရန်';
+    deleteItem.onclick = () => deleteCardFromHistory(item.id, index);
+
+    dropdown.appendChild(viewItem);
+    dropdown.appendChild(deleteItem);
+
+    row.appendChild(linkText);
+    row.appendChild(menuBtn);
+    row.appendChild(dropdown);
+
+    container.appendChild(row);
+  });
+}
+
+// 🌟 Dropdown Menu ကို Toggle လုပ်ရန်
+function toggleHistoryDropdown(index) {
+  document.querySelectorAll('.history-dropdown-menu').forEach((el, idx) => {
+    if (idx !== index) el.classList.remove('show');
+  });
+  const target = document.getElementById(`historyDropdown_${index}`);
+  if (target) {
+    target.classList.toggle('show');
+  }
+}
+
+// နေရာလပ်တစ်ခုခုကို နှိပ်လျှင် Dropdown ကို ပိတ်ရန်
+window.addEventListener('click', function(e) {
+  if (!e.target.closest('.history-menu-btn') && !e.target.closest('.history-dropdown-menu')) {
+    document.querySelectorAll('.history-dropdown-menu').forEach(el => el.classList.remove('show'));
+  }
+});
+
+// 🌟 မှတ်တမ်းထဲမှ Card ကို ကြည့်ရန် (Step 4 သို့ တင်ပြပေးခြင်း)
+async function viewCardFromHistory(cardId) {
+  const loader = document.getElementById('stepLoader');
+  if (loader) loader.classList.add('show');
+
+  try {
+    const sb = getSupabase();
+    if (sb) {
+      const { data, error } = await sb
+        .from('cards')
+        .select('*')
+        .eq('id', cardId)
+        .single();
+
+      if (data && !error) {
+        currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${cardId}`;
+        renderCardData({
+          sender: data.sender,
+          reason: data.reason,
+          note: data.note,
+          bgImage: data.bg_image || data.bgImage,
+          qrImage: data.qr_image || data.qrImage,
+          musicUrl: data.music_url || data.musicUrl
+        });
+        if (loader) loader.classList.remove('show');
+        showStep(4);
+        startCardTimer(cardId);
+        return;
+      } else {
+        alert('❌ ဤကတ်သည် သက်တမ်းကုန်သွားပြီ (သို့) မရှိတော့ပါ။');
+      }
+    }
+  } catch (err) {
+    console.error('View history card error:', err);
+  }
+  if (loader) loader.classList.remove('show');
+}
+
+// 🌟 မှတ်တမ်းထဲမှ Card ကို ဖျက်ပစ်ရန်
+async function deleteCardFromHistory(cardId, index) {
+  if (!confirm('ဤမှတ်တမ်းကို ဖျက်ရန် သေချာပါသလား?')) return;
+
+  const loader = document.getElementById('stepLoader');
+  if (loader) loader.classList.add('show');
+
+  try {
+    const sb = getSupabase();
+    if (sb) {
+      await sb.from('cards').delete().eq('id', cardId);
+    }
+  } catch (err) {
+    console.error('Delete card error:', err);
+  }
+
+  if (currentUser && currentUser.history) {
+    currentUser.history.splice(index, 1);
+    localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+  }
+
+  if (loader) loader.classList.remove('show');
+  renderHistoryList();
 }
 
 function goToStep(stepNumber) {
@@ -884,6 +1022,18 @@ async function generateAndSaveCard() {
       const generatedId = data[0].id;
       currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
       
+      // 🌟 ထွက်လာတဲ့ Card Link နှင့် အချက်အလက်များကို ဝင်ထားတဲ့ အကောင့်ရဲ့ မှတ်တမ်းထဲသို့ သိမ်းဆည်းရန်
+      if (currentUser) {
+        if (!currentUser.history) currentUser.history = [];
+        currentUser.history.unshift({
+          id: generatedId,
+          link: currentShareableLink,
+          reason: finalReason,
+          createdAt: new Date().toLocaleString()
+        });
+        localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+      }
+
       renderCardData({
         sender: payload.sender,
         reason: payload.reason,
