@@ -474,7 +474,7 @@
       gap: 8px;
     }
 
-    /* Export Card Preview */
+    /* Export Card Preview (4:3 Card) */
     @keyframes cardFloat {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-5px) rotate(0.4deg); }
@@ -550,7 +550,7 @@
 
     .card-qr-overlay {
       position: relative;
-      z-index: 2;
+      z-index: 4; /* Emoji တွေထက် သာလွန်မြင့်မားသော အလွှာတွင်ထားရှိသည် */
       padding: 6px;
       text-align: center;
     }
@@ -563,6 +563,26 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
     }
 
+    /* 🌟 1:1 ပုံ (QR ဧရိယာ) ၏ မီးတောက် Reality ဆန်ဆန် တောက်လောင်နေသော Border Animation */
+    @keyframes realisticFireGlow {
+      0% {
+        border-color: #ff3838;
+        box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff9f1a, inset 0 0 10px #ff3838;
+      }
+      33% {
+        border-color: #ff9f1a;
+        box-shadow: 0 0 16px #ffb142, 0 0 28px #ff5252, inset 0 0 14px #ff9f1a;
+      }
+      66% {
+        border-color: #ff5252;
+        box-shadow: 0 0 20px #ff3838, 0 0 35px #ffb142, inset 0 0 16px #ff5252;
+      }
+      100% {
+        border-color: #ff3838;
+        box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff9f1a, inset 0 0 10px #ff3838;
+      }
+    }
+
     .qr-img-wrapper {
       width: 100%;
       max-width: 95px;
@@ -570,10 +590,12 @@
       margin: 0 auto;
       border-radius: 10px;
       overflow: hidden;
-      border: 1.5px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+      border: 2px solid #ff3838;
       background: rgba(255, 255, 255, 0.95);
       display: none;
+      animation: realisticFireGlow 2.2s infinite ease-in-out;
+      z-index: 5;
+      position: relative;
     }
 
     .qr-img-wrapper img {
@@ -582,6 +604,7 @@
       object-fit: fill;
     }
 
+    /* 🌟 4:3 ကဒ်အတွင်းသာ Emoji တွေ ပျံဝဲစေရန် (1:1 ပုံပေါ်သို့ မတက်ရောက်စေရန် z-index ကို 3 ဖြင့် ကန့်သတ်ထားသည်) */
     .emoji-overlay {
       position: absolute;
       inset: 0;
@@ -594,8 +617,9 @@
       position: absolute;
       bottom: -20px;
       animation: floatUpEmoji 3.5s linear infinite;
-      opacity: 0.85;
+      opacity: 0.9;
       user-select: none;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
 
     @keyframes floatUpEmoji {
@@ -612,27 +636,28 @@
       background: rgba(14, 17, 36, 0.9);
       border: 1.5px solid var(--accent);
       border-radius: 16px;
-      padding: 8px 16px;
+      padding: 5px 12px !important;
+      max-height: 52px !important;
       margin-bottom: 12px;
-      box-shadow: 0 0 15px var(--accent-glow);
+      box-shadow: 0 0 10px var(--accent-glow);
     }
 
     .spinning-disc {
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: conic-gradient(from 0deg, #ff0055, #00f2fe, #ff0055);
       display: flex;
       align-items: center;
       justify-content: center;
       animation: spinDisc 3s linear infinite;
-      box-shadow: 0 0 10px var(--accent-glow);
+      box-shadow: 0 0 8px var(--accent-glow);
       flex-shrink: 0;
     }
 
     .spinning-disc-inner {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       background: #05030f;
       border-radius: 50%;
       border: 2px solid #fff;
@@ -644,30 +669,32 @@
     }
 
     .anime-dancer-free {
-      width: 48px;
-      height: 48px;
+      width: 44px !important;
+      height: 44px !important;
       border-radius: 50%;
-      border: 2px solid var(--accent);
-      overflow: hidden;
+      border: none !important;
+      overflow: hidden !important;
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 12px var(--accent-glow);
+      box-shadow: 0 0 10px var(--accent-glow);
       flex-shrink: 0;
+      margin: 0 8px;
     }
 
     .anime-dancer-free img {
-      width: 100%;
-      height: 100%;
+      width: 100% !important;
+      height: 100% !important;
       object-fit: cover;
+      border-radius: 50%;
     }
 
     .equalizer-bars {
       display: flex;
       align-items: flex-end;
       gap: 3px;
-      height: 20px;
+      height: 16px;
       flex-shrink: 0;
     }
 
@@ -676,13 +703,13 @@
       background: var(--accent);
       border-radius: 3px;
       animation: eqBounce 1.2s ease-in-out infinite alternate;
-      box-shadow: 0 0 8px var(--accent);
+      box-shadow: 0 0 6px var(--accent);
     }
 
-    .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 10px; }
-    .eq-bar:nth-child(2) { animation-delay: 0.4s; height: 18px; }
-    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 14px; }
-    .eq-bar:nth-child(4) { animation-delay: 0.5s; height: 20px; }
+    .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 8px; }
+    .eq-bar:nth-child(2) { animation-delay: 0.4s; height: 15px; }
+    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 11px; }
+    .eq-bar:nth-child(4) { animation-delay: 0.5s; height: 16px; }
 
     @keyframes eqBounce {
       0% { transform: scaleY(0.3); }
@@ -693,12 +720,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(14, 17, 36, 0.9);
-      border: 1.5px solid var(--accent);
-      border-radius: 14px;
-      padding: 12px 16px;
-      box-shadow: 0 0 12px var(--accent-glow);
-      height: 52px;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 10px 16px;
+      box-shadow: none !important;
+      height: 48px;
     }
 
     .preview-eq-bars {
@@ -921,7 +948,6 @@
       </div>
 
       <div class="form-group" id="audioPreviewGroup" style="display: none;">
-        <label id="lbl_audioPreview"></label>
         <div class="custom-preview-player">
           <div class="preview-eq-bars">
             <div class="p-bar"></div>

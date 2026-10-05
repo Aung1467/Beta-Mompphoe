@@ -19,6 +19,7 @@ let selectedBgFile = null;
 let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
+let emojiIntervalId = null; // 🌟 Emoji ဖန်တီးသည့် interval ကို ထိန်းချုပ်ရန်
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
@@ -88,7 +89,7 @@ const i18n = {
   }
 };
 
-// 🌟 Music Border ကို သေးစေပြီး အလယ်က Anime GIF အဝိုင်းကို ပိုကြီးကာ ထင်ရှားစေသော CSS ပြင်ဆင်ချက်
+// 🌟 စာသားများ animation နှင့် အလယ်က Anime GIF ပုံကိုသာ ကြီးပေးပြီး ပတ်လည် Equalizer Effect ထည့်သွင်းခြင်း
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -110,29 +111,26 @@ cardStyleInjected.innerHTML = `
     font-weight: bold;
   }
 
-  /* 🌟 Music Border ကြီးကို ပိုပါးပြီး သေးသွားစေရန် */
-  .player-controls-row, 
-  #audioPreviewGroup, 
-  .card-audio-container {
-    padding: 6px 12px !important;
-    max-height: 65px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 🌟 အလယ်က Anime GIF အဝိုင်းကို ပိုကြီးစေပြီး Box နဲ့ အရွယ်တူမဖြစ်စေဘဲ ထင်ရှားစေရန် */
-  .player-controls-row > div:nth-child(2),
-  .media-center-btn,
-  .anime-circle-container {
-    transform: scale(1.85) !important;
+  /* 🌟 Music border ကို မူလအရွယ်အစားအတိုင်းထားပြီး၊ အလယ်က Anime GIF ပုံကိုသာ ကြီးပေးခြင်း */
+  .player-controls-row > div:nth-child(2) img,
+  .media-center-btn img,
+  .anime-circle-container img {
+    transform: scale(1.45); /* GIF ပုံကို ပိုကြီးစေရန် */
     transform-origin: center;
-    margin: 0 25px !important;
-    z-index: 5;
+    border-radius: 50%;
   }
 
+  /* ပတ်လည် Equalizer glowing wave animation effect */
   @keyframes eqGlowWave {
-    0% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8); }
-    70% { box-shadow: 0 0 0 10px rgba(5, 217, 232, 0), 0 0 0 20px rgba(255, 42, 109, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0); }
+    0% {
+      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8);
+    }
+    70% {
+      box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0);
+    }
   }
 
   .player-controls-row > div:nth-child(2),
@@ -539,6 +537,37 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
+// 🌟 Step 4 ပေါ်လာလျှင် အီမိုဂျီများ အလိုအလျောက် ပျံဝဲပေါ်ထွက်လာစေရန် Function
+function startEmojiRain() {
+  if (emojiIntervalId) clearInterval(emojiIntervalId);
+  const overlay = document.getElementById('emojiOverlay');
+  if (!overlay) return;
+  
+  const emojis = ['✨', '💸', '🧧', '💖', '🎉', '🌟', '💰'];
+  
+  emojiIntervalId = setInterval(() => {
+    const step4El = document.getElementById('step4');
+    if (!step4El || !step4El.classList.contains('active')) {
+      clearInterval(emojiIntervalId);
+      return;
+    }
+    
+    const span = document.createElement('span');
+    span.className = 'floating-emoji';
+    span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    
+    // 4:3 ကဒ်အတွင်း နေရာအတိုင်းအတာအဝန်းအဝိုင်းအတွင်းကျပန်းပေါ်စေရန်
+    span.style.left = Math.random() * 88 + '%';
+    span.style.fontSize = (Math.random() * 12 + 16) + 'px';
+    
+    const duration = Math.random() * 1.5 + 2.5;
+    span.style.animationDuration = duration + 's';
+    
+    overlay.appendChild(span);
+    setTimeout(() => { span.remove(); }, duration * 1000);
+  }, 350);
+}
+
 function showStep(stepNumber) {
   const steps = document.querySelectorAll('.step');
   steps.forEach(s => {
@@ -561,6 +590,9 @@ function showStep(stepNumber) {
     if (eqContainer) {
       eqContainer.classList.remove('playing');
     }
+    startEmojiRain(); // 🌟 Step 4 ရောက်ပါက Emoji မိုးရွာသကဲ့သို့ ပျံဝဲခြင်းကို စတင်ရန်
+  } else {
+    if (emojiIntervalId) clearInterval(emojiIntervalId);
   }
 }
 
