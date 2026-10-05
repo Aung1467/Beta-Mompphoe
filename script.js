@@ -88,7 +88,7 @@ const i18n = {
   }
 };
 
-// 🌟 စာသားများ animation နှင့် အလယ်က Anime GIF ပုံကိုသာ ကြီးပေးပြီး ပတ်လည် Equalizer Effect ထည့်သွင်းခြင်း
+// 🌟 Music Border ကို သေးစေပြီး အလယ်က Anime GIF အဝိုင်းကို ပိုကြီးကာ ထင်ရှားစေသော CSS ပြင်ဆင်ချက်
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -110,26 +110,29 @@ cardStyleInjected.innerHTML = `
     font-weight: bold;
   }
 
-  /* 🌟 Music border ကို မူလအရွယ်အစားအတိုင်းထားပြီး၊ အလယ်က Anime GIF ပုံကိုသာ ကြီးပေးခြင်း */
-  .player-controls-row > div:nth-child(2) img,
-  .media-center-btn img,
-  .anime-circle-container img {
-    transform: scale(1.45); /* GIF ပုံကို ပိုကြီးစေရန် */
-    transform-origin: center;
-    border-radius: 50%;
+  /* 🌟 Music Border ကြီးကို ပိုပါးပြီး သေးသွားစေရန် */
+  .player-controls-row, 
+  #audioPreviewGroup, 
+  .card-audio-container {
+    padding: 6px 12px !important;
+    max-height: 65px !important;
+    box-sizing: border-box !important;
   }
 
-  /* ပတ်လည် Equalizer glowing wave animation effect */
+  /* 🌟 အလယ်က Anime GIF အဝိုင်းကို ပိုကြီးစေပြီး Box နဲ့ အရွယ်တူမဖြစ်စေဘဲ ထင်ရှားစေရန် */
+  .player-controls-row > div:nth-child(2),
+  .media-center-btn,
+  .anime-circle-container {
+    transform: scale(1.85) !important;
+    transform-origin: center;
+    margin: 0 25px !important;
+    z-index: 5;
+  }
+
   @keyframes eqGlowWave {
-    0% {
-      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8);
-    }
-    70% {
-      box-shadow: 0 0 0 12px rgba(5, 217, 232, 0), 0 0 0 24px rgba(255, 42, 109, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0.8), 0 0 0 0 rgba(255, 42, 109, 0.8); }
+    70% { box-shadow: 0 0 0 10px rgba(5, 217, 232, 0), 0 0 0 20px rgba(255, 42, 109, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(5, 217, 232, 0), 0 0 0 0 rgba(255, 42, 109, 0); }
   }
 
   .player-controls-row > div:nth-child(2),
