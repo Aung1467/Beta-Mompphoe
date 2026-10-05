@@ -65,8 +65,8 @@ const i18n = {
     customNoteLabel: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
     customNotePlaceholder: "စာစီပါ...",
     musicLabel: "သီချင်း ရွေးချယ်ရန်",
-    bgLabel: "နောက်ခံပုံ",
-    bgBtn: "📸 နောက်ခံပုံ ရွေးရန်",
+    bgLabel: "နောက်ခံပုံ / Video (Max 15s)",
+    bgBtn: "📸/🎬 နောက်ခံပုံ သို့မဟုတ် Video ရွေးရန်",
     qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
     qrBtn: "💳 QR Code / ပုံ ရွေးရန်",
     backBtn: "⬅ နောက်သို့",
@@ -82,7 +82,7 @@ const i18n = {
     dl1to1Btn: "📥 Save QR",
     closeBtn: "ပိတ်မည်",
     alertNote: "❌ ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းဖို့ စာစီရန် (Note) ကို ဖြည့်စွက်ပါ။",
-    alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်ပါ။",
+    alertBg: "❌ ကျေးဇူးပြု၍ နောက်ခံပုံ သို့မဟုတ် Video (Max 15s) ထည့်ပါ။",
     alertQr: "❌ ကျေးဇူးပြု၍ QR Code / အချက်အလက်ပုံ ထည့်ပါ။",
     reasons: [
       { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "သတင်းကျွတ်မုန့်ဖိုး" },
@@ -124,8 +124,8 @@ const i18n = {
     customNoteLabel: "Custom Note / Message",
     customNotePlaceholder: "Type your note here...",
     musicLabel: "Select Music",
-    bgLabel: "Background Image",
-    bgBtn: "📸 Choose BG Image",
+    bgLabel: "Background Image / Video (Max 15s)",
+    bgBtn: "📸/🎬 Choose BG Image or Video",
     qrLabel: "QR Code / Payment Info (HD)",
     qrBtn: "💳 Choose QR Image",
     backBtn: "⬅ Back",
@@ -141,7 +141,7 @@ const i18n = {
     dl1to1Btn: "📥 Save QR",
     closeBtn: "Close",
     alertNote: "❌ Please fill in the custom note field.",
-    alertBg: "❌ Please upload a background image.",
+    alertBg: "❌ Please upload a background image or video (Max 15s).",
     alertQr: "❌ Please upload a QR code / Payment image.",
     reasons: [
       { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "Thadingyut Pocket Money" },
@@ -162,7 +162,7 @@ cardStyleInjected.innerHTML = `
     50% { transform: translateY(-6px); }
   }
 
-  /* 🌟 Fast Glow Animation (1.0s speed) */
+  /* Fast Glow Animation (1.0s speed) */
   @keyframes realisticFireGlow {
     0% {
       border-color: #ff3838;
@@ -178,12 +178,11 @@ cardStyleInjected.innerHTML = `
     }
   }
 
-  /* ❌ Hide CD Disc Completely */
   .preview-eq-bars, #audioPreviewGroup .preview-eq-bars {
     display: none !important;
   }
 
-  /* 🌟 Mini Equalizer Wave Animation inside Music Select Box */
+  /* Mini Equalizer Wave Animation */
   .mini-eq-container {
     display: inline-flex;
     align-items: flex-end;
@@ -212,14 +211,12 @@ cardStyleInjected.innerHTML = `
     100% { height: 100%; opacity: 1; }
   }
 
-  /* Custom Select Trigger styling polish for Music */
   #musicCustomSelect .custom-select-trigger {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
   }
 
-  /* Card Content Text Styles */
   #outReason {
     margin-bottom: 12px !important;
     display: block !important;
@@ -239,7 +236,6 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
   }
 
-  /* 🌟 #exportCard Box (4:3 Card Area) */
   #exportCard {
     position: relative !important;
     overflow: hidden !important;
@@ -258,9 +254,8 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
-  /* Composition Area Background Image */
-  #cardBgImg {
-    display: block !important;
+  /* 🌟 BG Image and BG Video Positioning */
+  #cardBgImg, #cardBgVideo {
     position: absolute !important;
     inset: 0 !important;
     top: 0 !important;
@@ -272,16 +267,15 @@ cardStyleInjected.innerHTML = `
     pointer-events: none !important;
   }
 
-  #exportCard > *:not(#cardBgImg) {
+  #exportCard > *:not(#cardBgImg):not(#cardBgVideo) {
     position: relative !important;
     z-index: 5 !important;
   }
 
-  /* 🌟 "From: Aung" Tag: ညာဘက်အပေါ်သို့ ပိုမိုကပ်၍ သပ်ရပ်စွာ ပေါ်စေခြင်း */
   #outSender, .sender-tag {
     position: absolute !important;
-    top: 6px !important;     /* အပေါ်သို့ ပိုမိုမြင့်တင်ထားသည် */
-    right: 6px !important;   /* ညာဘက်သို့ ပိုမိုကပ်ထားသည် */
+    top: 6px !important;
+    right: 6px !important;
     left: auto !important;
     width: auto !important;
     max-width: fit-content !important;
@@ -308,7 +302,6 @@ cardStyleInjected.innerHTML = `
     object-fit: cover !important;
   }
 
-  /* 🌟 1:1 QR Box - Floating + Glow Animation (1.0s) */
   .qr-img-wrapper, #qrWrapper {
     display: block !important;
     width: 100% !important;
@@ -445,10 +438,21 @@ function changeLanguage(lang) {
   populateReasonDropdown(currentLang);
 }
 
-// Compress File to HD DataURL
+// Compress File or Read File as DataURL
 function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
+    
+    // If Video File, read directly as DataURL
+    if (file.type.startsWith('video/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    // Image File Compression
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -484,7 +488,21 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   });
 }
 
-// Helper: Render Mini Equalizer inside Music Trigger
+// Check Video Duration (Max 15s)
+function getVideoDuration(file) {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src);
+      resolve(video.duration);
+    };
+    video.onerror = () => resolve(0);
+    video.src = URL.createObjectURL(file);
+  });
+}
+
+// Helper: Mini Equalizer Html
 function getMiniEqHtml() {
   return `
     <div class="mini-eq-container">
@@ -547,7 +565,6 @@ function selectMusicOption(url, name) {
     player.src = url;
     player.load();
     player.loop = true;
-    
     player.play().catch(e => console.log("Auto-play error:", e));
   }
 }
@@ -621,6 +638,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+// 🌟 Render Card (Image/Video Auto Switch)
 function renderCardData(data) {
   if (!data) return;
 
@@ -628,13 +646,30 @@ function renderCardData(data) {
   document.getElementById('outReason').innerText = data.reason || '';
   document.getElementById('outNote').innerText = data.note || '';
 
-  const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
-  if (bgImgSrc) {
-    savedBgImage = bgImgSrc;
-    const bgEl = document.getElementById('cardBgImg');
-    if (bgEl) {
-      bgEl.src = bgImgSrc;
-      bgEl.style.display = 'block';
+  const bgSrc = data.bgImage || data.bg_image || savedBgImage;
+  const bgImgEl = document.getElementById('cardBgImg');
+  const bgVideoEl = document.getElementById('cardBgVideo');
+
+  if (bgSrc) {
+    savedBgImage = bgSrc;
+    const isVideo = bgSrc.startsWith('data:video/') || bgSrc.endsWith('.mp4');
+
+    if (isVideo) {
+      if (bgImgEl) bgImgEl.style.display = 'none';
+      if (bgVideoEl) {
+        bgVideoEl.src = bgSrc;
+        bgVideoEl.style.display = 'block';
+        bgVideoEl.play().catch(e => console.log("Video play error:", e));
+      }
+    } else {
+      if (bgVideoEl) {
+        bgVideoEl.pause();
+        bgVideoEl.style.display = 'none';
+      }
+      if (bgImgEl) {
+        bgImgEl.src = bgSrc;
+        bgImgEl.style.display = 'block';
+      }
     }
   }
 
@@ -643,12 +678,8 @@ function renderCardData(data) {
     savedQrImage = qrImgSrc;
     const qrEl = document.getElementById('cardQrImg');
     const qrWr = document.getElementById('qrWrapper');
-    if (qrEl) {
-      qrEl.src = qrImgSrc;
-    }
-    if (qrWr) {
-      qrWr.style.display = 'block';
-    }
+    if (qrEl) qrEl.src = qrImgSrc;
+    if (qrWr) qrWr.style.display = 'block';
   }
 
   const mUrl = data.musicUrl || data.music_url || savedMusicUrl;
@@ -726,8 +757,14 @@ async function deleteCardDataAndClean(cardId, storageKey) {
 
   const bgEl = document.getElementById('cardBgImg');
   if (bgEl) bgEl.style.display = 'none';
+  const bgVideoEl = document.getElementById('cardBgVideo');
+  if (bgVideoEl) {
+    bgVideoEl.pause();
+    bgVideoEl.style.display = 'none';
+  }
   const qrWr = document.getElementById('qrWrapper');
   if (qrWr) qrWr.style.display = 'none';
+
   document.getElementById('outSender').innerText = '';
   document.getElementById('outReason').innerText = '';
   document.getElementById('outNote').innerText = '';
@@ -1269,12 +1306,27 @@ function selectReasonOption(val, text) {
   toggleCustomReason();
 }
 
+// 🌟 Handle Image or MP4 Video Upload with 15s Check
 async function handleBgImage(input) {
   if (input.files && input.files[0]) {
-    selectedBgFile = input.files[0];
-    document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ နောက်ခံပုံ တင်နေပါပြီ...`;
+    const file = input.files[0];
+
+    // Video 15 Seconds Duration Check
+    if (file.type.startsWith('video/')) {
+      const duration = await getVideoDuration(file);
+      if (duration > 15) {
+        alert(currentLang === 'en' ? '⚠️ Video duration must not exceed 15 seconds.' : '⚠️ Video ကြာချိန်သည် 15 စက္ကန့်ထက် မပိုရပါ။');
+        input.value = '';
+        return;
+      }
+    }
+
+    selectedBgFile = file;
+    document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ ဖိုင် တင်နေပါပြီ...`;
     savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
-    document.getElementById('bgImgLabel').innerText = `✅ HD (${input.files[0].name})`;
+    
+    const isVid = file.type.startsWith('video/');
+    document.getElementById('bgImgLabel').innerText = `✅ ${isVid ? '🎬 Video' : '📸 Image'} (${file.name})`;
   }
 }
 

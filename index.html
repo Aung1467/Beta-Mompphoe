@@ -953,11 +953,12 @@
         <audio id="audioPreviewPlayer" style="display: none;"></audio>
       </div>
 
+      <!-- 🌟 နောက်ခံပုံ သို့မဟုတ် Video မဲရွေးချယ်မှု ပြင်ဆင်ထားသည့်နေရာ -->
       <div class="form-group">
         <label id="lbl_bgLabel"></label>
         <div class="file-input-wrapper">
           <div class="file-btn" id="bgImgLabel"></div>
-          <input type="file" accept="image/*" onchange="handleBgImage(this)">
+          <input type="file" accept="image/*,video/*" onchange="handleBgImage(this)">
         </div>
       </div>
 
@@ -980,7 +981,10 @@
       <h2 id="lbl_step4Title"></h2>
 
       <div id="exportCard">
+        <!-- 🌟 Image နှင့် Video သီးခြားပြသရန် element နှစ်ခု ပေါင်းစပ်ထားပါသည် -->
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
+        <video id="cardBgVideo" class="card-full-bg" autoplay loop muted playsinline style="display: none;"></video>
+        
         <span class="sender-tag" id="outSender"></span>
         <div class="emoji-overlay" id="emojiOverlay"></div>
         <div class="card-header-content">
