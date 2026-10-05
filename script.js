@@ -89,7 +89,7 @@ const i18n = {
   }
 };
 
-// CSS Styles Injection
+// 🌟 CSS Styles Injection (QR Border အရောင်တောက်မှုကို လျှော့ချပြီး Border ပါ ပုံပါ အတူတူ လှုပ်ရှားနေမည့် Animation ထည့်သွင်းခြင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -139,6 +139,26 @@ cardStyleInjected.innerHTML = `
     padding: 4px 0 !important;
     margin: 4px auto !important;
     height: auto !important;
+  }
+
+  /* 🌟 1:1 QR Border အရောင်တောက်မှုကို လျှော့ချခြင်း နှင့် Border ပါ ပုံပါ အတူတူ လှုပ်နေသော Floating Animation */
+  @keyframes qrFloatAndSoftGlow {
+    0% {
+      transform: translateY(0px) scale(1);
+      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
+    }
+    50% {
+      transform: translateY(-5px) scale(1.01);
+      box-shadow: 0 0 12px rgba(255, 165, 0, 0.55);
+    }
+    100% {
+      transform: translateY(0px) scale(1);
+      box-shadow: 0 0 6px rgba(255, 165, 0, 0.35);
+    }
+  }
+
+  #qrWrapper {
+    animation: qrFloatAndSoftGlow 3.5s infinite ease-in-out !important;
   }
 `;
 document.head.appendChild(cardStyleInjected);
@@ -387,7 +407,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// 🌟 Bulletproof Render Card Data Function (ပုံများနှင့် ဒေတာများ 100% ပေါ်စေရန်)
+// Render Card Data Function
 function renderCardData(data) {
   if (!data) return;
 
@@ -395,7 +415,6 @@ function renderCardData(data) {
   document.getElementById('outReason').innerText = data.reason || '';
   document.getElementById('outNote').innerText = data.note || '';
 
-  // Background Image Handling
   const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
   if (bgImgSrc) {
     savedBgImage = bgImgSrc;
@@ -409,7 +428,6 @@ function renderCardData(data) {
     }
   }
 
-  // QR / Payment Image Handling
   const qrImgSrc = data.qrImage || data.qr_image || savedQrImage;
   if (qrImgSrc) {
     savedQrImage = qrImgSrc;
@@ -419,7 +437,6 @@ function renderCardData(data) {
     if (qrWr) qrWr.style.display = 'block';
   }
 
-  // Music Audio Handling
   const mUrl = data.musicUrl || data.music_url || savedMusicUrl;
   if (mUrl) {
     savedMusicUrl = mUrl;
@@ -549,7 +566,7 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
-// 🌟 Emoji Rain Animation for Step 4
+// Emoji Rain Animation for Step 4
 function startEmojiRain() {
   if (emojiIntervalId) clearInterval(emojiIntervalId);
   const overlay = document.getElementById('emojiOverlay');
