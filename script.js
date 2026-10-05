@@ -90,7 +90,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (Timer Badge နှင့် အခြားဒီဇိုင်းများ)
+// 🌟 CSS Styles Injection (Language Switcher နှင့် တန်းတန်းဖြစ်သော Top Timer ဒီဇိုင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -112,21 +112,23 @@ cardStyleInjected.innerHTML = `
     font-weight: bold;
   }
 
-  /* 🌟 Card ထိပ်အလယ်ရှိ Timer Badge ဒီဇိုင်း */
-  .card-timer-badge {
+  /* 🌟 Language Switcher ၏ ဘယ်ဘက်တည့်တည့် ထိပ်ဆုံးတွင်ရှိမည့် 120 မိနစ် Timer Badge ဒီဇိုင်း */
+  .top-card-timer {
     position: absolute;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    background: rgba(0, 242, 254, 0.2);
-    border: 1px solid var(--accent);
-    color: #00f2fe;
-    padding: 3px 10px;
-    border-radius: 8px;
+    top: 20px;
+    right: 145px;
+    z-index: 100;
+    padding: 6px 14px;
+    font-size: 14px;
     font-weight: 700;
-    box-shadow: 0 3px 8px rgba(0, 242, 254, 0.3);
-    z-index: 5;
+    border-radius: 12px;
+    border: 1.5px solid rgba(0, 242, 254, 0.6);
+    background: rgba(10, 12, 28, 0.95);
+    color: #00f2fe;
+    box-shadow: 0 0 10px var(--accent-glow);
+    display: none;
+    align-items: center;
+    gap: 6px;
   }
 
   .player-controls-row > div:nth-child(2) img,
@@ -415,7 +417,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (loader) loader.classList.remove('show');
           showStep(4);
           
-          // 🌟 ကတ်ဖွင့်ချိန်တွင် 120 မိနစ် Timer စတင်ရန်
+          // 🌟 ၁၂၀ မိနစ် Timer စတင်ရန်
           startCardTimer(cardId);
           return;
         }
@@ -427,7 +429,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Render Card Data Function
+// 🌟 Render Card Data Function (ပုံများနှင့် အချက်အလက်များ သန့်ရှင်းစွာ ပေါ်လာစေရန်)
 function renderCardData(data) {
   if (!data) return;
 
@@ -453,8 +455,13 @@ function renderCardData(data) {
     savedQrImage = qrImgSrc;
     const qrEl = document.getElementById('cardQrImg');
     const qrWr = document.getElementById('qrWrapper');
-    if (qrEl) qrEl.src = qrImgSrc;
-    if (qrWr) qrWr.style.display = 'block';
+    if (qrEl) {
+      qrEl.src = qrImgSrc;
+      qrEl.style.display = 'block';
+    }
+    if (qrWr) {
+      qrWr.style.display = 'block';
+    }
   }
 
   const mUrl = data.musicUrl || data.music_url || savedMusicUrl;
@@ -471,7 +478,7 @@ function renderCardData(data) {
   }
 }
 
-// 🌟 120 မိနစ် Countdown Timer နှင့် ဒေတာဖျက်ဆီးသည့် လုပ်ဆောင်ချက်
+// 🌟 ၁၂၀ မိနစ် Countdown Timer နှင့် ဒေတာဖျက်ဆီးသည့် လုပ်ဆောင်ချက်
 function startCardTimer(cardId) {
   if (cardTimerInterval) clearInterval(cardTimerInterval);
 
@@ -485,17 +492,15 @@ function startCardTimer(cardId) {
     expireTime = parseInt(expireTime, 10);
   }
 
-  // Timer Badge UI ထည့်သွင်းခြင်း (မရှိသေးပါက ဖန်တီးမည်)
-  let timerEl = document.getElementById('cardTimer');
+  // Timer Badge UI ဖန်တီးခြင်း (Language Switcher နှင့် တန်းတန်းထိပ်ဆုံးတွင် ထားရှိသည်)
+  let timerEl = document.getElementById('topCardTimer');
   if (!timerEl) {
-    const exportCard = document.getElementById('exportCard');
-    if (exportCard) {
-      timerEl = document.createElement('div');
-      timerEl.id = 'cardTimer';
-      timerEl.className = 'card-timer-badge';
-      exportCard.insertBefore(timerEl, exportCard.firstChild);
-    }
+    timerEl = document.createElement('div');
+    timerEl.id = 'topCardTimer';
+    timerEl.className = 'top-card-timer';
+    document.body.appendChild(timerEl);
   }
+  timerEl.style.display = 'flex';
 
   cardTimerInterval = setInterval(async () => {
     const now = Date.now();
@@ -514,21 +519,22 @@ function startCardTimer(cardId) {
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     if (timerEl) {
-      timerEl.innerText = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      timerEl.innerHTML = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
   }, 1000);
 }
 
 // 🌟 ကတ်အချက်အလက်များနှင့် လင့်ခ်များကို ဖျက်ဆီးခြင်း
 async function deleteCardDataAndClean(cardId, storageKey) {
-  // Local Data ဖျက်မည်
   savedBgImage = '';
   savedQrImage = '';
   savedMusicUrl = '';
   currentShareableLink = '';
   localStorage.removeItem(storageKey);
 
-  // UI ကို ရှင်းလင်းမည်
+  const timerEl = document.getElementById('topCardTimer');
+  if (timerEl) timerEl.style.display = 'none';
+
   const bgEl = document.getElementById('cardBgImg');
   if (bgEl) bgEl.style.display = 'none';
   const qrWr = document.getElementById('qrWrapper');
@@ -545,7 +551,6 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     cardPlayer.src = '';
   }
 
-  // Supabase Database မှ Card အချက်အလက်များကို ဖျက်ဆီးမည်
   if (cardId) {
     try {
       const sb = getSupabase();
@@ -556,7 +561,6 @@ async function deleteCardDataAndClean(cardId, storageKey) {
       console.error('Supabase Delete Error:', err);
     }
 
-    // URL parameter (?id=...) ကို ရှင်းလင်းမည်
     if (window.history && window.history.replaceState) {
       const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
       window.history.replaceState({path: cleanUrl}, '', cleanUrl);
@@ -674,6 +678,11 @@ function viewHistory() {
 }
 
 function goToStep(stepNumber) {
+  const timerEl = document.getElementById('topCardTimer');
+  if (timerEl && stepNumber !== 4) {
+    timerEl.style.display = 'none';
+  }
+
   const loader = document.getElementById('stepLoader');
   loader.classList.add('show');
   setTimeout(() => {
