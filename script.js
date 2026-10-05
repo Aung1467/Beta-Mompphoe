@@ -20,7 +20,7 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 
-// Music Folder ထဲရှိ သီချင်းစာရင်း (လိုအပ်ပါက ဤနေရာတွင် အလွယ်တကူ ထပ်ထည့်နိုင်ပါသည်)
+// Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
   { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
   { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
@@ -28,48 +28,47 @@ const localMusicList = [
   { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
 ];
 
+// မြန်မာဘာသာစာသားများ သီးသန့်
 const i18n = {
   my: {
-    introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
+    introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
-    authTitle: "✨ အကောင့်ဝင်ရန် (Login / Signup) ✨",
+    authTitle: "အကောင့်ဝင်ရန်",
     modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
-    optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
-    optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
-    nameLabel: "သင်၏ နာမည်",
-    namePlaceholder: "နာမည်ရိုက်ပါ",
-    numLabel: "ဂဏန်း (ကုဒ်နံပါတ်)",
-    numPlaceholder: "ဂဏန်းရိုက်ပါ",
+    optLogin: "အကောင့်ရှိပြီးသား",
+    optSignup: "အကောင့်သစ်ဖွင့်ရန်",
+    nameLabel: "နာမည်",
+    numLabel: "(ID နံပါတ်)",
+    numPlaceholder: "နှစ်သက်ရာထည့်နိုင်သည်",
     passLabel: "Password",
     passPlaceholder: "Password ရိုက်ပါ",
-    pass2Label: "Password ထပ်မံရိုက်ပါ (Confirm)",
+    pass2Label: "Password ထပ်မံရိုက်ပါ",
     pass2Placeholder: "Password ကို ထပ်ရိုက်ပါ",
-    loginBtn: "အကောင့်ဝင်မည် 🔓",
-    signupBtn: "အကောင့်အသစ်ဖွင့်မည် ✨",
-    profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
-    changeAvatar: "📷 Profile ပုံပြောင်းရန်",
+    loginBtn: "အကောင့်ဝင်မည်",
+    signupBtn: "အကောင့်အသစ်ဖွင့်မည်",
+    profileTitle: "ကိုယ်ရေးအချက်အလက်",
+    changeAvatar: "Profile ပုံပြောင်းရန်",
     reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
-    historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
-    step3Title: "🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈",
+    historyBtn: "မှတ်တမ်းများ",
+    step3Title: "မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ",
     dropdownLabel: "အကြောင်းအရာ ရွေးချယ်ရန်",
     customReasonLabel: "ကိုယ်တိုင်စာရေးရန်",
     customReasonPlaceholder: "အကြောင်းအရာ ရေးပါ",
     customNoteLabel: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
     customNotePlaceholder: "စာစီပါ...",
-    musicLabel: "သီချင်း ရွေးချယ်ရန် (Music Folder)",
-    audioPreview: "သီချင်း နားဆောင်ရန် (Preview)",
-    bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
-    bgBtn: "📸 နောက်ခံပုံ ရွေးရန် (အကြည်)",
+    musicLabel: "သီချင်း ရွေးချယ်ရန်",
+    bgLabel: "နောက်ခံပုံ",
+    bgBtn: "📸 နောက်ခံပုံ ရွေးရန်",
     qrLabel: "QR Code / အချက်အလက်ပုံ (HD)",
-    qrBtn: "💳 QR Code ပုံ ရွေးရန်",
+    qrBtn: "💳 QR Code / ပုံ ရွေးရန်",
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
-    step4Title: "🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉",
-    qrHint: "Scan or Pay to Send Pocket Money 👇",
+    step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
+    qrHint: "Scan or Pay to Send",
     saveBtn: "💾 Save QR",
     shareBtn: "📤 Share",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
-    modalTitle: "📤 မျှဝေရန် (Share)",
+    modalTitle: "📤 မျှဝေရန်",
     modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
     copyLinkBtn: "📋 လင့်ခ် ကူးယူရန်",
     dl1to1Btn: "📥 1:1 ပုံ သိမ်းရန်",
@@ -84,64 +83,71 @@ const i18n = {
       { val: "သုံးစရာမရှိတော့လို့", text: "သုံးစရာမရှိတော့လို့" },
       { val: "အခြား", text: "အခြား (ကိုယ်တိုင်ရေးမည်)" }
     ]
-  },
-  en: {
-    introMsg: "Welcome 👋 Please wait...",
-    loaderMsg: "Please wait...",
-    authTitle: "✨ Login / Signup ✨",
-    modeSelectLabel: "Select Option",
-    optLogin: "Login (Existing Account)",
-    optSignup: "Sign Up (New Account)",
-    nameLabel: "Your Name",
-    namePlaceholder: "Enter your name",
-    numLabel: "Number / Code",
-    numPlaceholder: "Enter code number",
-    passLabel: "Password",
-    passPlaceholder: "Enter password",
-    pass2Label: "Confirm Password",
-    pass2Placeholder: "Re-enter password",
-    loginBtn: "Login 🔓",
-    signupBtn: "Create Account ✨",
-    profileTitle: "👤 Profile Dashboard",
-    changeAvatar: "📷 Change Profile Picture",
-    reqPocketBtn: "🧧 Request Pocket Money",
-    historyBtn: "📜 Request History",
-    step3Title: "🎈 Select Request Reason 🎈",
-    dropdownLabel: "Choose Reason",
-    customReasonLabel: "Custom Reason",
-    customReasonPlaceholder: "Write custom reason",
-    customNoteLabel: "Write Request Note",
-    customNotePlaceholder: "Write your note here...",
-    musicLabel: "Select Music (Music Folder)",
-    audioPreview: "Preview Audio",
-    bgLabel: "Background Image (3:4 HD)",
-    bgBtn: "📸 Select HD Background",
-    qrLabel: "Payment QR Code (HD)",
-    qrBtn: "💳 Select QR Code Image",
-    backBtn: "⬅ Back",
-    genCardBtn: "Create Card ✨",
-    step4Title: "🎉 Your Request Card 🎉",
-    qrHint: "Scan or Pay to Send Pocket Money 👇",
-    saveBtn: "💾 Save QR",
-    shareBtn: "📤 Share",
-    profileReturnBtn: "🏠 Back to Profile",
-    modalTitle: "📤 Share Request",
-    modalSub: "Send card and link via:",
-    copyLinkBtn: "📋 Copy Link",
-    dl1to1Btn: "📥 Download 1:1 Image",
-    closeBtn: "Close",
-    alertNote: "❌ Please write a request note.",
-    alertBg: "❌ Please upload a background image.",
-    alertQr: "❌ Please upload a QR code image.",
-    reasons: [
-      { val: "Pocket Money Request", text: "Pocket Money Request" },
-      { val: "Date with Lover", text: "Date with Lover" },
-      { val: "Hangout with Friends", text: "Hangout with Friends" },
-      { val: "Out of Money", text: "Out of Money" },
-      { val: "အခြား", text: "Other (Custom Write)" }
-    ]
   }
 };
+
+// HTML နေရာလပ်များသို့ စာသားများကို မြန်မာလို ထည့်သွင်းပေးသည့် Function
+function updateTexts() {
+  const d = i18n.my;
+  if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
+  if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
+  if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
+  if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = d.modeSelectLabel;
+  if(document.getElementById('authModeTriggerText')) document.getElementById('authModeTriggerText').innerText = d.optLogin;
+  if(document.getElementById('optLoginText')) document.getElementById('optLoginText').innerText = d.optLogin;
+  if(document.getElementById('optSignupText')) document.getElementById('optSignupText').innerText = d.optSignup;
+  
+  if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = d.nameLabel;
+  if(document.getElementById('loginName')) document.getElementById('loginName').placeholder = d.namePlaceholder;
+  if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = d.passLabel;
+  if(document.getElementById('loginPass')) document.getElementById('loginPass').placeholder = d.passPlaceholder;
+  if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = d.loginBtn;
+
+  if(document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = d.nameLabel;
+  if(document.getElementById('signupName')) document.getElementById('signupName').placeholder = d.namePlaceholder;
+  if(document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = d.numLabel;
+  if(document.getElementById('signupNum')) document.getElementById('signupNum').placeholder = d.numPlaceholder;
+  if(document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = d.passLabel;
+  if(document.getElementById('signupPass1')) document.getElementById('signupPass1').placeholder = d.passPlaceholder;
+  if(document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = d.pass2Label;
+  if(document.getElementById('signupPass2')) document.getElementById('signupPass2').placeholder = d.pass2Placeholder;
+  if(document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = d.signupBtn;
+
+  if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
+  if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
+  if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
+  if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
+
+  if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
+  if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
+  if(document.getElementById('reasonTriggerText')) document.getElementById('reasonTriggerText').innerText = d.reasons[0].text;
+  if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
+  if(document.getElementById('customReason')) document.getElementById('customReason').placeholder = d.customReasonPlaceholder;
+  if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = d.customNoteLabel;
+  if(document.getElementById('customNote')) document.getElementById('customNote').placeholder = d.customNotePlaceholder;
+
+  if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = d.musicLabel;
+  if(document.getElementById('lbl_audioPreview')) document.getElementById('lbl_audioPreview').innerText = d.audioPreview;
+  if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = d.bgLabel;
+  if(document.getElementById('bgImgLabel')) document.getElementById('bgImgLabel').innerText = d.bgBtn;
+  if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = d.qrLabel;
+  if(document.getElementById('qrImgLabel')) document.getElementById('qrImgLabel').innerText = d.qrBtn;
+
+  if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = d.backBtn;
+  if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
+
+  if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
+  if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = d.qrHint;
+  if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
+  if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
+  if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
+
+  if(document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = d.modalTitle;
+  if(document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = d.modalSub;
+  if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = d.copyLinkBtn;
+  if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = d.dl1to1Btn;
+  if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
+}
 
 // ပုံမဝါးစေရန် HD Quality (maxWidth 1200, quality 0.85)
 function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
@@ -182,7 +188,7 @@ function compressFileToDataUrl(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
-// Music Folder Dropdown Populate & Selection Functions (Auto-play on load disabled to prevent overlap)
+// Music Folder Dropdown Populate & Selection Functions
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
   if (!container) return;
@@ -216,7 +222,6 @@ function populateMusicDropdown() {
       player.src = localMusicList[0].url;
       player.load();
       player.loop = true;
-      // မူလအစတွင် အလိုအလျောက် အသံမပွင့်စေရန် play() ကို ဖြုတ်ထားပါသည်
     }
   }
 }
@@ -235,7 +240,6 @@ function selectMusicOption(url, name) {
     player.load();
     player.loop = true;
     
-    // သီချင်းကို တမင်ရွေးချယ်မှသာ Preview အသံ ပွင့်မည်
     player.play().then(() => {
       const eqContainer = document.querySelector('.preview-eq-bars');
       if(eqContainer) eqContainer.classList.add('playing');
@@ -257,7 +261,8 @@ window.addEventListener('click', function(e) {
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
-  populateReasonDropdown(currentLang);
+  updateTexts();
+  populateReasonDropdown('my');
   populateMusicDropdown();
 
   setTimeout(() => {
@@ -272,7 +277,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     const loader = document.getElementById('stepLoader');
     if (loader) loader.classList.add('show');
 
-    // Share လင့်ခ်ဖြင့် ဝင်လာသည့်အခါ Preview Player လုံးဝ မပွင့်စေရန် ရပ်တန့်ခြင်း
     const previewPlayer = document.getElementById('audioPreviewPlayer');
     if (previewPlayer) {
       previewPlayer.pause();
@@ -333,7 +337,6 @@ function renderCardData(data) {
   if (data.musicUrl) {
     savedMusicUrl = data.musicUrl;
 
-    // Step 4 card player (Share လင့်ခ်ဖြင့် ပြန်ဝင်လာသည့်အခါ Card Player သီးသန့် ဖွင့်ရန်)
     const cardPlayer = document.getElementById('cardAudioPlayer');
     const cardAudioGroup = document.getElementById('cardAudioGroup');
     if (cardPlayer && cardAudioGroup) {
@@ -356,6 +359,13 @@ function switchAuthMode(mode) {
     loginSec.style.display = 'none';
     signupSec.style.display = 'block';
   }
+}
+
+function selectAuthModeOption(val, text) {
+  document.getElementById('authModeTriggerText').innerText = text;
+  document.getElementById('authModeSelect').value = val;
+  document.getElementById('authModeCustomSelect').classList.remove('open');
+  switchAuthMode(val);
 }
 
 function handleSignup() {
@@ -441,7 +451,7 @@ function updateProfileAvatar(input) {
 }
 
 function viewHistory() {
-  alert('📜 သင် တောင်းဆိုခဲ့ဖူးသော မှတ်တမ်းများ မရှိသေးပါ။');
+  alert('မှတ်တမ်းများ မရှိသေးပါ။');
 }
 
 function goToStep(stepNumber) {
@@ -465,7 +475,6 @@ function showStep(stepNumber) {
     setTimeout(() => target.classList.add('active'), 50);
   }
 
-  // ✨ Step 4 သို့ ရောက်သည့်အခါ Preview Player ကို အသံရပ်တန့်စေခြင်း
   if (stepNumber === 4) {
     const previewPlayer = document.getElementById('audioPreviewPlayer');
     if (previewPlayer) {
@@ -480,26 +489,36 @@ function showStep(stepNumber) {
 }
 
 function toggleCustomReason() {
-  const dropdown = document.getElementById('reasonDropdown');
+  const dropdownVal = document.getElementById('reasonDropdownVal').value;
   const customGroup = document.getElementById('customReasonGroup');
-  customGroup.style.display = (dropdown.value === 'အခြား') ? 'block' : 'none';
+  customGroup.style.display = (dropdownVal === 'အခြား') ? 'block' : 'none';
 }
 
 function populateReasonDropdown(lang) {
-  const dropdown = document.getElementById('reasonDropdown');
-  if (!dropdown) return;
-  const currentVal = dropdown.value;
-  dropdown.innerHTML = '';
+  const container = document.getElementById('reasonDropdown');
+  if (!container) return;
+  container.innerHTML = '';
   
-  const reasonsList = i18n[lang] ? i18n[lang].reasons : i18n['my'].reasons;
+  const reasonsList = i18n.my.reasons;
   reasonsList.forEach(item => {
-    const opt = document.createElement('option');
-    opt.value = item.val;
-    opt.innerText = item.text;
-    dropdown.appendChild(opt);
+    const div = document.createElement('div');
+    div.className = 'custom-option';
+    div.innerText = item.text;
+    div.onclick = () => selectReasonOption(item.val, item.text);
+    container.appendChild(div);
   });
 
-  if (currentVal) dropdown.value = currentVal;
+  if (reasonsList.length > 0) {
+    document.getElementById('reasonTriggerText').innerText = reasonsList[0].text;
+    document.getElementById('reasonDropdownVal').value = reasonsList[0].val;
+  }
+  toggleCustomReason();
+}
+
+function selectReasonOption(val, text) {
+  document.getElementById('reasonTriggerText').innerText = text;
+  document.getElementById('reasonDropdownVal').value = val;
+  document.getElementById('reasonCustomSelect').classList.remove('open');
   toggleCustomReason();
 }
 
@@ -518,7 +537,6 @@ function handleQrImage(input) {
 }
 
 async function generateAndSaveCard() {
-  // ✨ "ကတ်ဖန်တီးမည်" ခလုတ်နှိပ်သည်နှင့် Preview အသံကို ချက်ချင်းရပ်တန့်ခိုင်းခြင်း
   const previewPlayer = document.getElementById('audioPreviewPlayer');
   if (previewPlayer) {
     previewPlayer.pause();
@@ -529,12 +547,12 @@ async function generateAndSaveCard() {
     eqContainer.classList.remove('playing');
   }
 
-  const reasonDropdown = document.getElementById('reasonDropdown').value;
+  const reasonVal = document.getElementById('reasonDropdownVal').value;
   const customReason = document.getElementById('customReason').value.trim();
   const customNote = document.getElementById('customNote').value.trim();
-  const finalReason = (reasonDropdown === 'အခြား' && customReason) ? customReason : reasonDropdown;
+  const finalReason = (reasonVal === 'အခြား' && customReason) ? customReason : reasonVal;
 
-  const d = i18n[currentLang] || i18n['my'];
+  const d = i18n.my;
 
   if (!customNote) {
     alert(d.alertNote);
@@ -599,7 +617,6 @@ async function generateAndSaveCard() {
       if (loader) loader.classList.remove('show');
       showStep(4);
 
-      // ✨ Step 4 ရောက်တာနဲ့ Card Player စတင်ဖွင့်ရန်
       const cardPlayer = document.getElementById('cardAudioPlayer');
       const cardAudioGroup = document.getElementById('cardAudioGroup');
       if (cardPlayer && cardAudioGroup && savedMusicUrl) {
@@ -632,7 +649,7 @@ function downloadSingleQrFromModal() {
   closeShareModal();
 }
 
-let openShareModal = function() {
+function openShareModal() {
   document.getElementById('shareModal').style.display = 'flex';
 }
 
@@ -648,7 +665,7 @@ function copyShareLink() {
 }
 
 function changeLanguage(lang) {
-  currentLang = lang;
-  populateReasonDropdown(lang);
-  populateMusicDropdown();
+  // မြန်မာဘာသာ တစ်မျိုးတည်းသာ ထားရှိသောကြောင့် ဒီ function ကို လိုအပ်သလို အသုံးပြုနိုင်ပါသည်
+  currentLang = 'my';
+  updateTexts();
 }

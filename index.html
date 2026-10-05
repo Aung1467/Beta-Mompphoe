@@ -39,7 +39,7 @@
       color: var(--text-color);
     }
 
-    /* Intro Splash Screen (Compact & Horizontal) */
+    /* Intro Splash Screen */
     #introSplash {
       position: fixed;
       inset: 0;
@@ -474,7 +474,7 @@
       gap: 8px;
     }
 
-    /* Export Card Preview (3:4 Ratio HD) with Floating Animation */
+    /* Export Card Preview */
     @keyframes cardFloat {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-5px) rotate(0.4deg); }
@@ -604,7 +604,7 @@
       100% { transform: translateY(-380px) scale(1.3) rotate(360deg); opacity: 0; }
     }
 
-    /* Clean Minimal Animated Music Player Styles (No Text) */
+    /* Minimal Animated Music Player */
     .custom-music-player {
       display: flex;
       align-items: center;
@@ -663,7 +663,6 @@
       object-fit: cover;
     }
 
-    /* Equalizer Wave Animation */
     .equalizer-bars {
       display: flex;
       align-items: flex-end;
@@ -690,7 +689,6 @@
       100% { transform: scaleY(1); }
     }
 
-    /* Custom Equalizer Preview Player Styles (Centered & Clean) */
     .custom-preview-player {
       display: flex;
       align-items: center;
@@ -764,7 +762,7 @@
   <div id="introSplash">
     <div class="intro-box">
       <div class="blue-white-spinner"></div>
-      <div id="introMsg" style="font-size: 13px; font-weight: 700; color: var(--accent); margin: 0; text-shadow: 0 0 6px var(--accent-glow);">မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...</div>
+      <div id="introMsg" style="font-size: 13px; font-weight: 700; color: var(--accent); margin: 0; text-shadow: 0 0 6px var(--accent-glow);"></div>
     </div>
   </div>
 
@@ -779,25 +777,21 @@
     <select id="userLang" onchange="changeLanguage(this.value)">
       <option value="my" selected>🇲🇲 မြန်မာ</option>
       <option value="en">🇬🇧 English</option>
-      <option value="th">🇹🇭 ไทย</option>
-      <option value="zh">🇨🇳 中文</option>
-      <option value="ja">🇯🇵 日本語</option>
-      <option value="ko">🇰🇷 한국어</option>
     </select>
   </div>
 
   <div id="stepLoader">
     <div class="blue-white-spinner"></div>
-    <p id="lbl_loaderMsg" style="margin-top: 12px; color: var(--accent); font-weight: 700; font-size: 13px; text-shadow: 0 0 6px var(--accent-glow);">ခဏစောင့်ပါ...</p>
+    <p id="lbl_loaderMsg" style="margin-top: 12px; color: var(--accent); font-weight: 700; font-size: 13px; text-shadow: 0 0 6px var(--accent-glow);"></p>
   </div>
 
   <div id="shareModal">
     <div class="modal-content">
-      <h3 id="lbl_modalTitle" style="color:var(--accent); font-size: 17px; margin-bottom:8px; text-shadow: 0 0 6px var(--accent-glow);">📤 မျှဝေရန် (Share)</h3>
-      <p id="lbl_modalSub" style="font-size:12px; font-weight:600; margin-bottom:14px; color:#cbd5e1;">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -</p>
-      <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()">📋 လင့်ခ် ကူးယူရန်</button>
-      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadCardImage()">📥 ကတ်ပုံရိပ် သိမ်းရန်</button>
-      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()">ပိတ်မည်</button>
+      <h3 id="lbl_modalTitle" style="color:var(--accent); font-size: 17px; margin-bottom:8px; text-shadow: 0 0 6px var(--accent-glow);"></h3>
+      <p id="lbl_modalSub" style="font-size:12px; font-weight:600; margin-bottom:14px; color:#cbd5e1;"></p>
+      <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()"></button>
+      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadSingleQrFromModal()"></button>
+      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()"></button>
     </div>
   </div>
 
@@ -805,18 +799,18 @@
 
     <!-- STEP 1: LOGIN / SIGNUP -->
     <div class="step active" id="step1">
-      <h2 id="lbl_authTitle">အကောင့်ဝင်ရန်</h2>
+      <h2 id="lbl_authTitle"></h2>
       
       <div class="form-group">
-        <label id="lbl_modeSelect">အမျိုးအစား ရွေးချယ်ရန်</label>
+        <label id="lbl_modeSelect"></label>
         <div class="custom-select-wrapper" id="authModeCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('authModeCustomSelect')">
-            <span id="authModeTriggerText">အကောင့်ရှိပြီးသား (Login ဝင်ရန်)</span>
+            <span id="authModeTriggerText"></span>
             <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
           </div>
           <div class="custom-options" id="authModeCustomOptions">
-            <div class="custom-option" onclick="selectAuthModeOption('login', 'အကောင့်ရှိပြီးသား (Login ဝင်ရန်)')">အကောင့်ရှိပြီးသား (Login ဝင်ရန်)</div>
-            <div class="custom-option" onclick="selectAuthModeOption('signup', 'အကောင့်သစ်ဖွင့်ရန် (Sign Up)')">အကောင့်သစ်ဖွင့်ရန် (Sign Up)</div>
+            <div class="custom-option" onclick="selectAuthModeOption('login', '')" id="optLoginText"></div>
+            <div class="custom-option" onclick="selectAuthModeOption('signup', '')" id="optSignupText"></div>
           </div>
         </div>
         <input type="hidden" id="authModeSelect" value="login">
@@ -825,41 +819,41 @@
       <!-- LOGIN FORM -->
       <div id="loginFormSection">
         <div class="form-group">
-          <label id="lbl_loginName">သင်၏ နာမည်</label>
-          <input type="text" id="loginName" placeholder="နာမည်ရိုက်ပါ Code မလို">
+          <label id="lbl_loginName"></label>
+          <input type="text" id="loginName">
         </div>
         <div class="form-group">
-          <label id="lbl_loginPass">Password</label>
-          <input type="password" id="loginPass" placeholder="Password ရိုက်ပါ">
+          <label id="lbl_loginPass"></label>
+          <input type="password" id="loginPass">
         </div>
-        <button class="btn" id="btn_login" onclick="handleLogin()">အကောင့်ဝင်မည် 🔓</button>
+        <button class="btn" id="btn_login" onclick="handleLogin()"></button>
       </div>
 
       <!-- SIGNUP FORM -->
       <div id="signupFormSection" style="display: none;">
         <div class="form-group">
-          <label id="lbl_signupName">သင်၏ နာမည်</label>
-          <input type="text" id="signupName" placeholder="နာမည်ရိုက်ပါ">
+          <label id="lbl_signupName"></label>
+          <input type="text" id="signupName">
         </div>
         <div class="form-group">
-          <label id="lbl_signupNum">ဂဏန်း (ကုဒ်နံပါတ်)</label>
-          <input type="text" id="signupNum" placeholder="ဂဏန်းရိုက်ပါ (ဥပမာ - 1234)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <label id="lbl_signupNum"></label>
+          <input type="text" id="signupNum" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass1">Password (အနည်းဆုံး ၄ လုံး)</label>
-          <input type="password" id="signupPass1" placeholder="Password အသစ်ပေးရန်">
+          <label id="lbl_signupPass1"></label>
+          <input type="password" id="signupPass1">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass2">Password ထပ်မံရိုက်ပါ (Confirm)</label>
-          <input type="password" id="signupPass2" placeholder="Password ကို ထပ်ရိုက်ပါ">
+          <label id="lbl_signupPass2"></label>
+          <input type="password" id="signupPass2">
         </div>
-        <button class="btn" id="btn_signup" onclick="handleSignup()">အကောင့်အသစ်ဖွင့်မည် ✨</button>
+        <button class="btn" id="btn_signup" onclick="handleSignup()"></button>
       </div>
     </div>
 
     <!-- STEP 2: PROFILE DASHBOARD -->
     <div class="step" id="step2">
-      <h2 id="lbl_profileTitle">👤 ကိုယ်ရေးအချက်အလက် (Profile)</h2>
+      <h2 id="lbl_profileTitle"></h2>
       
       <div class="profile-container">
         <div class="profile-avatar-box" id="profileAvatarBox">
@@ -870,56 +864,55 @@
 
         <div class="profile-action-row">
           <div class="file-input-wrapper profile-small-btn">
-            <span>📷 ပုံပြောင်းရန်</span>
+            <span id="lbl_changeAvatar"></span>
             <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
           </div>
           <button class="profile-small-btn" id="lbl_changeNick" onclick="changeNickname()">
-            <span>✏ နာမည်ပြောင်း</span>
+            <span>✏</span>
           </button>
         </div>
 
-        <div class="profile-name" id="displayProfileName">အမည်</div>
-        <div class="profile-id" id="displayProfileNum">ဂဏန်း: -</div>
+        <div class="profile-name" id="displayProfileName"></div>
+        <div class="profile-id" id="displayProfileNum"></div>
 
         <div class="dashboard-actions">
-          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;">🧧 မုန့်ဖိုးတောင်းရန်</button>
-          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;">📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ</button>
+          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;"></button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;"></button>
         </div>
       </div>
     </div>
 
     <!-- STEP 3: REQUEST REASON & MESSAGE -->
     <div class="step" id="step3">
-      <h2 id="lbl_step3Title">🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈</h2>
+      <h2 id="lbl_step3Title"></h2>
 
       <div class="form-group">
-        <label for="reasonDropdown" id="lbl_dropdown">အကြောင်းအရာ ရွေးချယ်ရန်</label>
+        <label for="reasonDropdown" id="lbl_dropdown"></label>
         <div class="custom-select-wrapper" id="reasonCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
-            <span id="reasonTriggerText">အကြောင်းအရာ ရွေးချယ်ရန်</span>
+            <span id="reasonTriggerText"></span>
             <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
           </div>
-          <div class="custom-options" id="reasonCustomOptions"></div>
+          <div class="custom-options" id="reasonDropdown"></div>
         </div>
-        <input type="hidden" id="reasonDropdown" value="">
+        <input type="hidden" id="reasonDropdownVal" value="">
       </div>
 
       <div class="form-group" id="customReasonGroup" style="display: none;">
-        <label for="customReason" id="lbl_customReason">ကိုယ်တိုင်စာရေးရန်</label>
-        <input type="text" id="customReason" placeholder="အကြောင်းအရာ ရေးပါ">
+        <label for="customReason" id="lbl_customReason"></label>
+        <input type="text" id="customReason">
       </div>
 
       <div class="form-group">
-        <label for="customNote" id="lbl_customNote">မုန့်ဖိုးတောင်းဖို့ စာစီရန် (မဖြစ်မနေ ရေးရန်)</label>
-        <textarea id="customNote" rows="2" placeholder="စာစီပါ"></textarea>
+        <label for="customNote" id="lbl_customNote"></label>
+        <textarea id="customNote" rows="2"></textarea>
       </div>
 
-      <!-- Music Folder Selection Dropdown -->
       <div class="form-group">
-        <label id="lbl_musicLabel">သီချင်း ရွေးချယ်ရန် (Music Folder)</label>
+        <label id="lbl_musicLabel"></label>
         <div class="custom-select-wrapper" id="musicCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
-            <span id="musicTriggerText">သီချင်း ရွေးချယ်ပါ</span>
+            <span id="musicTriggerText"></span>
             <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
           </div>
           <div class="custom-options" id="musicCustomOptions"></div>
@@ -927,9 +920,8 @@
         <input type="hidden" id="musicDropdown" value="">
       </div>
 
-      <!-- Custom Equalizer Preview Player -->
       <div class="form-group" id="audioPreviewGroup" style="display: none;">
-        <label id="lbl_audioPreview">သီချင်း နားဆောင်ရန် (Preview)</label>
+        <label id="lbl_audioPreview"></label>
         <div class="custom-preview-player">
           <div class="preview-eq-bars">
             <div class="p-bar"></div>
@@ -943,32 +935,31 @@
       </div>
 
       <div class="form-group">
-        <label id="lbl_bgLabel">နောက်ခံပုံ (3:4 Ratio HD) - မဖြစ်မနေ ထည့်ရန်</label>
+        <label id="lbl_bgLabel"></label>
         <div class="file-input-wrapper">
-          <div class="file-btn" id="bgImgLabel">📸 နောက်ခံပုံ ရွေးရန် (အကြည်)</div>
+          <div class="file-btn" id="bgImgLabel"></div>
           <input type="file" accept="image/*" onchange="handleBgImage(this)">
         </div>
       </div>
 
       <div class="form-group">
-        <label id="lbl_qrLabel">QR Code / အချက်အလက်ပုံ (1:1 HD) - မဖြစ်မနေ ထည့်ရန်</label>
+        <label id="lbl_qrLabel"></label>
         <div class="file-input-wrapper">
-          <div class="file-btn" id="qrImgLabel">💳 QR Code ပုံ ရွေးရန်</div>
+          <div class="file-btn" id="qrImgLabel"></div>
           <input type="file" accept="image/*" onchange="handleQrImage(this)">
         </div>
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;">⬅ နောက်သို့</button>
-        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()" style="padding: 10px; font-size: 13px;">ကတ်ဖန်တီးမည် ✨</button>
+        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()" style="padding: 10px; font-size: 13px;"></button>
       </div>
     </div>
 
     <!-- STEP 4: RESULT CARD -->
     <div class="step" id="step4">
-      <h2 id="lbl_step4Title">🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉</h2>
+      <h2 id="lbl_step4Title"></h2>
 
-      <!-- Card Container with Floating Animation & Random Emoji Overlay -->
       <div id="exportCard">
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
         <span class="sender-tag" id="outSender"></span>
@@ -978,977 +969,42 @@
           <p id="outNote"></p>
         </div>
         <div class="card-qr-overlay">
-          <p id="lbl_qrHint">Scan or Pay to Send Pocket Money 👇</p>
+          <p id="lbl_qrHint"></p>
           <div class="qr-img-wrapper" id="qrWrapper">
             <img id="cardQrImg" alt="QR">
           </div>
         </div>
       </div>
 
-      <!-- Minimal Animated Music Player with gif/anime.gif in the Middle -->
       <div class="custom-music-player" id="cardAudioGroup" style="display: none;">
         <div class="spinning-disc">
           <div class="spinning-disc-inner"></div>
         </div>
-        
         <div class="anime-dancer-free">
           <img src="gif/anime.gif" alt="Custom GIF">
         </div>
-
         <div class="equalizer-bars">
           <div class="eq-bar"></div>
           <div class="eq-bar"></div>
           <div class="eq-bar"></div>
           <div class="eq-bar"></div>
         </div>
-        <!-- Hidden Audio Element with autoplay and loop -->
         <audio id="cardAudioPlayer" autoplay loop style="display: none;"></audio>
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" id="btn_saveQr" onclick="downloadCardImage()" style="padding: 10px; font-size: 13px;">📥 ကတ်ပုံသိမ်းရန်</button>
-        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;">📤 မျှဝေမည်</button>
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;"></button>
       </div>
       
       <div class="btn-group" style="margin-top: 8px;">
-        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;">🏠 Profile သို့ပြန်ရန်</button>
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
       </div>
     </div>
 
   </div>
 
-  <script>
-    // Supabase Credentials
-    const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
-
-    let supabaseClient = null;
-
-    function getSupabase() {
-      if (!supabaseClient && window.supabase && window.supabase.createClient) {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      }
-      return supabaseClient;
-    }
-
-    let currentUser = null;
-    let currentAvatarUrl = "";
-    let currentBgUrl = "";
-    let currentQrUrl = "";
-    let currentMusicUrl = "";
-    let currentMusicName = "song1.mp3";
-    let currentLang = 'my';
-    let emojiInterval = null;
-    let currentShareableLink = '';
-
-    const localMusicList = [
-      { name: '🎵 song1.mp3', url: 'music/song1.mp3' },
-      { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
-      { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
-      { name: '🎵 song4.mp3', url: 'music/song4.mp3' }
-    ];
-
-    const translations = {
-      my: {
-        introMsg: "မင်္ဂလာပါ 👋 ခဏစောင့်ပေးပါ...",
-        loaderMsg: "ခဏစောင့်ပါ...",
-        authTitle: "အကောင့်ဝင်ရန်",
-        modeSelect: "အမျိုးအစား ရွေးချယ်ရန်",
-        optLogin: "အကောင့်ရှိပြီးသား (Login ဝင်ရန်)",
-        optSignup: "အကောင့်သစ်ဖွင့်ရန် (Sign Up)",
-        loginName: "သင်၏ နာမည်",
-        loginPass: "Password",
-        btnLogin: "အကောင့်ဝင်မည် 🔓",
-        signupName: "သင်၏ နာမည်",
-        signupNum: "ဂဏန်း (ကုဒ်နံပါတ်)",
-        signupPass1: "Password",
-        signupPass2: "Password ထပ်မံရိုက်ပါ (Confirm)",
-        btnSignup: "အကောင့်အသစ်ဖွင့်မည် ✨",
-        profileTitle: "👤 ကိုယ်ရေးအချက်အလက် (Profile)",
-        changeAvatar: "📷 ပုံပြောင်းရန်",
-        changeNick: "✏ နာမည်ပြောင်း",
-        reqPocketBtn: "🧧 မုန့်ဖိုးတောင်းရန်",
-        historyBtn: "📜 မုန့်ဖိုးတောင်းခဲ့သည့် မှတ်တမ်းများ",
-        step3Title: "🎈 မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ 🎈",
-        dropdown: "အကြောင်းအရာ ရွေးချယ်ရန်",
-        customReason: "ကိုယ်တိုင်စာရေးရန်",
-        customNote: "မုန့်ဖိုးတောင်းဖို့ စာစီရန်",
-        musicLabel: "သီချင်း ရွေးချယ်ရန် (Music Folder)",
-        audioPreview: "သီချင်း နားဆောင်ရန် (Preview)",
-        bgLabel: "နောက်ခံပုံ (3:4 Ratio HD)",
-        qrLabel: "QR Code / အချက်အလက်ပုံ (1:1 HD)",
-        bgImgLabelText: "📸 နောက်ခံပုံ ရွေးရန် (အကြည်)",
-        qrImgLabelText: "💳 QR Code ပုံ ရွေးရန်",
-        btnBack: "⬅ နောက်သို့",
-        btnGen: "ကတ်ဖန်တီးမည် ✨",
-        step4Title: "🎉 သင့်မုန့်ဖိုးတောင်းလွှာ 🎉",
-        qrHint: "Scan or Pay to Send Pocket Money 👇",
-        saveQr: "📥 ကတ်ပုံသိမ်းရန်",
-        share: "📤 မျှဝေမည်",
-        profileReturn: "🏠 Profile သို့ပြန်ရန်",
-        modalTitle: "📤 မျှဝေရန် (Share)",
-        modalSub: "မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -",
-        copyLink: "📋 လင့်ခ် ကူးယူရန်",
-        dlQrModal: "📥 ကတ်ပုံရိပ် သိမ်းရန်",
-        closeModal: "ပိတ်မည်",
-        reasons: [
-          { val: 'food', text: 'မုန့်ဖိုးဝယ်စားဖို့ပါ' },
-          { val: 'game', text: 'ဂိမ်းငွေဖြည့်ဖို့ပါ' },
-          { val: 'date', text: 'ချစ်သူနဲ့ချိန်းတွေ့ဖို့ပါ' },
-          { val: 'shopping', text: 'ပစ္စည်းဝယ်ယူဖို့ပါ' },
-          { val: 'custom', text: 'အခြားအကြောင်းအရာ (ကိုယ်တိုင်ရေးရန်)' }
-        ]
-      },
-      en: {
-        introMsg: "Welcome 👋 Please wait...",
-        loaderMsg: "Please wait...",
-        authTitle: "Sign In",
-        modeSelect: "Select Mode",
-        optLogin: "Login (Existing Account)",
-        optSignup: "Sign Up (New Account)",
-        loginName: "Your Name",
-        loginPass: "Password",
-        btnLogin: "Login 🔓",
-        signupName: "Your Name",
-        signupNum: "Number Code",
-        signupPass1: "Password",
-        signupPass2: "Confirm Password",
-        btnSignup: "Sign Up ✨",
-        profileTitle: "👤 Profile",
-        changeAvatar: "📷 Change Avatar",
-        changeNick: "✏ Edit Name",
-        reqPocketBtn: "🧧 Request Pocket Money",
-        historyBtn: "📜 History",
-        step3Title: "🎈 Reason for Request 🎈",
-        dropdown: "Select Reason",
-        customReason: "Custom Reason",
-        customNote: "Custom Note",
-        musicLabel: "Select Music (Music Folder)",
-        audioPreview: "Preview Audio",
-        bgLabel: "Background (3:4 HD)",
-        qrLabel: "QR Code / Payment Info (1:1 HD)",
-        bgImgLabelText: "📸 Select Background",
-        qrImgLabelText: "💳 Select QR Code",
-        btnBack: "⬅ Back",
-        btnGen: "Generate Card ✨",
-        step4Title: "🎉 Pocket Money Card 🎉",
-        qrHint: "Scan or Pay to Send Pocket Money 👇",
-        saveQr: "📥 Save Card",
-        share: "📤 Share",
-        profileReturn: "🏠 Return to Profile",
-        modalTitle: "📤 Share",
-        modalSub: "Send card and link -",
-        copyLink: "📋 Copy Link",
-        dlQrModal: "📥 Save Card Image",
-        closeModal: "Close",
-        reasons: [
-          { val: 'food', text: 'For Snacks' },
-          { val: 'game', text: 'For Gaming' },
-          { val: 'date', text: 'For Dating' },
-          { val: 'shopping', text: 'For Shopping' },
-          { val: 'custom', text: 'Custom Reason' }
-        ]
-      },
-      th: {
-        introMsg: "ยินดีต้อนรับ 👋 กรุณารอสักครู่...",
-        loaderMsg: "กรุณารอสักครู่...",
-        authTitle: "เข้าสู่ระบบ",
-        modeSelect: "เลือกโหมด",
-        optLogin: "เข้าสู่ระบบ (บัญชีที่มีอยู่)",
-        optSignup: "สมัครสมาชิกใหม่ (Sign Up)",
-        loginName: "ชื่อของคุณ",
-        loginPass: "รหัสผ่าน",
-        btnLogin: "เข้าสู่ระบบ 🔓",
-        signupName: "ชื่อของคุณ",
-        signupNum: "รหัสตัวเลข",
-        signupPass1: "รหัสผ่าน",
-        signupPass2: "ยืนยันรหัสผ่าน",
-        btnSignup: "สมัครสมาชิก ✨",
-        profileTitle: "👤 โปรไฟล์",
-        changeAvatar: "📷 เปลี่ยนรูปภาพ",
-        changeNick: "✏ เปลี่ยนชื่อ",
-        reqPocketBtn: "🧧 ขอค่าขนม",
-        historyBtn: "📜 ประวัติ",
-        step3Title: "🎈 เหตุผลในการขอ 🎈",
-        dropdown: "เลือกเหตุผล",
-        customReason: "เหตุผลอื่นๆ",
-        customNote: "ข้อความเพิ่มเติม",
-        musicLabel: "เลือกเพลง (Music Folder)",
-        audioPreview: "ฟังเสียงตัวอย่าง (Preview)",
-        bgLabel: "ภาพพื้นหลัง (3:4 HD)",
-        qrLabel: "QR Code / ข้อมูลการชำระเงิน",
-        bgImgLabelText: "📸 เลือกภาพพื้นหลัง",
-        qrImgLabelText: "💳 เลือก QR Code",
-        btnBack: "⬅ ย้อนกลับ",
-        btnGen: "สร้างการ์ด ✨",
-        step4Title: "🎉 การ์ดขอค่าขนมของคุณ 🎉",
-        qrHint: "สแกนหรือจ่ายเพื่อส่งค่าขนม 👇",
-        saveQr: "📥 บันทึกการ์ด",
-        share: "📤 แชร์",
-        profileReturn: "🏠 กลับสู่โปรไฟล์",
-        modalTitle: "📤 แชร์",
-        modalSub: "ส่งการ์ดและลิงก์ -",
-        copyLink: "📋 คัดลอกลิงก์",
-        dlQrModal: "📥 บันทึกภาพการ์ด",
-        closeModal: "ปิด",
-        reasons: [
-          { val: 'food', text: 'สำหรับซื้อขนม' },
-          { val: 'game', text: 'สำหรับเติมเกม' },
-          { val: 'date', text: 'สำหรับเดตกับแฟน' },
-          { val: 'shopping', text: 'สำหรับซื้อของ' },
-          { val: 'custom', text: 'เหตุผลอื่นๆ (พิมพ์เอง)' }
-        ]
-      },
-      zh: {
-        introMsg: "欢迎 👋 请稍候...",
-        loaderMsg: "请稍候...",
-        authTitle: "登录",
-        modeSelect: "选择模式",
-        optLogin: "登录 (已有账号)",
-        optSignup: "注册 (新账号)",
-        loginName: "您的姓名",
-        loginPass: "密码",
-        btnLogin: "登录 🔓",
-        signupName: "您的姓名",
-        signupNum: "编号",
-        signupPass1: "密码",
-        signupPass2: "确认密码",
-        btnSignup: "注册 ✨",
-        profileTitle: "👤 个人资料",
-        changeAvatar: "📷 更换头像",
-        changeNick: "✏ 修改昵称",
-        reqPocketBtn: "🧧 索要零花钱",
-        historyBtn: "📜 历史记录",
-        step3Title: "🎈 索要原因 🎈",
-        dropdown: "选择原因",
-        customReason: "自定义原因",
-        customNote: "留言备注",
-        musicLabel: "选择音乐 (Music Folder)",
-        audioPreview: "预览试听",
-        bgLabel: "背景图 (3:4 HD)",
-        qrLabel: "二维码 / 支付信息",
-        bgImgLabelText: "📸 选择背景图",
-        qrImgLabelText: "💳 选择二维码",
-        btnBack: "⬅ 返回",
-        btnGen: "生成卡片 ✨",
-        step4Title: "🎉 您的零花钱卡片 🎉",
-        qrHint: "扫描或付款发送零花钱 👇",
-        saveQr: "📥 保存卡片",
-        share: "📤 分享",
-        profileReturn: "🏠 返回个人资料",
-        modalTitle: "📤 分享",
-        modalSub: "发送卡片和链接 -",
-        copyLink: "📋 复制链接",
-        dlQrModal: "📥 保存卡片图片",
-        closeModal: "关闭",
-        reasons: [
-          { val: 'food', text: '买零食' },
-          { val: 'game', text: '充值游戏' },
-          { val: 'date', text: '约会' },
-          { val: 'shopping', text: '网购' },
-          { val: 'custom', text: '其他原因 (自定义)' }
-        ]
-      },
-      ja: {
-        introMsg: "ようこそ 👋 少々お待ちください...",
-        loaderMsg: "少々お待ちください...",
-        authTitle: "ログイン",
-        modeSelect: "モード選択",
-        optLogin: "ログイン (既存アカウント)",
-        optSignup: "新規登録 (Sign Up)",
-        loginName: "お名前",
-        loginPass: "パスワード",
-        btnLogin: "ログイン 🔓",
-        signupName: "お名前",
-        signupNum: "番号コード",
-        signupPass1: "パスワード",
-        signupPass2: "パスワード確認",
-        btnSignup: "登録する ✨",
-        profileTitle: "👤 プロフィール",
-        changeAvatar: "📷 アバター変更",
-        changeNick: "✏ 名前変更",
-        reqPocketBtn: "🧧 お小遣いをねだる",
-        historyBtn: "📜 履歴",
-        step3Title: "🎈 理由を選択 🎈",
-        dropdown: "理由を選択",
-        customReason: "その他の理由",
-        customNote: "メッセージ",
-        musicLabel: "音楽を選択 (Music Folder)",
-        audioPreview: "プレビュー試聴",
-        bgLabel: "背景 (3:4 HD)",
-        qrLabel: "QRコード / 支払い情報",
-        bgImgLabelText: "📸 背景を選択",
-        qrImgLabelText: "💳 QRコードを選択",
-        btnBack: "⬅ 戻る",
-        btnGen: "カード作成 ✨",
-        step4Title: "🎉 お小遣い請求カード 🎉",
-        qrHint: "スキャンして送金してください 👇",
-        saveQr: "📥 カードを保存",
-        share: "📤 シェア",
-        profileReturn: "🏠 プロフィールに戻る",
-        modalTitle: "📤 シェア",
-        modalSub: "カードとリンクを送信 -",
-        copyLink: "📋 リンクをコピー",
-        dlQrModal: "📥 カード画像を保存",
-        closeModal: "閉じる",
-        reasons: [
-          { val: 'food', text: 'お菓子代のため' },
-          { val: 'game', text: 'ゲーム課金のため' },
-          { val: 'date', text: 'デートのため' },
-          { val: 'shopping', text: '買い物のため' },
-          { val: 'custom', text: 'その他の理由 (自由入力)' }
-        ]
-      },
-      ko: {
-        introMsg: "환영합니다 👋 잠시만 기다려주세요...",
-        loaderMsg: "잠시만 기다려주세요...",
-        authTitle: "로그인",
-        modeSelect: "모드 선택",
-        optLogin: "로그인 (기존 계정)",
-        optSignup: "회원가입 (Sign Up)",
-        loginName: "이름",
-        loginPass: "비밀번호",
-        btnLogin: "로그인 🔓",
-        signupName: "이름",
-        signupNum: "회원 번호",
-        signupPass1: "비밀번호",
-        signupPass2: "비밀번호 확인",
-        btnSignup: "회원가입 ✨",
-        profileTitle: "👤 프로필",
-        changeAvatar: "📷 아바타 변경",
-        changeNick: "✏ 닉네임 변경",
-        reqPocketBtn: "🧧 용돈 요청하기",
-        historyBtn: "📜 기록",
-        step3Title: "🎈 요청 사유 🎈",
-        dropdown: "사유 선택",
-        customReason: "직접 작성",
-        customNote: "요청 메시지",
-        musicLabel: "음악 선택 (Music Folder)",
-        audioPreview: "미리 듣기 (Preview)",
-        bgLabel: "배경 화면 (3:4 HD)",
-        qrLabel: "QR 코드 / 결제 정보",
-        bgImgLabelText: "📸 배경 선택",
-        qrImgLabelText: "💳 QR 코드 선택",
-        btnBack: "⬅ 뒤로",
-        btnGen: "카드 생성 ✨",
-        step4Title: "🎉 용돈 요청 카드 🎉",
-        qrHint: "สแกนหรือจ่ายเพื่อส่งค่าขนม 👇",
-        saveQr: "📥 카드 저장",
-        share: "📤 공유",
-        profileReturn: "🏠 프로필로 돌아가기",
-        modalTitle: "📤 공유",
-        modalSub: "카드 및 링크 전송 -",
-        copyLink: "📋 링크 복사",
-        dlQrModal: "📥 카드 이미지 저장",
-        closeModal: "닫기",
-        reasons: [
-          { val: 'food', text: '간식비 용도' },
-          { val: 'game', text: '게임 캐시 충전' },
-          { val: 'date', text: '데이트 비용' },
-          { val: 'shopping', text: '쇼핑 용도' },
-          { val: 'custom', text: '기타 사유 (직접 입력)' }
-        ]
-      }
-    };
-
-    function changeLanguage(lang) {
-      currentLang = lang;
-      const t = translations[lang] || translations['my'];
-      
-      if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = t.introMsg;
-      if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = t.loaderMsg;
-      if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = t.authTitle;
-      if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = t.modeSelect;
-      
-      const authModeVal = document.getElementById('authModeSelect').value;
-      if(authModeVal === 'login') {
-        document.getElementById('authModeTriggerText').innerText = t.optLogin;
-      } else {
-        document.getElementById('authModeTriggerText').innerText = t.optSignup;
-      }
-
-      if(document.getElementById('lbl_loginName')) document.getElementById('lbl_loginName').innerText = t.loginName;
-      if(document.getElementById('lbl_loginPass')) document.getElementById('lbl_loginPass').innerText = t.loginPass;
-      if(document.getElementById('btn_login')) document.getElementById('btn_login').innerText = t.btnLogin;
-      if(document.getElementById('lbl_signupName')) document.getElementById('lbl_signupName').innerText = t.signupName;
-      if(document.getElementById('lbl_signupNum')) document.getElementById('lbl_signupNum').innerText = t.signupNum;
-      if(document.getElementById('lbl_signupPass1')) document.getElementById('lbl_signupPass1').innerText = t.signupPass1;
-      if(document.getElementById('lbl_signupPass2')) document.getElementById('lbl_signupPass2').innerText = t.signupPass2;
-      if(document.getElementById('btn_signup')) document.getElementById('btn_signup').innerText = t.btnSignup;
-      if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = t.profileTitle;
-      if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerHTML = `<span>${t.changeNick}</span>`;
-      if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = t.reqPocketBtn;
-      if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = t.historyBtn;
-      if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = t.step3Title;
-      if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = t.dropdown;
-      if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = t.customReason;
-      if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = t.customNote;
-      
-      if(document.getElementById('lbl_musicLabel')) document.getElementById('lbl_musicLabel').innerText = t.musicLabel;
-      if(document.getElementById('lbl_audioPreview')) document.getElementById('lbl_audioPreview').innerText = t.audioPreview;
-
-      if(document.getElementById('lbl_bgLabel')) document.getElementById('lbl_bgLabel').innerText = t.bgLabel;
-      if(document.getElementById('lbl_qrLabel')) document.getElementById('lbl_qrLabel').innerText = t.qrLabel;
-      if(document.getElementById('bgImgLabel') && !currentBgUrl) document.getElementById('bgImgLabel').innerText = t.bgImgLabelText;
-      if(document.getElementById('qrImgLabel') && !currentQrUrl) document.getElementById('qrImgLabel').innerText = t.qrImgLabelText;
-      if(document.getElementById('btn_backStep3')) document.getElementById('btn_backStep3').innerText = t.btnBack;
-      if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = t.btnGen;
-      if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = t.step4Title;
-      if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = t.qrHint;
-      if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = t.saveQr;
-      if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = t.share;
-      if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = t.profileReturn;
-      if(document.getElementById('lbl_modalTitle')) document.getElementById('lbl_modalTitle').innerText = t.modalTitle;
-      if(document.getElementById('lbl_modalSub')) document.getElementById('lbl_modalSub').innerText = t.modalSub;
-      if(document.getElementById('btn_copyLink')) document.getElementById('btn_copyLink').innerText = t.copyLink;
-      if(document.getElementById('btn_dlQrModal')) document.getElementById('btn_dlQrModal').innerText = t.dlQrModal;
-      if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = t.closeModal;
-
-      populateReasons();
-      populateMusicDropdown();
-    }
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      setTimeout(() => {
-        const splash = document.getElementById('introSplash');
-        if(splash) splash.classList.add('fade-out');
-        populateReasons();
-        populateMusicDropdown();
-      }, 500);
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const cardId = urlParams.get('id');
-
-      if (cardId) {
-        showLoader(true);
-        // Share လင့်ခ်ဖြင့် ဝင်လာသည့်အခါ Preview Player လုံးဝ မပွင့်စေရန် ရပ်တန့်ခြင်း
-        const previewPlayer = document.getElementById('audioPreviewPlayer');
-        if (previewPlayer) {
-          previewPlayer.pause();
-          previewPlayer.currentTime = 0;
-        }
-
-        try {
-          const sb = getSupabase();
-          if (sb) {
-            const { data, error } = await sb
-              .from('cards')
-              .select('*')
-              .eq('id', cardId)
-              .single();
-
-            if (data && !error) {
-              document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
-              document.getElementById('outReason').innerText = data.reason || '';
-              document.getElementById('outNote').innerText = data.note || '';
-
-              if (data.bg_image) {
-                currentBgUrl = data.bg_image;
-                const bgEl = document.getElementById('cardBgImg');
-                bgEl.src = data.bg_image;
-                bgEl.style.display = 'block';
-              }
-              if (data.qr_image) {
-                currentQrUrl = data.qr_image;
-                const qrEl = document.getElementById('cardQrImg');
-                const qrWr = document.getElementById('qrWrapper');
-                qrEl.src = data.qr_image;
-                qrWr.style.display = 'block';
-              }
-              if (data.music_url) {
-                currentMusicUrl = data.music_url;
-                const cardPlayer = document.getElementById('cardAudioPlayer');
-                const cardAudioGroup = document.getElementById('cardAudioGroup');
-
-                if (cardPlayer && cardAudioGroup) {
-                  cardPlayer.src = data.music_url;
-                  cardPlayer.load();
-                  cardPlayer.play().catch(e => console.log("Autoplay prevented:", e));
-                  cardAudioGroup.style.display = 'flex';
-                }
-              }
-              showLoader(false);
-              goToStep(4);
-              return;
-            }
-          }
-        } catch (err) {
-          console.error('Supabase load error:', err);
-        }
-        showLoader(false);
-      }
-    });
-
-    function showLoader(show) {
-      const loader = document.getElementById('stepLoader');
-      if(loader) {
-        if(show) loader.classList.add('show');
-        else loader.classList.remove('show');
-      }
-    }
-
-    function goToStep(stepNum) {
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-      const target = document.getElementById('step' + stepNum);
-      if(target) target.classList.add('active');
-
-      if (stepNum === 4) {
-        startEmojiOverlay();
-        // Step 4 သို့ ရောက်သည်နှင့် Preview Player ကို အသံရပ်တန့်စေခြင်း
-        const previewPlayer = document.getElementById('audioPreviewPlayer');
-        if (previewPlayer) {
-          previewPlayer.pause();
-          previewPlayer.currentTime = 0;
-        }
-        const eqContainer = document.querySelector('.preview-eq-bars');
-        if (eqContainer) {
-          eqContainer.classList.remove('playing');
-        }
-      } else {
-        stopEmojiOverlay();
-      }
-    }
-
-    function startEmojiOverlay() {
-      const container = document.getElementById('emojiOverlay');
-      if (!container) return;
-      container.innerHTML = '';
-      const emojis = ['🧧', '✨', '💸', '💖', '🎉', '🌟', '💰', '🔥', '🌸'];
-
-      if (emojiInterval) clearInterval(emojiInterval);
-
-      emojiInterval = setInterval(() => {
-        if (document.getElementById('step4').classList.contains('active')) {
-          const span = document.createElement('span');
-          span.className = 'floating-emoji';
-          span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-          span.style.left = (Math.random() * 85 + 5) + '%';
-          span.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
-          span.style.fontSize = (15 + Math.random() * 12) + 'px';
-          container.appendChild(span);
-          setTimeout(() => {
-            span.remove();
-          }, 3500);
-        }
-      }, 350);
-    }
-
-    function stopEmojiOverlay() {
-      if (emojiInterval) {
-        clearInterval(emojiInterval);
-        emojiInterval = null;
-      }
-    }
-
-    function switchAuthMode(mode) {
-      const loginSec = document.getElementById('loginFormSection');
-      const signupSec = document.getElementById('signupFormSection');
-      if(mode === 'login') {
-        if(loginSec) loginSec.style.display = 'block';
-        if(signupSec) signupSec.style.display = 'none';
-      } else {
-        if(loginSec) loginSec.style.display = 'none';
-        if(signupSec) signupSec.style.display = 'block';
-      }
-    }
-
-    function selectAuthModeOption(val, text) {
-      document.getElementById('authModeTriggerText').innerText = text;
-      document.getElementById('authModeSelect').value = val;
-      document.getElementById('authModeCustomSelect').classList.remove('open');
-      switchAuthMode(val);
-    }
-
-    function populateReasons() {
-      const t = translations[currentLang] || translations['my'];
-      const reasons = t.reasons;
-      const container = document.getElementById('reasonCustomOptions');
-      if(!container) return;
-
-      const currentVal = document.getElementById('reasonDropdown').value;
-      container.innerHTML = '';
-
-      let found = false;
-      reasons.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'custom-option';
-        div.innerText = r.text;
-        div.onclick = () => selectReasonOption(r.val, r.text);
-        container.appendChild(div);
-        if(r.val === currentVal) {
-          document.getElementById('reasonTriggerText').innerText = r.text;
-          found = true;
-        }
-      });
-
-      if(!found && reasons.length > 0) {
-        document.getElementById('reasonTriggerText').innerText = reasons[0].text;
-        document.getElementById('reasonDropdown').value = reasons[0].val;
-      }
-      toggleCustomReason();
-    }
-
-    function selectReasonOption(val, text) {
-      document.getElementById('reasonTriggerText').innerText = text;
-      document.getElementById('reasonDropdown').value = val;
-      document.getElementById('reasonCustomSelect').classList.remove('open');
-      toggleCustomReason();
-    }
-
-    function populateMusicDropdown() {
-      const container = document.getElementById('musicCustomOptions');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const currentVal = document.getElementById('musicDropdown').value;
-      let found = false;
-
-      localMusicList.forEach(song => {
-        const div = document.createElement('div');
-        div.className = 'custom-option';
-        div.innerText = song.name;
-        div.onclick = () => selectMusicOption(song.url, song.name);
-        container.appendChild(div);
-
-        if (song.url === currentVal) {
-          document.getElementById('musicTriggerText').innerText = song.name;
-          found = true;
-        }
-      });
-
-      if (!found && localMusicList.length > 0) {
-        document.getElementById('musicTriggerText').innerText = localMusicList[0].name;
-        document.getElementById('musicDropdown').value = localMusicList[0].url;
-        currentMusicUrl = localMusicList[0].url;
-        currentMusicName = localMusicList[0].name;
-        
-        const previewGroup = document.getElementById('audioPreviewGroup');
-        const player = document.getElementById('audioPreviewPlayer');
-        if (previewGroup && player) {
-          previewGroup.style.display = 'block';
-          player.src = localMusicList[0].url;
-          player.load();
-          player.loop = true;
-          // Auto-play on load is removed here to prevent multiple audio overlaps
-        }
-      }
-    }
-
-    function selectMusicOption(url, name) {
-      document.getElementById('musicTriggerText').innerText = name;
-      document.getElementById('musicDropdown').value = url;
-      document.getElementById('musicCustomSelect').classList.remove('open');
-      
-      currentMusicUrl = url;
-      currentMusicName = name;
-      const previewGroup = document.getElementById('audioPreviewGroup');
-      const player = document.getElementById('audioPreviewPlayer');
-      if (previewGroup && player) {
-        previewGroup.style.display = 'block';
-        player.src = url;
-        player.load();
-        player.loop = true;
-        
-        player.play().then(() => {
-          const eqContainer = document.querySelector('.preview-eq-bars');
-          if(eqContainer) eqContainer.classList.add('playing');
-        }).catch(e => console.log("Auto-play error:", e));
-      }
-    }
-
-    function toggleCustomDropdown(wrapperId) {
-      document.querySelectorAll('.custom-select-wrapper').forEach(el => {
-        if (el.id !== wrapperId) el.classList.remove('open');
-      });
-      document.getElementById(wrapperId).classList.toggle('open');
-    }
-
-    window.addEventListener('click', function(e) {
-      if (!e.target.closest('.custom-select-wrapper')) {
-        document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
-      }
-    });
-
-    function toggleCustomReason() {
-      const val = document.getElementById('reasonDropdown').value;
-      const customGroup = document.getElementById('customReasonGroup');
-      if(customGroup) {
-        if(val === 'custom') {
-          customGroup.style.display = 'block';
-        } else {
-          customGroup.style.display = 'none';
-        }
-      }
-    }
-
-    function changeNickname() {
-      const currentName = document.getElementById('displayProfileName').innerText;
-      const promptText = currentLang === 'en' ? "Enter new Nickname:" : "Nick Name အသစ် ထည့်ပါ:";
-      const newName = prompt(promptText, currentName);
-      if (newName && newName.trim() !== "") {
-        const trimmed = newName.trim();
-        document.getElementById('displayProfileName').innerText = trimmed;
-        if(currentUser) currentUser.name = trimmed;
-      }
-    }
-
-    function handleLogin() {
-      const name = document.getElementById('loginName').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-      if(!name || !pass) {
-        alert(currentLang === 'en' ? 'Please enter name and password.' : 'ကျေးဇူးပြု၍ နာမည်နှင့် Password ဖြည့်ပါ။');
-        return;
-      }
-      showLoader(true);
-      setTimeout(() => {
-        showLoader(false);
-        currentUser = { name: name, num: 'VIP-001' };
-        document.getElementById('displayProfileName').innerText = name;
-        document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ဂဏန်း: ') + 'VIP-001';
-        goToStep(2);
-      }, 500);
-    }
-
-    async function handleSignup() {
-      const name = document.getElementById('signupName').value.trim();
-      const num = document.getElementById('signupNum').value.trim();
-      const p1 = document.getElementById('signupPass1').value.trim();
-      const p2 = document.getElementById('signupPass2').value.trim();
-
-      if(!name || !num || !p1 || !p2) {
-        alert(currentLang === 'en' ? 'Please fill all fields.' : 'အချက်အလက်အားလုံး ဖြည့်ပါ။');
-        return;
-      }
-
-      if(p1.length < 4) {
-        alert(currentLang === 'en' ? 'Password must be at least 4 characters.' : 'Password သည် အနည်းဆုံး ၄ လုံး ရှိရပါမည်။');
-        return;
-      }
-
-      if(p1 !== p2) {
-        alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password နှစ်ခု မတူပါ။');
-        return;
-      }
-
-      showLoader(true);
-
-      try {
-        const sb = getSupabase();
-        if (sb) {
-          const { data: existingUsers, error: checkError } = await sb
-            .from('users')
-            .select('*')
-            .or(`name.eq.${name},num.eq.${num}`);
-
-          if (existingUsers && existingUsers.length > 0) {
-            showLoader(false);
-            alert(currentLang === 'en' ? 'Name or ID Code already exists! Please choose another.' : 'ဤနာမည် (သို့) ID Code ဖြင့် အကောင့်ဖွင့်ပြီးသား ရှိနေပါပြီ။ ကျေးဇူးပြု၍ အခြားနာမည် သို့မဟုတ် နံပါတ်ကို အသုံးပြုပါ။');
-            return;
-          }
-
-          await sb.from('users').insert([{ name: name, num: num, password: p1 }]);
-        }
-      } catch (err) {
-        console.log('User check/register notice:', err);
-      }
-
-      showLoader(false);
-      currentUser = { name: name, num: num };
-      document.getElementById('displayProfileName').innerText = name;
-      document.getElementById('displayProfileNum').innerText = (currentLang === 'en' ? 'Code: ' : 'ဂဏန်း: ') + num;
-      goToStep(2);
-    }
-
-    function updateProfileAvatar(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentAvatarUrl = e.target.result;
-          const box = document.getElementById('profileAvatarBox');
-          box.innerHTML = `<img src="${currentAvatarUrl}" alt="Avatar">`;
-        }
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-
-    function handleBgImage(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentBgUrl = e.target.result;
-          document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? "Background selected" : "📸 နောက်ခံပုံ ရွေးပြီးပါပြီ";
-        }
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-
-    function handleQrImage(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentQrUrl = e.target.result;
-          document.getElementById('qrImgLabel').innerText = currentLang === 'en' ? "QR selected" : "💳 QR Code ပုံ ရွေးပြီးပါပြီ";
-        }
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-
-    async function generateAndSaveCard() {
-      // "ကတ်ဖန်တီးမည်" ခလုတ်နှိပ်သည်နှင့် Preview အသံကို ချက်ချင်းရပ်တန့်ခြင်း
-      const previewPlayer = document.getElementById('audioPreviewPlayer');
-      if (previewPlayer) {
-        previewPlayer.pause();
-        previewPlayer.currentTime = 0;
-      }
-      const eqContainer = document.querySelector('.preview-eq-bars');
-      if (eqContainer) {
-        eqContainer.classList.remove('playing');
-      }
-
-      const noteText = document.getElementById('customNote').value.trim();
-
-      if (!noteText) {
-        alert(currentLang === 'en' ? 'Please write your note/message for pocket money!' : 'ကျေးဇူးပြု၍ မုန့်ဖိုးတောင်းမည့် စာစီစာကုံး/စာသားကို ရေးသားပေးပါ။');
-        return;
-      }
-      if (!currentBgUrl) {
-        alert(currentLang === 'en' ? 'Please select a background image!' : 'ကျေးဇူးပြု၍ နောက်ခံပုံ (Background Image) ထည့်သွင်းပေးပါ။');
-        return;
-      }
-      if (!currentQrUrl) {
-        alert(currentLang === 'en' ? 'Please select a QR Code / Payment image!' : 'ကျေးဇူးပြု၍ QR Code (သို့) ငွေပေးချေမှုပုံကို ထည့်သွင်းပေးပါ။');
-        return;
-      }
-
-      const reasonVal = document.getElementById('reasonDropdown').value;
-      let reasonText = "";
-      
-      if(reasonVal === 'custom') {
-        reasonText = document.getElementById('customReason').value.trim() || (currentLang === 'en' ? 'Pocket Money Request' : 'မုန့်ဖိုးတောင်းခြင်း');
-      } else {
-        const triggerEl = document.getElementById('reasonTriggerText');
-        reasonText = triggerEl ? triggerEl.innerText : "မုန့်ဖိုးတောင်းခြင်း";
-      }
-
-      const senderName = currentUser ? currentUser.name : "Guest";
-
-      document.getElementById('outSender').innerText = "From: " + senderName;
-      document.getElementById('outReason').innerText = reasonText;
-      document.getElementById('outNote').innerText = noteText;
-
-      const bgImgEl = document.getElementById('cardBgImg');
-      if(currentBgUrl) {
-        bgImgEl.src = currentBgUrl;
-        bgImgEl.style.display = 'block';
-      } else {
-        bgImgEl.style.display = 'none';
-      }
-
-      const qrImgEl = document.getElementById('cardQrImg');
-      const qrWrapper = document.getElementById('qrWrapper');
-      if(currentQrUrl) {
-        qrImgEl.src = currentQrUrl;
-        qrWrapper.style.display = 'block';
-      } else {
-        qrWrapper.style.display = 'none';
-      }
-
-      if(currentMusicUrl) {
-        const cardPlayer = document.getElementById('cardAudioPlayer');
-        const cardAudioGroup = document.getElementById('cardAudioGroup');
-
-        if(cardPlayer && cardAudioGroup) {
-          cardPlayer.src = currentMusicUrl;
-          cardPlayer.load();
-          cardPlayer.play().catch(e => console.log("Autoplay error:", e));
-          cardAudioGroup.style.display = 'flex';
-        }
-      }
-
-      showLoader(true);
-
-      try {
-        const sb = getSupabase();
-        if (sb) {
-          const payload = {
-            sender: senderName,
-            reason: reasonText,
-            note: noteText,
-            bg_image: currentBgUrl,
-            qr_image: currentQrUrl,
-            music_url: currentMusicUrl
-          };
-
-          const { data, error } = await sb
-            .from('cards')
-            .insert([payload])
-            .select();
-
-          if (error) throw error;
-
-          if (data && data.length > 0) {
-            const generatedId = data[0].id;
-            currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
-          }
-        }
-      } catch (err) {
-        console.error('Supabase Save Error:', err);
-      }
-
-      showLoader(false);
-      goToStep(4);
-    }
-
-    function openShareModal() {
-      document.getElementById('shareModal').style.display = 'flex';
-    }
-
-    function closeShareModal() {
-      document.getElementById('shareModal').style.display = 'none';
-    }
-
-    function copyShareLink() {
-      const linkToCopy = currentShareableLink || window.location.href;
-      navigator.clipboard.writeText(linkToCopy).then(() => {
-        alert(currentLang === 'en' ? 'Link copied!' : 'လင့်ခ်ကို ကူးယူပြီးပါပြီ');
-        closeShareModal();
-      });
-    }
-
-    function downloadCardImage() {
-      const card = document.getElementById('exportCard');
-      const emojiOv = document.getElementById('emojiOverlay');
-      if(emojiOv) emojiOv.style.display = 'none';
-
-      showLoader(true);
-      html2canvas(card, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: null
-      }).then(canvas => {
-        showLoader(false);
-        if(emojiOv) emojiOv.style.display = 'block';
-        const a = document.createElement('a');
-        a.href = canvas.toDataURL('image/png');
-        a.download = 'PocketMoney_Card.png';
-        a.click();
-        if(document.getElementById('shareModal').style.display === 'flex') {
-          closeShareModal();
-        }
-      }).catch(err => {
-        showLoader(false);
-        if(emojiOv) emojiOv.style.display = 'block';
-        alert(currentLang === 'en' ? 'Failed to download card.' : 'ပုံထုတ်ယူ၍ မရပါ');
-      });
-    }
-
-    function viewHistory() {
-      alert(currentLang === 'en' ? 'No history found.' : 'မှတ်တမ်းများ မရှိသေးပါ။');
-    }
-  </script>
-
-  <!-- Eruda Console for Mobile Debugging -->
+  <script src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
 </body>
