@@ -20,6 +20,7 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 let cardTimerInterval = null;
+let isSharedLinkVisitor = false; // 🌟 Card Link ကနေ ဝင်လာသူ ဟုတ်မဟုတ် မှတ်သားရန်
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
@@ -88,7 +89,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (အပြင်ဘောင် ငြိမ်စေပြီး အထဲက ပုံအရွယ်အစား မပြောင်းဘဲ ဘောင်ပတ်ပတ်လည် ညင်သာစွာ ရွေ့လျားစေခြင်း)
+// 🌟 CSS Styles Injection (အပြင်ဘောင် ငြိမ်စေပြီး အထဲက ပုံကို Swing ဖြင့် ညင်သာစွာ လွှဲယမ်းလှုပ်ရှားစေခြင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   #outReason {
@@ -106,18 +107,18 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 4:3 ပုံ (Background Image) အရွယ်အစား (scale) ကို ပုံသေထားပြီး အလယ်ကိုအခြေခံကာ ဘောင်ပတ်ပတ်လည် ညင်သာစွာ ရွေ့လျားခြင်း */
-  @keyframes smoothBorderPan {
-    0% { transform: scale(1.06) translate(0px, 0px); }
-    25% { transform: scale(1.06) translate(-5px, 4px); }
-    50% { transform: scale(1.06) translate(4px, 5px); }
-    75% { transform: scale(1.06) translate(-4px, -4px); }
-    100% { transform: scale(1.06) translate(0px, 0px); }
+  /* 🌟 4:3 ပုံ (Background Image) ကို scale ပုံသေထားကာ အလယ်ဗဟိုကိုအခြေခံ၍ Swing (လွှဲယမ်း) ပုံစံ ညင်သာစွာ ရွေ့လျားခြင်း */
+  @keyframes smoothSwingAnimation {
+    0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
+    25% { transform: scale(1.06) rotate(-1.2deg) translate(-4px, 3px); }
+    50% { transform: scale(1.06) rotate(0.8deg) translate(3px, 4px); }
+    75% { transform: scale(1.06) rotate(-0.8deg) translate(-3px, -3px); }
+    100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
   }
 
   #cardBgImg {
     transform-origin: center center !important;
-    animation: smoothBorderPan 8s infinite ease-in-out !important;
+    animation: smoothSwingAnimation 8s infinite ease-in-out !important;
   }
 
   /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
@@ -394,6 +395,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const cardId = urlParams.get('id');
 
   if (cardId) {
+    isSharedLinkVisitor = true; // 🌟 Card Link ကနေ ဝင်လာသူဖြစ်ကြောင်း မှတ်သားခြင်း
     const loader = document.getElementById('stepLoader');
     if (loader) loader.classList.add('show');
 
@@ -693,6 +695,33 @@ function goToStep(stepNumber) {
     loader.classList.remove('show');
     showStep(stepNumber);
   }, 800);
+}
+
+// 🌟 Card Link ဖြင့် ဝင်လာသူများ Profile သို့ပြန်ရန်ခလုတ်နှိပ်လျှင် Login/Auth နေရာသို့ သွားစေခြင်း
+function returnToProfileOrLogin() {
+  if (isSharedLinkVisitor) {
+    // URL ထဲမှ ?id=... ကို ဖယ်ရှားပြီး မူလ စာမျက်နှာ (သို့မဟုတ် Login/Step 1) သို့ ပို့ဆောင်ခြင်း
+    if (window.history && window.history.replaceState) {
+      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+    }
+    isSharedLinkVisitor = false;
+    
+    // Audio Player များကို ရပ်တန့်ရန်
+    const cardPlayer = document.getElementById('cardAudioPlayer');
+    if (cardPlayer) {
+      cardPlayer.pause();
+      cardPlayer.currentTime = 0;
+    }
+    const timerEl = document.getElementById('topCardTimer');
+    if (timerEl) timerEl.style.display = 'none';
+
+    // Step 1 (သို့မဟုတ် Login / Auth မျက်နှာပြင်) သို့ ပြန်သွားရန်
+    goToStep(1);
+  } else {
+    // ပုံမှန် ဖန်တီးသူအတွက်မူ Profile သို့ (Step 2) သို့ ပြန်သွားမည်
+    goToStep(2);
+  }
 }
 
 function showStep(stepNumber) {
