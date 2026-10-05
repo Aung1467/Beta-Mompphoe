@@ -19,7 +19,7 @@ let selectedBgFile = null;
 let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
-let emojiIntervalId = null;
+let heartIntervalId = null;
 let cardTimerInterval = null;
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
@@ -68,7 +68,6 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
-    qrHint: "Scan or Pay to Send",
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -90,46 +89,60 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (UI ကြည့်ရရှင်းစေရန် နှင့် Black Shadow ဖြင့် သပ်ရပ်စေရန်)
+// 🌟 CSS Styles Injection (Pendulum Animation နှင့် Neon Heart Bubble Animation များ ထည့်သွင်းခြင်း)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
-  #exportCard {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    padding: 16px !important;
-  }
-  .card-header-content {
-    margin-top: 24px !important;
-    margin-bottom: auto !important;
-  }
   #outReason {
-    margin-bottom: 10px !important;
+    margin-bottom: 18px !important;
     display: block !important;
-    font-size: 17px !important;
-    font-weight: bold !important;
+    font-weight: bold;
     color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
   #outNote {
-    margin-top: 6px !important;
+    margin-top: 10px !important;
     display: block !important;
-    font-size: 12px !important;
-    line-height: 1.4 !important;
-    font-weight: bold !important;
+    font-weight: bold;
     color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
-  .card-qr-overlay {
-    margin-top: auto !important;
-    padding-bottom: 4px !important;
+
+  /* 🌟 4:3 ပုံ/ကတ်ပြားအတွက် Pendulum (လွှဲသီးပုံစံ) Animation */
+  @keyframes pendulumSwing {
+    0% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+    100% { transform: rotate(-2deg); }
   }
-  #lbl_qrHint {
-    font-size: 10px !important;
-    color: #00d2d3 !important;
-    margin-bottom: 4px !important;
-    font-weight: bold !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+
+  #exportCard {
+    transform-origin: top center;
+    animation: pendulumSwing 4s infinite ease-in-out !important;
+  }
+
+  /* 🌟 Neon Heart Bubble Animation styles */
+  @keyframes neonFloatUp {
+    0% {
+      transform: translateY(0px) scale(0.6);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-380px) scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  .neon-heart-bubble {
+    position: absolute;
+    bottom: 20px;
+    font-size: 26px;
+    color: #ff2a6d;
+    text-shadow: 0 0 8px #ff2a6d, 0 0 16px #ff2a6d, 0 0 24px #05d9e8;
+    animation: neonFloatUp 3.2s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 50;
   }
 
   /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
@@ -270,7 +283,6 @@ function updateTexts() {
   if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
 
   if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
-  if(document.getElementById('lbl_qrHint')) document.getElementById('lbl_qrHint').innerText = d.qrHint;
   if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
   if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
   if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
@@ -437,8 +449,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           if (loader) loader.classList.remove('show');
           showStep(4);
           
-          // 🌟 Supabase မှ ဖတ်လာသော created_at အချိန်ကို အခြေခံ၍ Timer စတင်မည် (ဘယ်သူဝင်ဝင် အချိန်တူကျန်နေမည်)
-          startCardTimer(cardId, data.created_at);
+          startCardTimer(cardId);
           return;
         }
       }
@@ -449,18 +460,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Render Card Data Function
+// Render Card Data Function (Scan or Pay to Send စာသားမပါဝင်တော့ပါ)
 function renderCardData(data) {
   if (!data) return;
 
   document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
   document.getElementById('outReason').innerText = data.reason || '';
   document.getElementById('outNote').innerText = data.note || '';
-
-  const qrHintEl = document.getElementById('lbl_qrHint');
-  if (qrHintEl) {
-    qrHintEl.innerText = i18n.my.qrHint;
-  }
 
   const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
   if (bgImgSrc) {
@@ -503,25 +509,18 @@ function renderCardData(data) {
   }
 }
 
-// 🌟 ၁၂၀ မိနစ် Real-time Countdown Timer (ဖန်တီးခဲ့သည့် created_at အချိန်ကို အခြေခံသည်)
-function startCardTimer(cardId, createdAt) {
+// 🌟 ၁၂၀ မိနစ် Countdown Timer နှင့် ဒေတာဖျက်ဆီးသည့် လုပ်ဆောင်ချက်
+function startCardTimer(cardId) {
   if (cardTimerInterval) clearInterval(cardTimerInterval);
 
-  let expireTime;
-  if (createdAt) {
-    // Supabase တွင် သိမ်းထားသည့် ဖန်တီးချိန်ကို အခြေခံ၍ ၁၂၀ မိနစ် (၇၂၀၀ စက္ကန့်) ဖြည့်တင်းတွက်ချက်သည်
-    expireTime = new Date(createdAt).getTime() + (120 * 60 * 1000);
-  } else {
-    // ဖန်တီးသူ၏ Localတွင်သာ ရှိသေးပါက localStorage ကိုသုံးမည်
-    const storageKey = `card_expire_${cardId || 'local_card'}`;
-    expireTime = localStorage.getItem(storageKey);
+  const storageKey = `card_expire_${cardId || 'local_card'}`;
+  let expireTime = localStorage.getItem(storageKey);
 
-    if (!expireTime) {
-      expireTime = Date.now() + (120 * 60 * 1000);
-      localStorage.setItem(storageKey, expireTime);
-    } else {
-      expireTime = parseInt(expireTime, 10);
-    }
+  if (!expireTime) {
+    expireTime = Date.now() + 120 * 60 * 1000;
+    localStorage.setItem(storageKey, expireTime);
+  } else {
+    expireTime = parseInt(expireTime, 10);
   }
 
   let timerEl = document.getElementById('topCardTimer');
@@ -541,7 +540,6 @@ function startCardTimer(cardId, createdAt) {
       clearInterval(cardTimerInterval);
       if (timerEl) timerEl.innerText = "⏳ အချိန်ကုန်သွားပါပြီ";
       
-      const storageKey = `card_expire_${cardId || 'local_card'}`;
       await deleteCardDataAndClean(cardId, storageKey);
       return;
     }
@@ -722,34 +720,34 @@ function goToStep(stepNumber) {
   }, 800);
 }
 
-// Emoji Rain Animation for Step 4
-function startEmojiRain() {
-  if (emojiIntervalId) clearInterval(emojiIntervalId);
+// 🌟 Neon Heart Bubble Animation for Step 4
+function startNeonHeartAnimation() {
+  if (heartIntervalId) clearInterval(heartIntervalId);
   const overlay = document.getElementById('emojiOverlay');
   if (!overlay) return;
   
-  const emojis = ['✨', '💸', '🧧', '💖', '🎉', '🌟', '💰'];
+  const hearts = ['💖', '💗', '💓', '💘', '💕', '💞', '✨'];
   
-  emojiIntervalId = setInterval(() => {
+  heartIntervalId = setInterval(() => {
     const step4El = document.getElementById('step4');
     if (!step4El || !step4El.classList.contains('active')) {
-      clearInterval(emojiIntervalId);
+      clearInterval(heartIntervalId);
       return;
     }
     
     const span = document.createElement('span');
-    span.className = 'floating-emoji';
-    span.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+    span.className = 'neon-heart-bubble';
+    span.innerText = hearts[Math.floor(Math.random() * hearts.length)];
     
-    span.style.left = Math.random() * 88 + '%';
-    span.style.fontSize = (Math.random() * 12 + 16) + 'px';
+    span.style.left = Math.random() * 85 + '%';
+    span.style.fontSize = (Math.random() * 10 + 20) + 'px';
     
-    const duration = Math.random() * 1.5 + 2.5;
+    const duration = Math.random() * 1.2 + 2.4;
     span.style.animationDuration = duration + 's';
     
     overlay.appendChild(span);
     setTimeout(() => { span.remove(); }, duration * 1000);
-  }, 350);
+  }, 300);
 }
 
 function showStep(stepNumber) {
@@ -774,9 +772,9 @@ function showStep(stepNumber) {
     if (eqContainer) {
       eqContainer.classList.remove('playing');
     }
-    startEmojiRain();
+    startNeonHeartAnimation();
   } else {
-    if (emojiIntervalId) clearInterval(emojiIntervalId);
+    if (heartIntervalId) clearInterval(heartIntervalId);
   }
 }
 
@@ -895,7 +893,6 @@ async function generateAndSaveCard() {
 
     if (data && data.length > 0) {
       const generatedId = data[0].id;
-      const createdTimestamp = data[0].created_at || new Date().toISOString();
       currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
       
       renderCardData({
@@ -910,8 +907,7 @@ async function generateAndSaveCard() {
       if (loader) loader.classList.remove('show');
       showStep(4);
 
-      // 🌟 ဖန်တီးပြီးသည်နှင့် created_at အချိန်ကို အခြေခံ၍ Timer စတင်မည်
-      startCardTimer(generatedId, createdTimestamp);
+      startCardTimer(generatedId);
 
       const cardPlayer = document.getElementById('cardAudioPlayer');
       const cardAudioGroup = document.getElementById('cardAudioGroup');
