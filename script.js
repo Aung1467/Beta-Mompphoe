@@ -20,6 +20,7 @@ let selectedQrFile = null;
 let currentShareableLink = '';
 let currentLang = 'my';
 let emojiIntervalId = null;
+let cardTimerInterval = null; // 🌟 Timer Interval အတွက် ထည့်သွင်းခြင်း
 
 // Music Folder ထဲရှိ သီချင်းစာရင်း
 const localMusicList = [
@@ -89,7 +90,7 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (QR Border အရောင်တောက်မှုကို လျှော့ချပြီး Border ပါ ပုံပါ အတူတူ လှုပ်ရှားနေမည့် Animation ထည့်သွင်းခြင်း)
+// 🌟 CSS Styles Injection (Timer Badge နှင့် အခြားဒီဇိုင်းများ)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes textGlowAnimation {
@@ -109,6 +110,23 @@ cardStyleInjected.innerHTML = `
     display: block !important;
     animation: textGlowAnimation 3s infinite 1.5s;
     font-weight: bold;
+  }
+
+  /* 🌟 Card ထိပ်အလယ်ရှိ Timer Badge ဒီဇိုင်း */
+  .card-timer-badge {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    background: rgba(0, 242, 254, 0.2);
+    border: 1px solid var(--accent);
+    color: #00f2fe;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(0, 242, 254, 0.3);
+    z-index: 5;
   }
 
   .player-controls-row > div:nth-child(2) img,
@@ -141,7 +159,6 @@ cardStyleInjected.innerHTML = `
     height: auto !important;
   }
 
-  /* 🌟 1:1 QR Border အရောင်တောက်မှုကို လျှော့ချခြင်း နှင့် Border ပါ ပုံပါ အတူတူ လှုပ်နေသော Floating Animation */
   @keyframes qrFloatAndSoftGlow {
     0% {
       transform: translateY(0px) scale(1);
@@ -397,6 +414,9 @@ window.addEventListener('DOMContentLoaded', async () => {
           });
           if (loader) loader.classList.remove('show');
           showStep(4);
+          
+          // 🌟 ကတ်ဖွင့်ချိန်တွင် 120 မိနစ် Timer စတင်ရန်
+          startCardTimer(cardId);
           return;
         }
       }
@@ -449,6 +469,102 @@ function renderCardData(data) {
       cardAudioGroup.style.display = 'flex';
     }
   }
+}
+
+// 🌟 120 မိနစ် Countdown Timer နှင့် ဒေတာဖျက်ဆီးသည့် လုပ်ဆောင်ချက်
+function startCardTimer(cardId) {
+  if (cardTimerInterval) clearInterval(cardTimerInterval);
+
+  const storageKey = `card_expire_${cardId || 'local_card'}`;
+  let expireTime = localStorage.getItem(storageKey);
+
+  if (!expireTime) {
+    expireTime = Date.now() + 120 * 60 * 1000; // ၁၂၀ မိနစ် (၇၂၀၀ စက္ကန့်)
+    localStorage.setItem(storageKey, expireTime);
+  } else {
+    expireTime = parseInt(expireTime, 10);
+  }
+
+  // Timer Badge UI ထည့်သွင်းခြင်း (မရှိသေးပါက ဖန်တီးမည်)
+  let timerEl = document.getElementById('cardTimer');
+  if (!timerEl) {
+    const exportCard = document.getElementById('exportCard');
+    if (exportCard) {
+      timerEl = document.createElement('div');
+      timerEl.id = 'cardTimer';
+      timerEl.className = 'card-timer-badge';
+      exportCard.insertBefore(timerEl, exportCard.firstChild);
+    }
+  }
+
+  cardTimerInterval = setInterval(async () => {
+    const now = Date.now();
+    const distance = expireTime - now;
+
+    if (distance <= 0) {
+      clearInterval(cardTimerInterval);
+      if (timerEl) timerEl.innerText = "⏳ အချိန်ကုန်သွားပါပြီ";
+      
+      // ကတ်ဒေတာများနှင့် Supabase မှပါ ဖျက်မည်
+      await deleteCardDataAndClean(cardId, storageKey);
+      return;
+    }
+
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    if (timerEl) {
+      timerEl.innerText = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+  }, 1000);
+}
+
+// 🌟 ကတ်အချက်အလက်များနှင့် လင့်ခ်များကို ဖျက်ဆီးခြင်း
+async function deleteCardDataAndClean(cardId, storageKey) {
+  // Local Data ဖျက်မည်
+  savedBgImage = '';
+  savedQrImage = '';
+  savedMusicUrl = '';
+  currentShareableLink = '';
+  localStorage.removeItem(storageKey);
+
+  // UI ကို ရှင်းလင်းမည်
+  const bgEl = document.getElementById('cardBgImg');
+  if (bgEl) bgEl.style.display = 'none';
+  const qrWr = document.getElementById('qrWrapper');
+  if (qrWr) qrWr.style.display = 'none';
+  document.getElementById('outSender').innerText = '';
+  document.getElementById('outReason').innerText = '';
+  document.getElementById('outNote').innerText = '';
+  
+  const cardAudioGroup = document.getElementById('cardAudioGroup');
+  if (cardAudioGroup) cardAudioGroup.style.display = 'none';
+  const cardPlayer = document.getElementById('cardAudioPlayer');
+  if (cardPlayer) {
+    cardPlayer.pause();
+    cardPlayer.src = '';
+  }
+
+  // Supabase Database မှ Card အချက်အလက်များကို ဖျက်ဆီးမည်
+  if (cardId) {
+    try {
+      const sb = getSupabase();
+      if (sb) {
+        await sb.from('cards').delete().eq('id', cardId);
+      }
+    } catch (err) {
+      console.error('Supabase Delete Error:', err);
+    }
+
+    // URL parameter (?id=...) ကို ရှင်းလင်းမည်
+    if (window.history && window.history.replaceState) {
+      const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+      window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+    }
+  }
+
+  alert('⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  goToStep(2);
 }
 
 function switchAuthMode(mode) {
@@ -752,6 +868,9 @@ async function generateAndSaveCard() {
 
       if (loader) loader.classList.remove('show');
       showStep(4);
+
+      // 🌟 ကတ်အသစ်ဖန်တီးပြီးသည်နှင့် Timer စတင်ရန်
+      startCardTimer(generatedId);
 
       const cardPlayer = document.getElementById('cardAudioPlayer');
       const cardAudioGroup = document.getElementById('cardAudioGroup');
