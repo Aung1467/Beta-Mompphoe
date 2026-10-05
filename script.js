@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Floating Animation & Reduced Glow Effect Styles
+// 🌟 Metallic CD Disc & Clean Static Background Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -110,7 +110,7 @@ cardStyleInjected.innerHTML = `
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4), inset 0 0 6px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 14px rgba(0, 242, 254, 0.6), inset 0 0 8px rgba(255, 255, 255, 0.4);
   }
 
   .preview-eq-bars::before {
@@ -147,20 +147,24 @@ cardStyleInjected.innerHTML = `
     100% { transform: rotate(360deg); }
   }
 
-  /* Floating Animation Effect for Card Container */
-  @keyframes cardFloating {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-    100% { transform: translateY(0px); }
+  #outReason {
+    margin-bottom: 18px !important;
+    display: block !important;
+    font-weight: bold;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
+  }
+  #outNote {
+    margin-top: 10px !important;
+    display: block !important;
+    font-weight: bold;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
   #step4 {
     position: relative !important;
     overflow: hidden !important;
-    border: 2px solid rgba(0, 242, 254, 0.5) !important;
-    border-radius: 18px !important;
-    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15) !important; /* Reduced Glow Effect */
-    animation: cardFloating 4s ease-in-out infinite !important;
   }
 
   #cardBgImg {
@@ -170,7 +174,7 @@ cardStyleInjected.innerHTML = `
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: fill !important; /* Strength/Stretch to fill completely */
+    object-fit: cover !important;
     z-index: 0 !important;
   }
 
@@ -202,10 +206,10 @@ cardStyleInjected.innerHTML = `
     font-size: 14px;
     font-weight: 700;
     border-radius: 12px;
-    border: 1.5px solid rgba(0, 242, 254, 0.5);
+    border: 1.5px solid rgba(0, 242, 254, 0.6);
     background: rgba(10, 12, 28, 0.95);
     color: #00f2fe;
-    box-shadow: 0 0 8px rgba(0, 242, 254, 0.3);
+    box-shadow: 0 0 10px var(--accent-glow);
     display: none;
     align-items: center;
     gap: 6px;
@@ -218,21 +222,6 @@ cardStyleInjected.innerHTML = `
     padding: 4px 0 !important;
     margin: 4px auto !important;
     height: auto !important;
-  }
-
-  #outReason {
-    margin-bottom: 18px !important;
-    display: block !important;
-    font-weight: bold;
-    color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
-  }
-  #outNote {
-    margin-top: 10px !important;
-    display: block !important;
-    font-weight: bold;
-    color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 `;
 document.head.appendChild(cardStyleInjected);
@@ -509,7 +498,7 @@ function renderCardData(data) {
       bgEl.style.left = '0';
       bgEl.style.width = '100%';
       bgEl.style.height = '100%';
-      bgEl.style.objectFit = 'fill'; // Stretched to fill completely
+      bgEl.style.objectFit = 'cover';
       bgEl.style.zIndex = '0';
     }
   }
