@@ -94,7 +94,7 @@ const i18n = {
   }
 };
 
-// 🌟 Metallic CD Disc & Background Fix Styles
+// 🌟 Metallic CD Disc & Optimized Background / Faster Animation Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
@@ -164,15 +164,16 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
+  /* Swing Animation ကို ပိုမိုမြန်ဆန်စေရန် (8s မှ 4.5s သို့ ပြောင်းထားသည်) */
   @keyframes smoothSwingAnimation {
     0% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
-    25% { transform: scale(1.06) rotate(-1.2deg) translate(-4px, 3px); }
-    50% { transform: scale(1.06) rotate(0.8deg) translate(3px, 4px); }
-    75% { transform: scale(1.06) rotate(-0.8deg) translate(-3px, -3px); }
+    25% { transform: scale(1.06) rotate(-1.5deg) translate(-3px, 2px); }
+    50% { transform: scale(1.06) rotate(1deg) translate(2px, 3px); }
+    75% { transform: scale(1.06) rotate(-1deg) translate(-2px, -2px); }
     100% { transform: scale(1.06) rotate(0deg) translate(0px, 0px); }
   }
 
-  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း */
+  /* Background Image ပေါ်စေရန် Container နှင့် Image ကို သေချာချိန်ညှိခြင်း (3:4 အပါအဝင် အချိုးအစားအမျိုးမျိုးအတွက်) */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
@@ -180,7 +181,7 @@ cardStyleInjected.innerHTML = `
 
   #cardBgImg {
     transform-origin: center center !important;
-    animation: smoothSwingAnimation 8s infinite ease-in-out !important;
+    animation: smoothSwingAnimation 4.5s infinite ease-in-out !important;
     display: block !important;
     position: absolute !important;
     top: 0 !important;
@@ -188,7 +189,7 @@ cardStyleInjected.innerHTML = `
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    z-index: 1 !important;
+    z-index: 0 !important;
   }
 
   /* ကတ်ပေါ်ရှိ အချက်အလက်များ နောက်ခံပုံအပေါ်မှ ပေါ်စေရန် */
@@ -533,7 +534,7 @@ function renderCardData(data) {
       bgEl.style.width = '100%';
       bgEl.style.height = '100%';
       bgEl.style.objectFit = 'cover';
-      bgEl.style.zIndex = '1';
+      bgEl.style.zIndex = '0';
     }
   }
 
