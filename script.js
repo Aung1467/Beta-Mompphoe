@@ -68,6 +68,7 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
+    qrHint: "Scan or Pay to Send",
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -89,22 +90,46 @@ const i18n = {
   }
 };
 
-// 🌟 CSS Styles Injection (Animation ဖျောက်ပြီး Black Shadow ထည့်သွင်းထားခြင်း)
+// 🌟 CSS Styles Injection (UI ကြည့်ရရှင်းစေရန် နှင့် Black Shadow ဖြင့် သပ်ရပ်စေရန်)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
+  #exportCard {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 16px !important;
+  }
+  .card-header-content {
+    margin-top: 24px !important;
+    margin-bottom: auto !important;
+  }
   #outReason {
-    margin-bottom: 18px !important;
+    margin-bottom: 10px !important;
     display: block !important;
-    font-weight: bold;
+    font-size: 17px !important;
+    font-weight: bold !important;
     color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
   }
   #outNote {
-    margin-top: 10px !important;
+    margin-top: 6px !important;
     display: block !important;
-    font-weight: bold;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    font-weight: bold !important;
     color: #ffffff !important;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8) !important;
+  }
+  .card-qr-overlay {
+    margin-top: auto !important;
+    padding-bottom: 4px !important;
+  }
+  #lbl_qrHint {
+    font-size: 10px !important;
+    color: #00d2d3 !important;
+    margin-bottom: 4px !important;
+    font-weight: bold !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9) !important;
   }
 
   /* 🌟 Language Switcher ဘက်တည့်တည့် ထိပ်ဆုံးရှိ 120 မိနစ် Timer Badge ဒီဇိုင်း */
@@ -423,13 +448,18 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Render Card Data Function
+// 🌟 Render Card Data (ပုံများနှင့် undefined စာသားများကို သေချာစွာ ရှင်းလင်းပေးခြင်း)
 function renderCardData(data) {
   if (!data) return;
 
   document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
   document.getElementById('outReason').innerText = data.reason || '';
   document.getElementById('outNote').innerText = data.note || '';
+
+  const qrHintEl = document.getElementById('lbl_qrHint');
+  if (qrHintEl) {
+    qrHintEl.innerText = i18n.my.qrHint;
+  }
 
   const bgImgSrc = data.bgImage || data.bg_image || savedBgImage;
   if (bgImgSrc) {
