@@ -817,16 +817,41 @@ function selectAuthModeOption(val, text) {
   switchAuthMode(val);
 }
 
+// 🌟 Account သစ်ဖွင့်ခြင်း (Signup With Pass & Unique ID Validation)
 function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
   const p1 = document.getElementById('signupPass1').value;
   const p2 = document.getElementById('signupPass2').value;
 
+  // ၁။ ကွက်လပ်များ ပြည့်စုံစွာ ဖြည့်ထားခြင်း ရှိမရှိ စစ်ဆေးခြင်း
   if (!name || !num || !p1 || !p2) {
     alert(currentLang === 'en' ? 'Please fill in all fields.' : 'အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
     return;
   }
+
+  // ၂။ ID တစ်ယောက်ယောက် သုံးပြီးသား ဟုတ်/မဟုတ် LocalStorage တွင် စစ်ဆေးခြင်း
+  if (localStorage.getItem(`user_${num}`)) {
+    alert(
+      currentLang === 'en'
+        ? '⚠️️ This ID is already registered. Please choose another ID.'
+        : '⚠️ ဤ ID အား အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြား ID တစ်ခု ပြောင်းလဲ ရိုက်ထည့်ပါ'
+    );
+    return;
+  }
+
+  // ၃။ Password အနည်းဆုံး ၆ လုံး နှင့် English စာလုံး ပါဝင်မှု ရှိမရှိ စစ်ဆေးခြင်း
+  const hasEnglishLetter = /[a-zA-Z]/.test(p1);
+  if (p1.length < 6 || !hasEnglishLetter) {
+    alert(
+      currentLang === 'en'
+        ? '⚠️ Password must be at least 6 characters and contain English letters (a-z/A-Z).'
+        : '⚠️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး (a-z/A-Z) ပါဝင်ရပါမည်။'
+    );
+    return;
+  }
+
+  // ၄။ Password ၂ ခု ကိုက်ညီမှု စစ်ဆေးခြင်း
   if (p1 !== p2) {
     alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
     return;
@@ -841,6 +866,7 @@ function handleSignup() {
   goToStep(2);
 }
 
+// 🌟 Account ဝင်ရောက်ခြင်း (Login)
 function handleLogin() {
   const name = document.getElementById('loginName').value.trim();
   const pass = document.getElementById('loginPass').value;
