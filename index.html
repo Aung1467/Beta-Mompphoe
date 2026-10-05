@@ -550,7 +550,7 @@
 
     .card-qr-overlay {
       position: relative;
-      z-index: 4;
+      z-index: 4; /* Emoji တွေထက် သာလွန်မြင့်မားသော အလွှာတွင်ထားရှိသည် */
       padding: 6px;
       text-align: center;
     }
@@ -563,6 +563,7 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
     }
 
+    /* 🌟 1:1 ပုံ (QR ဧရိယာ) ၏ မီးတောက် Reality ဆန်ဆန် တောက်လောင်နေသော Border Animation */
     @keyframes realisticFireGlow {
       0% {
         border-color: #ff3838;
@@ -603,6 +604,7 @@
       object-fit: fill;
     }
 
+    /* 🌟 4:3 ကဒ်အတွင်းသာ Emoji တွေ ပျံဝဲစေရန် (1:1 ပုံပေါ်သို့ မတက်ရောက်စေရန် z-index ကို 3 ဖြင့် ကန့်သတ်ထားသည်) */
     .emoji-overlay {
       position: absolute;
       inset: 0;
@@ -666,29 +668,26 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* 🌟 GIF ရဲ့ အဝိုင်း border နဲ့ အလင်းတန်း (Glow effect) များကို ဖျောက်ပြီး သန့်ရှင်းစွာ ပေါ်စေရန် ပြင်ဆင်ထားခြင်း */
     .anime-dancer-free {
       width: 44px !important;
       height: 44px !important;
-      border-radius: 0 !important;
+      border-radius: 50%;
       border: none !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      overflow: visible !important;
+      overflow: hidden !important;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
       margin: 0 8px;
     }
 
     .anime-dancer-free img {
       width: 100% !important;
       height: 100% !important;
-      object-fit: contain !important;
-      border-radius: 0 !important;
-      border: none !important;
-      background: transparent !important;
-      box-shadow: none !important;
+      object-fit: cover;
+      border-radius: 50%;
     }
 
     .equalizer-bars {
