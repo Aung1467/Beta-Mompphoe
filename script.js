@@ -254,7 +254,7 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
-  /* 🌟 BG Image and BG Video Positioning */
+  /* BG Image and BG Video Positioning */
   #cardBgImg, #cardBgVideo {
     position: absolute !important;
     inset: 0 !important;
@@ -345,6 +345,21 @@ cardStyleInjected.innerHTML = `
   }
 `;
 document.head.appendChild(cardStyleInjected);
+
+// Helper: LocalStorage ထဲတွင် နာမည်တူရှိမရှိ စစ်ဆေးသည့် Function
+function isNameTaken(name, currentNum = null) {
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('user_')) {
+      const u = JSON.parse(localStorage.getItem(key));
+      // တကယ်လို့ နာမည်တူပြီး ID (num) မတူရင် တူတယ်ဟု သတ်မှတ်မည်
+      if (u.name.toLowerCase() === name.toLowerCase() && u.num !== currentNum) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 // Text Localization Function
 function updateTexts() {
@@ -443,7 +458,6 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
     
-    // If Video File, read directly as DataURL
     if (file.type.startsWith('video/')) {
       const reader = new FileReader();
       reader.onload = (e) => resolve(e.target.result);
@@ -452,7 +466,6 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
       return;
     }
 
-    // Image File Compression
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -638,7 +651,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// 🌟 Render Card (Image/Video Auto Switch)
+// Render Card Data
 function renderCardData(data) {
   if (!data) return;
 
@@ -793,7 +806,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     }
   }
 
-  alert(currentLang === 'en' ? '⚠️ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  alert(currentLang === 'en' ? '⚠️️ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
   goToStep(2);
 }
 
@@ -817,7 +830,7 @@ function selectAuthModeOption(val, text) {
   switchAuthMode(val);
 }
 
-// 🌟 Account သစ်ဖွင့်ခြင်း (Signup With Pass & Unique ID Validation)
+// 🌟 Account သစ်ဖွင့်ခြင်း (Signup Validation - ID နှင့် Name နှစ်ခုလုံး တူမရအောင် စစ်ဆေးပေးသည်)
 function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
@@ -830,17 +843,27 @@ function handleSignup() {
     return;
   }
 
-  // ၂။ ID တစ်ယောက်ယောက် သုံးပြီးသား ဟုတ်/မဟုတ် LocalStorage တွင် စစ်ဆေးခြင်း
+  // ၂။ ID တစ်ယောက်ယောက် သုံးပြီးသား ဟုတ်/မဟုတ် စစ်ဆေးခြင်း
   if (localStorage.getItem(`user_${num}`)) {
     alert(
       currentLang === 'en'
-        ? '⚠️️ This ID is already registered. Please choose another ID.'
+        ? '⚠️ This ID is already registered. Please choose another ID.'
         : '⚠️ ဤ ID အား အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြား ID တစ်ခု ပြောင်းလဲ ရိုက်ထည့်ပါ'
     );
     return;
   }
 
-  // ၃။ Password အနည်းဆုံး ၆ လုံး နှင့် English စာလုံး ပါဝင်မှု ရှိမရှိ စစ်ဆေးခြင်း
+  // ၃။ နာမည် တူနေသူ ရှိမရှိ စစ်ဆေးခြင်း (Name Unique Check)
+  if (isNameTaken(name)) {
+    alert(
+      currentLang === 'en'
+        ? '⚠️ This name is already taken. Please choose a different name.'
+        : '⚠️ ဤနာမည်ဖြင့် အကောင့်ဖွင့်ထားပြီး ဖြစ်ပါသည်။ ကျေးဇူးပြု၍ အခြားနာမည်တစ်ခု ပြောင်းလဲသုံးပေးပါ။'
+    );
+    return;
+  }
+
+  // ၄။ Password အနည်းဆုံး ၆ လုံး နှင့် English စာလုံး ပါဝင်မှု ရှိမရှိ စစ်ဆေးခြင်း
   const hasEnglishLetter = /[a-zA-Z]/.test(p1);
   if (p1.length < 6 || !hasEnglishLetter) {
     alert(
@@ -851,7 +874,7 @@ function handleSignup() {
     return;
   }
 
-  // ၄။ Password ၂ ခု ကိုက်ညီမှု စစ်ဆေးခြင်း
+  // ၅။ Password ၂ ခု ကိုက်ညီမှု စစ်ဆေးခြင်း
   if (p1 !== p2) {
     alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
     return;
@@ -866,7 +889,7 @@ function handleSignup() {
   goToStep(2);
 }
 
-// 🌟 Account ဝင်ရောက်ခြင်း (Login)
+// Account ဝင်ရောက်ခြင်း (Login)
 function handleLogin() {
   const name = document.getElementById('loginName').value.trim();
   const pass = document.getElementById('loginPass').value;
@@ -881,7 +904,7 @@ function handleLogin() {
     const key = localStorage.key(i);
     if (key.startsWith('user_')) {
       const u = JSON.parse(localStorage.getItem(key));
-      if (u.name === name) {
+      if (u.name.toLowerCase() === name.toLowerCase()) {
         foundUser = u;
         break;
       }
@@ -914,6 +937,7 @@ function setupProfileView() {
   }
 }
 
+// 🌟 နာမည်ပြောင်းသည့်အခါ နာမည်တူရှိနေပါက ပြောင်းမရအောင် စစ်ဆေးသည့် Logic ပါဝင်သော Function
 function changeNickname() {
   if (!currentUser) return;
   
@@ -977,12 +1001,22 @@ function changeNickname() {
   modal.querySelector('#customNickOk').onclick = () => {
     const newName = input.value.trim();
     if (newName) {
+      // နာမည်အသစ်သည် အခြားသူ သုံးပြီးသားဖြစ်နေပါက Alert ထုတ်ပြမည်
+      if (isNameTaken(newName, currentUser.num)) {
+        alert(
+          currentLang === 'en'
+            ? '⚠️ This name is already taken by another user.'
+            : '⚠️ ဤနာမည်အား အခြားသူတစ်ဦးမှ အသုံးပြုထားပြီး ဖြစ်ပါသည်။ အခြားနာမည်တစ်ခု ပြောင်းလဲရိုက်ထည့်ပါ။'
+        );
+        return;
+      }
+
       currentUser.name = newName;
       localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
       setupProfileView();
-      alert("Update Name");
+      alert(currentLang === 'en' ? "Name updated successfully!" : "နာမည်ပြောင်းလဲပြီးပါပြီ!");
+      closeModal();
     }
-    closeModal();
   };
 }
 
@@ -1332,12 +1366,10 @@ function selectReasonOption(val, text) {
   toggleCustomReason();
 }
 
-// 🌟 Handle Image or MP4 Video Upload with 15s Check
 async function handleBgImage(input) {
   if (input.files && input.files[0]) {
     const file = input.files[0];
 
-    // Video 15 Seconds Duration Check
     if (file.type.startsWith('video/')) {
       const duration = await getVideoDuration(file);
       if (duration > 15) {
