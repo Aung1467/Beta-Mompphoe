@@ -592,7 +592,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     }
   }
 
-  alert('⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  alert('⚠️️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
   goToStep(2);
 }
 
@@ -704,13 +704,14 @@ function viewHistory() {
   goToStep(5);
 }
 
-// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (စာသားနှင့် တိုင်မာများကို အပေါ်သို့ ကပ်စေရန် padding နှင့် margin များကို ထပ်မံကျဉ်းမြောင်းထားသည်)
+// 🌟 ပြင်ဆင်ပြီးသား renderHistoryList (မှတ်တမ်းများ နှင့် နောက်သို့ ခလုတ်ကြား ကွာဟချက်ကို ပိုကျယ်စေပြီး မီနူးနှိပ်လျှင် စာမကွယ်စေရန် space ချဲ့ပေးထားသည်)
 function renderHistoryList() {
   if (historyTimerInterval) clearInterval(historyTimerInterval);
 
   const container = document.getElementById('historyListContainer');
   if (!container) return;
   container.innerHTML = '';
+  container.style.paddingBottom = '50px'; // 🌟 အောက်ခြေခလုတ်နှင့် ကွာဟချက် လွတ်လပ်စေရန်
 
   if (!currentUser || !currentUser.history || currentUser.history.length === 0) {
     container.innerHTML = '<p style="text-align: center; color: #cbd5e1; font-size: 13px; padding: 20px;">မှတ်တမ်းများ မရှိသေးပါ။</p>';
@@ -723,20 +724,20 @@ function renderHistoryList() {
     row.style.display = 'flex';
     row.style.flexDirection = 'column';
     row.style.position = 'relative';
-    row.style.padding = '4px 10px'; // 🌟 ဘောင်အတွင်း ပိုမိုကျဉ်းမြောင်းစေရန် padding ကို လျှော့ချထားသည်
-    row.style.marginBottom = '5px';
+    row.style.padding = '6px 12px';
+    row.style.marginBottom = '12px'; // 🌟 တစ်ခုနှင့်တစ်ခု အကွာအဝေးကို ပိုချဲ့ပေးထား၍ မီနူးနှိပ်လျှင် စာမကွယ်ပါ
     row.style.borderRadius = '8px';
     row.style.background = 'rgba(15, 23, 42, 0.85)';
     row.style.border = '1px solid rgba(255, 255, 255, 0.08)';
 
-    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်ကို ဘေးချင်းတန်းတူ ဖြစ်စေရန်)
+    // 🌟 အပေါ်ပိုင်း (သက်တမ်းနှင့် မီနူးခလုတ်)
     const topRow = document.createElement('div');
     topRow.style.display = 'flex';
     topRow.style.justifyContent = 'space-between';
     topRow.style.alignItems = 'center';
     topRow.style.width = '100%';
     topRow.style.position = 'relative'; 
-    topRow.style.marginBottom = '0px'; // 🌟 အပေါ်နှင့်အောက် ကွာဟချက်မရှိဘဲ အပေါ်သို့ ကပ်နေစေရန်
+    topRow.style.marginBottom = '2px';
 
     const expireText = document.createElement('span');
     expireText.className = 'history-timer-span';
@@ -804,7 +805,6 @@ function renderHistoryList() {
     // 🌟 အောက်ပိုင်း (လင့်ခ်စာသား)
     const bottomRow = document.createElement('div');
     bottomRow.style.width = '100%';
-    bottomRow.style.marginTop = '-2px'; // 🌟 စာသားကို အထက်သို့ ပိုကပ်စေရန်
 
     const linkText = document.createElement('span');
     linkText.className = 'history-link-text';
