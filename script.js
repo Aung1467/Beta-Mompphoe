@@ -221,20 +221,20 @@ cardStyleInjected.innerHTML = `
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.6) !important;
   }
 
-  /* 🌟 Step4 Card Box: Glow လျှော့ထားပြီး Floating Animation ထည့်သွင်းထားသည် */
+  /* 🌟 Step4 Card Frame: Floating Animation & Glow လျှော့ထားခြင်း */
   #step4 {
     position: relative !important;
     overflow: hidden !important;
-    box-shadow: 0 4px 18px rgba(0, 242, 254, 0.22) !important; /* Glow Effect လျှော့ထားသည် */
-    animation: floatCard 3.5s ease-in-out infinite !important; /* Floating Animation */
+    box-shadow: 0 4px 18px rgba(0, 242, 254, 0.25) !important;
+    animation: floatCard 3.5s ease-in-out infinite !important;
   }
 
   @keyframes floatCard {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-7px); }
+    50% { transform: translateY(-6px); }
   }
 
-  /* 🌟 ပုံပါဝင်သည့် Composition Area အတွက် Stretch ဖြစ်စေရန် */
+  /* 🌟 Composition Area တွင် Background Image ကို Stretch/Cover ဖြစ်စေရန် */
   #cardBgImg {
     display: block !important;
     position: absolute !important;
@@ -242,13 +242,19 @@ cardStyleInjected.innerHTML = `
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important; /* Stretch to composition area */
+    object-fit: cover !important;
     z-index: 0 !important;
+    pointer-events: none !important;
   }
 
-  #step4 > *:not(#cardBgImg) {
-    position: relative !important;
-    z-index: 2 !important;
+  /* 🌟 Card အတွင်းရှိ အချက်အလက်များ Background ၏ အပေါ်တွင် ရှင်းလင်းစွာ ပေါ်စေရန် */
+  #step4 > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  #outSender {
+    z-index: 5 !important;
   }
 
   #lbl_qrHint {
@@ -339,7 +345,7 @@ function updateTexts() {
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
 
-  // 🌟 ခဲတံ Emoji ကို ဖျက်ထားပြီး နာမည်ပြောင်းရန် စာသား သီးသန့် ဖော်ပြထားပါသည်
+  // ခဲတံ Emoji မပါဘဲ နာမည်ပြောင်းရန် စာသား သီးသန့်
   if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
 
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
@@ -794,7 +800,7 @@ function setupProfileView() {
   }
 }
 
-// 🌟 နာမည်ပြောင်းသည့် UI ကို Custom Modern Glassmorphic Modal ဖြင့် အစားထိုးပြင်ဆင်ထားပါသည်
+// နာမည်ပြောင်းသည့် UI ကို Custom Modern Glassmorphic Modal ဖြင့် ပြုလုပ်ထားပါသည်
 function changeNickname() {
   if (!currentUser) return;
   
