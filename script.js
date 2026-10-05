@@ -330,6 +330,9 @@ function updateTexts() {
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
 
+  // နာမည်ပြောင်းရန် ခလုတ်တွင် ခဲတံသင်္ကေတ + စာသား အတူတူပေါ်စေရန် ထည့်သွင်းထားပါသည်
+  if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerHTML = `<span>✏ ${d.changeNickBtn}</span>`;
+
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
   if(document.getElementById('lbl_historyTitle')) document.getElementById('lbl_historyTitle').innerText = d.historyTitle;
@@ -782,7 +785,6 @@ function setupProfileView() {
   }
 }
 
-// 🌟 Added changeNickname Function
 function changeNickname() {
   if (!currentUser) return;
   const currentName = currentUser.name || '';
