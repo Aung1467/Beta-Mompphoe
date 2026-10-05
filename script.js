@@ -94,78 +94,57 @@ const i18n = {
   }
 };
 
-// 🌟 Reality & Fast Twitchy Equalizer Styles (ဘားအရွယ်အစား အနည်းငယ်ကြီးပြီး အမြန်နှုန်းမြှင့်ထားသည်)
+// 🌟 Spinning CD Disc Style (Equalizer နေရာတွင် လှပသော CD ပြားလည်သည့်ပုံစံဖြင့် အစားထိုးထားသည်)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   .preview-eq-bars {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 5px;
+    width: 48px;
     height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1e293b 30%, #0f172a 70%);
+    border: 2.5px solid #00f2fe;
     position: relative;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
   }
 
-  .preview-eq-bars.playing .p-bar {
-    /* တက်ကြွပြီး ခပ်မြန်မြန် လှုပ်ရှားစေရန် Animation များကို သီးသန့်ချိတ်ဆက်ထားသည် */
+  .preview-eq-bars::before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #090d16;
+    border: 2px solid #00f2fe;
+    border-radius: 50%;
+    z-index: 2;
   }
 
+  .preview-eq-bars::after {
+    content: '💿';
+    position: absolute;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  /* မူလ ဘားဟောင်းများကို ဖျောက်ထားခြင်း (ကုဒ်မပျက်စေရန်) */
   .p-bar {
-    width: 8px; /* ဘားအရွယ်အစား အနည်းငယ် ပိုကြီးစေသည် */
-    height: 24px; /* အစအဆုံး အနည်းငယ် ပိုရှည်စေသည် */
-    border-radius: 1px;
+    display: none !important;
   }
 
-  .p-bar:nth-child(1) {
-    background: #00bcd4;
-    animation: eqReal1 0.22s infinite ease-in-out alternate;
-  }
-  .p-bar:nth-child(2) {
-    background: #3f51b5;
-    animation: eqReal2 0.16s infinite ease-in-out alternate;
-  }
-  .p-bar:nth-child(3) {
-    background: #e91e63;
-    animation: eqReal3 0.26s infinite ease-in-out alternate;
-  }
-  .p-bar:nth-child(4) {
-    background: #ffeb3b;
-    animation: eqReal4 0.19s infinite ease-in-out alternate;
-  }
-  .p-bar:nth-child(5) {
-    background: #4caf50;
-    animation: eqReal5 0.23s infinite ease-in-out alternate;
+  /* သီချင်းစဖွင့်သောအခါ CD ပြား လည်ပတ်ခြင်း Animation */
+  .preview-eq-bars.playing {
+    animation: spinCdDisc 2s linear infinite !important;
   }
 
-  @keyframes eqReal1 {
-    0% { transform: scaleY(0.3); }
-    40% { transform: scaleY(1.2); }
-    70% { transform: scaleY(0.6); }
-    100% { transform: scaleY(1.5); }
-  }
-  @keyframes eqReal2 {
-    0% { transform: scaleY(0.8); }
-    30% { transform: scaleY(0.4); }
-    60% { transform: scaleY(1.4); }
-    100% { transform: scaleY(0.5); }
-  }
-  @keyframes eqReal3 {
-    0% { transform: scaleY(0.4); }
-    50% { transform: scaleY(1.6); }
-    80% { transform: scaleY(0.7); }
-    100% { transform: scaleY(1.1); }
-  }
-  @keyframes eqReal4 {
-    0% { transform: scaleY(1.1); }
-    35% { transform: scaleY(0.3); }
-    65% { transform: scaleY(1.3); }
-    100% { transform: scaleY(0.6); }
-  }
-  @keyframes eqReal5 {
-    0% { transform: scaleY(0.5); }
-    45% { transform: scaleY(1.4); }
-    75% { transform: scaleY(0.8); }
-    100% { transform: scaleY(1.2); }
+  @keyframes spinCdDisc {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   #outReason {
