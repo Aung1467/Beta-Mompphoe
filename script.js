@@ -29,16 +29,22 @@ const localMusicList = [
   { name: '🎵 song2.mp3', url: 'music/song2.mp3' },
   { name: '🎵 song3.mp3', url: 'music/song3.mp3' },
   { name: '🎵 song4.mp3', url: 'music/song4.mp3' },
-  { name: '🎵 song5.mp3', url: 'music/song4.mp3' },
-  { name: '🎵 song6.mp3', url: 'music/song4.mp3' },
-  { name: '🎵 song7.mp3', url: 'music/song4.mp3' }
+  { name: '🎵 song5.mp3', url: 'music/song5.mp3' },
+  { name: '🎵 song6.mp3', url: 'music/song6.mp3' },
+  { name: '🎵 song7.mp3', url: 'music/song7.mp3' },
+  { name: '🎵 song8.mp3', url: 'music/song8.mp3' },
+  { name: '🎵 song9.mp3', url: 'music/song9.mp3' },
+  { name: '🎵 song10.mp3', url: 'music/song10.mp3' },
+  { name: '🎵 song11.mp3', url: 'music/song11.mp3' },
+  { name: '🎵 song12.mp3', url: 'music/song12.mp3' },
+  { name: '🎵 song13.mp3', url: 'music/song13.mp3' }
 ];
 
 // ဘာသာစကား စာသားများ (မြန်မာ / English)
 const i18n = {
   my: {
     pageTitle: "Beta Monpphoe",
-    introMsg: "မင်္ဂလာပါ ခဏစောင့်ပေးပါ...",
+    introMsg: "ကြိုဆိုပါတယ် ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
     authTitle: "အကောင့်ဝင်ရန်",
     modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
@@ -74,7 +80,7 @@ const i18n = {
     qrBtn: "💳 QR Code / ပုံ ရွေးရန်",
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
-    step4Title: " 😌 မုန့်ဖိုးတောင်းလွှာ 😌 ",
+    step4Title: " မုန့်ဖိုးတောင်းလွှာ ",
     qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
@@ -96,7 +102,7 @@ const i18n = {
     ]
   },
   en: {
-    pageTitle: "Pocket Money Request Web App",
+    pageTitle: "Beta Monpphoe",
     introMsg: "Welcome! Please wait...",
     loaderMsg: "Please wait...",
     authTitle: "Account Auth",
@@ -132,8 +138,8 @@ const i18n = {
     qrLabel: "QR Code / Payment Info (HD)",
     qrBtn: "💳 Choose QR Image",
     backBtn: "⬅ Back",
-    genCardBtn: "Create Card ✨",
-    step4Title: " 😌 Pocket Money Request 😌 ",
+    genCardBtn: "Create Card",
+    step4Title: " Pocket Money Request ",
     qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 Share Request",
@@ -322,12 +328,12 @@ cardStyleInjected.innerHTML = `
 
   .top-card-timer {
     position: absolute;
-    top: 65px;
+    top: 75px;
     left: 50%;
 transform: translateX(-50%);
     z-index: 100;
     padding: 6px 14px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     display: none;
     align-items: center;
@@ -749,11 +755,11 @@ function startCardTimer(cardId) {
       return;
     }
 
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 120));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     if (timerEl) {
-      timerEl.innerHTML = `⏳ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      timerEl.innerHTML = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}အထိသာ`;
     }
   }, 1000);
 }
