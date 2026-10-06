@@ -4,379 +4,1096 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="page_title">Beta Monpphoe</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS SDK -->
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4891395174599211"
+     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4891395174599211"
+     crossorigin="anonymous"></script>
+  
   <style>
     :root {
       --primary: #ff0055;
+      --primary-hover: #ff3377;
       --accent: #00f2fe;
+      --accent-glow: rgba(0, 242, 254, 0.4);
+      --bg-glass: rgba(10, 12, 28, 0.96);
+      --radius-custom: 26px;
+      --text-color: #ffffff;
     }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Padauk', 'Poppins', sans-serif;
+    }
+
     body {
-      background: #090d16;
-      color: #ffffff;
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #131238, #05030f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: var(--text-color);
     }
-    .step {
-      display: none;
-      opacity: 0;
-      transition: opacity 0.4s ease-in-out;
-    }
-    .step.active {
-      display: block;
-      opacity: 1;
-    }
+
     /* Intro Splash Screen */
     #introSplash {
       position: fixed;
       inset: 0;
-      background: #090d16;
-      z-index: 99999;
+      background: rgba(5, 3, 15, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 999;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      transition: opacity 0.5s ease;
+      align-items: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
+
+    .intro-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(10, 12, 28, 0.95);
+      padding: 12px 20px;
+      border-radius: 18px;
+      border: 1.5px solid rgba(0, 242, 254, 0.5);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
     #introSplash.fade-out {
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
     }
-    /* Custom Select Dropdown Styling */
+
+    /* Ocean Waves Background */
+    .ocean {
+      height: 160px;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .wave {
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(0, 242, 254, 0.15)"/></svg>');
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 100%;
+      animation: waveMove 10s linear infinite;
+    }
+
+    .wave:nth-of-type(2) {
+      bottom: -10px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,65 C650,170 900,10 1200,40 L1200,120 L0,120 Z" fill="rgba(255, 0, 85, 0.15)"/></svg>');
+      animation: waveMove 6s linear infinite, waveSwell 4s ease-in-out infinite;
+    }
+
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes waveSwell {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Top Language Switcher and Notice Button Container (Centered above app-card) */
+    .top-controls-container {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 90%;
+      max-width: 410px;
+      justify-content: space-between;
+    }
+
+    .notice-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 242, 254, 0.6);
+      background: rgba(10, 12, 28, 0.95);
+      color: #00f2fe;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-glow);
+      transition: all 0.3s ease;
+    }
+
+    .notice-btn:hover {
+      background: rgba(0, 242, 254, 0.15);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .top-lang-switcher {
+      /* positioning adjusted within flex container */
+    }
+
+    .top-lang-switcher select {
+      padding: 6px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 242, 254, 0.6);
+      background: rgba(10, 12, 28, 0.95);
+      color: #fff;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    /* Step Loader */
+    #stepLoader {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 900;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    #stepLoader.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .blue-white-spinner {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #00f2fe;
+      border-right-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main App Container */
+    .app-card {
+      width: 90%;
+      max-width: 410px;
+      max-height: 82vh;
+      margin-top: 40px;
+      overflow-y: auto;
+      background: var(--bg-glass);
+      backdrop-filter: blur(25px);
+      border-radius: var(--radius-custom);
+      border: 2px solid rgba(0, 242, 254, 0.6);
+      box-shadow: 0 0 25px var(--accent-glow), inset 0 0 15px rgba(255, 0, 85, 0.15);
+      padding: 22px;
+      position: relative;
+      z-index: 10;
+      animation: cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes cardEntrance {
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .step {
+      display: none;
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    .step.active {
+      display: block;
+      animation: stepFadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes stepFadeSlideIn {
+      0% { opacity: 0; transform: translateY(18px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    h2 {
+      color: var(--accent);
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      text-shadow: 0 0 8px var(--accent-glow);
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+      color: #ffffff;
+      font-size: 13px;
+      text-shadow: 0 0 6px rgba(0, 242, 254, 0.3);
+    }
+
+    /* Custom Select Component */
     .custom-select-wrapper {
       position: relative;
+      width: 100%;
       user-select: none;
     }
+
     .custom-select-trigger {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(0, 242, 254, 0.4);
+      width: 100%;
+      padding: 10px 14px;
       border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 14px;
-      color: #fff;
+      border: 1.5px solid rgba(0, 242, 254, 0.4);
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: pointer;
       transition: all 0.3s ease;
     }
-    .custom-select-trigger:hover {
+
+    .custom-select-trigger:hover, .custom-select-wrapper.open .custom-select-trigger {
       border-color: var(--accent);
-      box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+      box-shadow: 0 0 10px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.1);
     }
+
+    .custom-select-trigger svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--accent);
+      transition: transform 0.4s ease;
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger svg {
+      transform: rotate(180deg);
+    }
+
     .custom-options {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      background: #0f172a;
-      border: 1px solid rgba(0, 242, 254, 0.3);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin-top 0.3s ease;
+      opacity: 0;
+      background: #0e1124;
+      border: 1.5px solid transparent;
       border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
-      z-index: 999;
-      display: none;
-      max-height: 220px;
-      overflow-y: auto;
+      margin-top: 0;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 99;
     }
+
     .custom-select-wrapper.open .custom-options {
-      display: block;
+      max-height: 250px;
+      overflow-y: auto;
+      opacity: 1;
+      border-color: rgba(0, 242, 254, 0.6);
+      margin-top: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 10px var(--accent-glow);
     }
+
     .custom-option {
-      padding: 12px 16px;
-      font-size: 14px;
-      color: #cbd5e1;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
       cursor: pointer;
-      transition: background 0.2s, color 0.2s;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s ease, padding-left 0.2s ease, color 0.2s ease;
     }
+
+    .custom-option:last-child {
+      border-bottom: none;
+    }
+
     .custom-option:hover {
       background: rgba(0, 242, 254, 0.15);
-      color: #00f2fe;
+      padding-left: 18px;
+      color: var(--accent);
     }
-    /* Loader Spinner */
-    .step-loader {
-      position: fixed;
-      inset: 0;
-      background: rgba(9, 13, 22, 0.85);
-      backdrop-filter: blur(5px);
-      z-index: 9999;
-      display: none;
+
+    input[type="text"], input[type="password"], textarea, select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 242, 254, 0.35);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      outline: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    select option {
+      background: #1e272e;
+      color: #ffffff;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .profile-action-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .profile-small-btn, .file-btn {
+      flex: 1;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid rgba(0, 242, 254, 0.4);
+      border-radius: 12px;
+      color: #ffffff;
+      cursor: pointer;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      gap: 12px;
+      gap: 6px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    .step-loader.show {
+
+    .profile-small-btn:hover, .file-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 242, 254, 0.12);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .btn-group {
       display: flex;
+      gap: 10px;
+      margin-top: 14px;
     }
-    .spinner {
-      width: 45px;
-      height: 45px;
-      border: 4px solid rgba(0, 242, 254, 0.2);
-      border-top-color: var(--accent);
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), #ff3377);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 0, 85, 0.4);
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(255, 0, 85, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      box-shadow: none;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Profile Section */
+    .profile-container {
+      text-align: center;
+      background: transparent;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+
+    .profile-avatar-box {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+      border: 2px solid var(--accent);
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 15px var(--accent-glow);
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+
+    .profile-avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffeaa7;
+      margin-bottom: 2px;
+      text-shadow: 0 0 6px rgba(255,234,167,0.4);
+    }
+
+    .profile-id {
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+    }
+
+    .dashboard-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-list-container {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-right: 4px;
+    }
+
+    /* Export Card Preview (4:3 Card) */
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-5px) rotate(0.4deg); }
+    }
+
+    #exportCard {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 3 / 4;
+      margin: 0 auto 12px auto;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 25px var(--accent-glow), 0 10px 24px rgba(0, 0, 0, 0.8);
+      background: #0f1123;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      animation: cardFloat 4s ease-in-out infinite, cardEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .card-full-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(1.06) contrast(1.06) saturate(1.05);
+      z-index: 1;
+      display: none;
+    }
+
+    .sender-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 11px;
+      background: var(--primary);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(255, 71, 87, 0.5);
+      z-index: 5;
+    }
+
+    .card-header-content {
+      position: relative;
+      z-index: 2;
+      margin: auto;
+      padding: 12px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .card-header-content h3 {
+      font-size: 17px;
+      color: #ffeaa7;
+      margin-bottom: 4px;
+      font-weight: 700;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+    }
+
+    .card-header-content p {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #ffffff;
+      font-weight: 600;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+    }
+
+    .card-qr-overlay {
+      position: relative;
+      z-index: 4;
+      padding: 6px;
+      text-align: center;
+    }
+
+    .card-qr-overlay p {
+      font-size: 9px;
+      color: #00d2d3;
+      margin-bottom: 3px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+    }
+
+    @keyframes realisticFireGlow {
+      0% {
+        border-color: #ff3838;
+        box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff9f1a, inset 0 0 10px #ff3838;
+      }
+      33% {
+        border-color: #ff9f1a;
+        box-shadow: 0 0 16px #ffb142, 0 0 28px #ff5252, inset 0 0 14px #ff9f1a;
+      }
+      66% {
+        border-color: #ff5252;
+        box-shadow: 0 0 20px #ff3838, 0 0 35px #ffb142, inset 0 0 16px #ff5252;
+      }
+      100% {
+        border-color: #ff3838;
+        box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff9f1a, inset 0 0 10px #ff3838;
+      }
+    }
+
+    .qr-img-wrapper {
+      width: 100%;
+      max-width: 95px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #ff3838;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      animation: realisticFireGlow 2.2s infinite ease-in-out;
+      z-index: 5;
+      position: relative;
+    }
+
+    .qr-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+
+    .emoji-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    .custom-music-player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(14, 17, 36, 0.9);
+      border: 1.5px solid var(--accent);
+      border-radius: 16px;
+      padding: 5px 12px !important;
+      max-height: 52px !important;
+      margin-bottom: 12px;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .spinning-disc {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff0055, #00f2fe, #ff0055);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinDisc 3s linear infinite;
+      box-shadow: 0 0 8px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .spinning-disc-inner {
+      width: 12px;
+      height: 12px;
+      background: #05030f;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    @keyframes spinDisc {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .anime-dancer-free {
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 50%;
+      border: none !important;
+      overflow: hidden !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px var(--accent-glow);
+      flex-shrink: 0;
+      margin: 0 8px;
+    }
+
+    .anime-dancer-free img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .equalizer-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 8px; }
+    .eq-bar:nth-child(2) { animation-delay: 0.4s; height: 15px; }
+    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 11px; }
+    .eq-bar:nth-child(4) { animation-delay: 0.5s; height: 16px; }
+
+    @keyframes eqBounce {
+      0% { transform: scaleY(0.3); }
+      100% { transform: scaleY(1); }
+    }
+
+    .custom-preview-player {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 10px 16px;
+      box-shadow: none !important;
+      height: 48px;
+    }
+
+    .preview-eq-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      height: 20px;
+    }
+
+    .preview-eq-bars.playing .p-bar {
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+    }
+
+    .p-bar {
+      width: 4px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 3px;
+      box-shadow: 0 0 6px var(--accent);
+      transition: height 0.3s ease;
+    }
+
+    .save-btn { background: linear-gradient(135deg, #2ed573, #26af5f); box-shadow: 0 4px 10px rgba(46, 213, 115, 0.25); }
+    .share-btn { background: linear-gradient(135deg, #3742fa, #2f3542); box-shadow: 0 4px 10px rgba(55, 66, 250, 0.25); }
+
+    /* Share Modal */
+    #shareModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 15, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 995;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #111326;
+      padding: 20px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 310px;
+      text-align: center;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 25px var(--accent-glow);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body>
 
-  <!-- Intro Splash -->
+  <!-- Intro Splash Screen -->
   <div id="introSplash">
-    <div class="spinner mb-4"></div>
-    <p id="introMsg" class="text-sm font-medium tracking-wide text-cyan-400">ကြိုဆိုပါတယ် ခဏစောင့်ပေးပါ...</p>
-  </div>
-
-  <!-- Global Loader -->
-  <div id="stepLoader" class="step-loader">
-    <div class="spinner"></div>
-    <span id="lbl_loaderMsg" class="text-sm text-cyan-300 font-medium">ခဏစောင့်ပါ...</span>
-  </div>
-
-  <!-- Language Switcher Bar -->
-  <div class="absolute top-4 right-4 z-50">
-    <div class="custom-select-wrapper" id="langCustomSelect" style="width: 110px;">
-      <div class="custom-select-trigger" onclick="toggleCustomDropdown('langCustomSelect')">
-        <span id="langTriggerText">🇲🇲 မြန်မာ</span>
-        <span>▼</span>
-      </div>
-      <div class="custom-options" id="langCustomOptions">
-        <div class="custom-option" onclick="changeLanguage('my')">🇲🇲 မြန်မာ</div>
-        <div class="custom-option" onclick="changeLanguage('en')">🇬🇧 English</div>
-        <div class="custom-option" onclick="changeLanguage('th')">🇹🇭 ไทย</div>
-        <div class="custom-option" onclick="changeLanguage('zh')">🇨🇳 中文</div>
-        <div class="custom-option" onclick="changeLanguage('ja')">🇯🇵 日本語</div>
-      </div>
+    <div class="intro-box">
+      <div class="blue-white-spinner"></div>
+      <div id="introMsg" style="font-size: 13px; font-weight: 700; color: var(--accent); margin: 0; text-shadow: 0 0 6px var(--accent-glow);"></div>
     </div>
   </div>
 
-  <div class="w-full max-w-sm mx-auto">
+  <!-- Ocean Waves Background -->
+  <div class="ocean">
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
 
-    <!-- STEP 1: AUTHENTICATION (Login / Signup) -->
-    <div id="step1" class="step active bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 p-6 rounded-2xl shadow-2xl">
-      <h2 id="lbl_authTitle" class="text-xl font-bold text-center mb-6 text-cyan-400">အကောင့်ဝင်ရန်</h2>
+  <!-- Centered Top Controls: Notice Button & Language Switcher -->
+  <div class="top-controls-container">
+    <button class="notice-btn" onclick="openNoticeModal()">! သိရန်</button>
+    <div class="top-lang-switcher">
+      <select id="userLang" onchange="changeLanguage(this.value)">
+        <option value="my" selected>🇲🇲 မြန်မာ</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Notice Modal -->
+  <div id="noticeModal" style="display: none; position: fixed; inset: 0; background: rgba(5, 3, 15, 0.9); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 20px;">
+    <div class="modal-content" style="max-width: 320px; text-align: left; border: 2px solid var(--accent);">
+      <h3 style="color: var(--accent); font-size: 17px; margin-bottom: 10px; text-align: center;">📌 အသုံးပြုသူများသိစေရန်</h3>
+      <ul style="font-size: 12px; color: #cbd5e1; padding-left: 16px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; font-weight: 600;">
+        <li>ပြုလုပ်သူသည် အသုံးပြုသူများ၏ Data များအားတောင်းခံခြင်း ရယူသိမ်းဆည်းခြင်းများ ပြုလုပ်မည်မဟုတ်ပါ</li>
+        <li>အကောင်းမြင်စိတ်ထားပြီး သင့်တော်သည့်အတိုင်းသာ သုံးကြပါရန်မေတ္တာရပ်ခံပါသည်</li>
+        <li>အကောင့်ဝင်ရောက်ပြီးမှသာ မုန့်ဖိုးတောင်းလွှာများ ဖန်တီးနိုင်ပါသည်။</li>
+        <li>မှန်ကန်သော QR Code နှင့် နောက်ခံပုံ/ဗီဒီယိုများကို အသုံးပြုပါ။</li>
+        <li>ဖန်တီးထားသော ကတ်လင့်ခ်များသည် 120 မိနစ်သာ သက်တမ်းရှိပါသည်။</li>
+        <li>ညစ်ညမ်းသော VD/ပုံများ, နိုင်ငံရေး, ဘာသာရေး စသည့်အရာများအာ မပြုလုပ်ကြပါရန် မေတ္တာရပ်ခံပါသည်</li>
+        <li style="margin-top: 6px;">
+    Creator အားမုန့်ဖိုးပေးချင်ပါက, အကြံပြုချက်များပေးလိုပါက / Tiktok: 
+    <a href="https://www.tiktok.com/@_yato_003?_r=1&_t=ZS-9AIzhZsSGE3" target="_blank" style="color: #00f2fe; text-decoration: underline;">@Yato</a>
+</li>
+      </ul>
+      <button class="btn" onclick="closeNoticeModal()" style="width: 100%; padding: 10px; font-size: 13px;">ပိတ်မည်</button>
+    </div>
+  </div>
+
+  <div id="stepLoader">
+    <div class="blue-white-spinner"></div>
+    <p id="lbl_loaderMsg" style="margin-top: 12px; color: var(--accent); font-weight: 700; font-size: 13px; text-shadow: 0 0 6px var(--accent-glow);"></p>
+  </div>
+
+  <div id="shareModal">
+    <div class="modal-content">
+      <h3 id="lbl_modalTitle" style="color:var(--accent); font-size: 17px; margin-bottom:8px; text-shadow: 0 0 6px var(--accent-glow);"></h3>
+      <p id="lbl_modalSub" style="font-size:12px; font-weight:600; margin-bottom:14px; color:#cbd5e1;"></p>
+      <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()"></button>
+      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadSingleQrFromModal()"></button>
+      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()"></button>
+    </div>
+  </div>
+
+  <div class="app-card">
+
+    <!-- STEP 1: LOGIN / SIGNUP -->
+    <div class="step active" id="step1">
+      <h2 id="lbl_authTitle"></h2>
       
-      <!-- Mode Selection Dropdown -->
-      <div class="mb-5">
-        <label id="lbl_modeSelect" class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">အမျိုးအစား ရွေးချယ်ရန်</label>
+      <div class="form-group">
+        <label id="lbl_modeSelect"></label>
         <div class="custom-select-wrapper" id="authModeCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('authModeCustomSelect')">
-            <span id="authModeTriggerText">အကောင့်ရှိပြီးသား</span>
-            <span>▼</span>
+            <span id="authModeTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
           </div>
-          <div class="custom-options">
-            <div class="custom-option" id="optLoginText" onclick="selectAuthModeOption('login', 'အကောင့်ရှိပြီးသား')">အကောင့်ရှိပြီးသား</div>
-            <div class="custom-option" id="optSignupText" onclick="selectAuthModeOption('signup', 'အကောင့်သစ်ဖွင့်ရန်')">အကောင့်သစ်ဖွင့်ရန်</div>
+          <div class="custom-options" id="authModeCustomOptions">
+            <div class="custom-option" onclick="selectAuthModeOption('login', '')" id="optLoginText"></div>
+            <div class="custom-option" onclick="selectAuthModeOption('signup', '')" id="optSignupText"></div>
           </div>
         </div>
         <input type="hidden" id="authModeSelect" value="login">
       </div>
 
-      <!-- Login Form -->
-      <div id="loginFormSection" class="space-y-4">
-        <div>
-          <label id="lbl_loginName" class="block text-xs font-semibold text-slate-300 mb-1">နာမည်</label>
-          <input type="text" id="loginName" placeholder="နာမည်ရိုက်ပါ" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+      <!-- LOGIN FORM -->
+      <div id="loginFormSection">
+        <div class="form-group">
+          <label id="lbl_loginName"></label>
+          <input type="text" id="loginName">
         </div>
-        <div>
-          <label id="lbl_loginPass" class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-          <input type="password" id="loginPass" placeholder="Password ရိုက်ပါ" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+        <div class="form-group">
+          <label id="lbl_loginPass"></label>
+          <input type="password" id="loginPass">
         </div>
-        <button id="btn_login" onclick="handleLogin()" class="w-full mt-2 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold py-3 rounded-xl shadow-lg shadow-cyan-500/20 active:scale-95 transition">အကောင့်ဝင်မည်</button>
+        <button class="btn" id="btn_login" onclick="handleLogin()"></button>
       </div>
 
-      <!-- Signup Form -->
-      <div id="signupFormSection" class="space-y-4" style="display: none;">
-        <div>
-          <label id="lbl_signupName" class="block text-xs font-semibold text-slate-300 mb-1">နာမည်</label>
-          <input type="text" id="signupName" placeholder="နာမည်ရိုက်ပါ" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+      <!-- SIGNUP FORM -->
+      <div id="signupFormSection" style="display: none;">
+        <div class="form-group">
+          <label id="lbl_signupName"></label>
+          <input type="text" id="signupName">
         </div>
-        <div>
-          <label id="lbl_signupNum" class="block text-xs font-semibold text-slate-300 mb-1">ID နံပါတ်</label>
-          <input type="text" id="signupNum" placeholder="နှစ်သက်ရာထည့်နိုင်သည်" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+        <div class="form-group">
+          <label id="lbl_signupNum"></label>
+          <input type="text" id="signupNum" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
-        <div>
-          <label id="lbl_signupPass1" class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-          <input type="password" id="signupPass1" placeholder="Password ရိုက်ပါ" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+        <div class="form-group">
+          <label id="lbl_signupPass1"></label>
+          <input type="password" id="signupPass1">
         </div>
-        <div>
-          <label id="lbl_signupPass2" class="block text-xs font-semibold text-slate-300 mb-1">Password ထပ်မံရိုက်ပါ</label>
-          <input type="password" id="signupPass2" placeholder="Password ကို ထပ်ရိုက်ပါ" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cyan-400">
+        <div class="form-group">
+          <label id="lbl_signupPass2"></label>
+          <input type="password" id="signupPass2">
         </div>
-        <button id="btn_signup" onclick="handleSignup()" class="w-full mt-2 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold py-3 rounded-xl shadow-lg shadow-cyan-500/20 active:scale-95 transition">အကောင့်အသစ်ဖွင့်မည်</button>
-      </div>
-    </div>
-
-    <!-- STEP 2: USER PROFILE DASHBOARD -->
-    <div id="step2" class="step bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 p-6 rounded-2xl shadow-2xl text-center">
-      <h2 id="lbl_profileTitle" class="text-xl font-bold mb-6 text-cyan-400">ကိုယ်ရေးအချက်အလက်</h2>
-      
-      <div class="relative w-24 h-24 mx-auto mb-4 group">
-        <div id="profileAvatarBox" class="w-full h-full rounded-full border-2 border-cyan-400 overflow-hidden bg-slate-800 flex items-center justify-center text-2xl font-bold text-cyan-400 shadow-inner">
-          👤
-        </div>
-        <label for="avatarInput" class="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer text-xs font-semibold text-cyan-300">
-          <span id="lbl_changeAvatar">Profile ပုံပြောင်းရန်</span>
-        </label>
-        <input type="file" id="avatarInput" accept="image/*" class="hidden" onchange="updateProfileAvatar(this)">
-      </div>
-
-      <h3 id="displayProfileName" class="text-lg font-bold text-white mb-1">-</h3>
-      <p id="displayProfileNum" class="text-xs text-slate-400 mb-6">ID: -</p>
-
-      <div class="space-y-3">
-        <button onclick="changeNickname()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold py-3 rounded-xl text-sm transition flex items-center justify-center gap-2">
-          ✏️ <span id="lbl_changeNick">နာမည်ပြောင်းရန်</span>
-        </button>
-        <button onclick="goToStep(3)" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-pink-500/20 active:scale-95 transition flex items-center justify-center gap-2">
-          <span id="lbl_reqPocketBtn">🧧 မုန့်ဖိုးတောင်းရန်</span>
-        </button>
-        <button onclick="viewHistory()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold py-3 rounded-xl text-sm transition flex items-center justify-center gap-2">
-          📊 <span id="lbl_historyBtn">မှတ်တမ်းများ</span>
-        </button>
+        <button class="btn" id="btn_signup" onclick="handleSignup()"></button>
       </div>
     </div>
 
-    <!-- STEP 3: CREATE POCKET MONEY REQUEST FORM -->
-    <div id="step3" class="step bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 p-6 rounded-2xl shadow-2xl">
-      <h2 id="lbl_step3Title" class="text-lg font-bold text-center mb-5 text-cyan-400">မုန့်ဖိုးတောင်းမည့် အကြောင်းအရာ</h2>
+    <!-- STEP 2: PROFILE DASHBOARD -->
+    <div class="step" id="step2">
+      <h2 id="lbl_profileTitle"></h2>
       
-      <div class="space-y-4">
-        <!-- Reason Dropdown -->
-        <div>
-          <label id="lbl_dropdown" class="block text-xs font-semibold text-slate-300 mb-1">အကြောင်းအရာ ရွေးချယ်ရန်</label>
-          <div class="custom-select-wrapper" id="reasonCustomSelect">
-            <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
-              <span id="reasonTriggerText">သတင်းကျွတ်မုန့်ဖိုး</span>
-              <span>▼</span>
-            </div>
-            <div class="custom-options" id="reasonDropdown"></div>
+      <div class="profile-container">
+        <div class="profile-avatar-box" id="profileAvatarBox">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="#a4b0be">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+
+        <div class="profile-action-row">
+          <div class="file-input-wrapper profile-small-btn">
+            <span id="lbl_changeAvatar"></span>
+            <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
           </div>
-          <input type="hidden" id="reasonDropdownVal" value="သတင်းကျွတ်မုန့်ဖိုး">
+          <button class="profile-small-btn" id="lbl_changeNick" onclick="changeNickname()">
+            <span>✏</span>
+          </button>
         </div>
 
-        <!-- Custom Reason Group -->
-        <div id="customReasonGroup" style="display: none;">
-          <label id="lbl_customReason" class="block text-xs font-semibold text-slate-300 mb-1">ကိုယ်တိုင်စာရေးရန်</label>
-          <input type="text" id="customReason" placeholder="အကြောင်းအရာ ရေးပါ" class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-400">
-        </div>
+        <div class="profile-name" id="displayProfileName"></div>
+        <div class="profile-id" id="displayProfileNum"></div>
 
-        <!-- Custom Note -->
-        <div>
-          <label id="lbl_customNote" class="block text-xs font-semibold text-slate-300 mb-1">မုန့်ဖိုးတောင်းဖို့ စာစီရန်</label>
-          <textarea id="customNote" rows="3" placeholder="စာစီပါ..." class="w-full bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-cyan-400"></textarea>
-        </div>
-
-        <!-- Music Selection -->
-        <div>
-          <label id="lbl_musicLabel" class="block text-xs font-semibold text-slate-300 mb-1">သီချင်း ရွေးချယ်ရန်</label>
-          <div class="custom-select-wrapper" id="musicCustomSelect">
-            <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
-              <span id="musicTriggerText">🎵 song1.mp3</span>
-              <span>▼</span>
-            </div>
-            <div class="custom-options" id="musicCustomOptions"></div>
-          </div>
-          <input type="hidden" id="musicDropdown" value="music/song1.mp3">
-        </div>
-
-        <!-- Audio Preview Player Group -->
-        <div id="audioPreviewGroup" style="display: none;" class="custom-preview-player">
-          <audio id="audioPreviewPlayer" controls style="width: 100%; height: 36px;"></audio>
-        </div>
-
-        <!-- Background Image / Video -->
-        <div>
-          <label id="lbl_bgLabel" class="block text-xs font-semibold text-slate-300 mb-1">နောက်ခံပုံ / Video (Max 15s)</label>
-          <label for="bgFile" id="bgImgLabel" class="block w-full border-2 border-dashed border-slate-700 hover:border-cyan-400 bg-slate-800/40 text-center py-3 rounded-xl text-xs font-semibold text-slate-300 cursor-pointer transition">
-            📸/🎬 ပုံ သို့မဟုတ် Video
-          </label>
-          <input type="file" id="bgFile" accept="image/*,video/mp4" class="hidden" onchange="handleBgImage(this)">
-        </div>
-
-        <!-- QR Code / Payment Info -->
-        <div>
-          <label id="lbl_qrLabel" class="block text-xs font-semibold text-slate-300 mb-1">QR Code / အချက်အလက်ပုံ</label>
-          <label for="qrFile" id="qrImgLabel" class="block w-full border-2 border-dashed border-slate-700 hover:border-cyan-400 bg-slate-800/40 text-center py-3 rounded-xl text-xs font-semibold text-slate-300 cursor-pointer transition">
-            💳 QR Code / ပုံ ရွေးရန်
-          </label>
-          <input type="file" id="qrFile" accept="image/*" class="hidden" onchange="handleQrImage(this)">
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex gap-2 pt-2">
-          <button id="btn_backStep3" onclick="returnToProfileOrLogin()" class="w-1/3 bg-slate-800 hover:bg-slate-700 border border-slate-700 font-semibold py-3 rounded-xl text-sm transition">⬅ နောက်သို့</button>
-          <button id="btn_genCard" onclick="generateAndSaveCard()" class="w-2/3 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold py-3 rounded-xl shadow-lg shadow-cyan-500/20 active:scale-95 transition">ကတ်ဖန်တီးမည် ✨</button>
+        <div class="dashboard-actions">
+          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;"></button>
+          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;"></button>
         </div>
       </div>
     </div>
 
-    <!-- STEP 4: PREVIEW / SHARED CARD VIEW -->
-    <div id="step4" class="step bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 p-5 rounded-2xl shadow-2xl text-center">
-      <h2 id="lbl_step4Title" class="text-base font-bold mb-3 text-cyan-400 tracking-wider"> မုန့်ဖိုးတောင်းလွှာ </h2>
-      
-      <!-- Generated Export Card Display -->
+    <!-- STEP 5: HISTORY SECTION -->
+    <div class="step" id="step5">
+      <h2 id="lbl_historyTitle"></h2>
+      <div class="history-list-container" id="historyListContainer"></div>
+      <button class="btn btn-secondary" id="btn_backHistory" onclick="goToStep(2)" style="width: 100%; padding: 10px; font-size: 13px;"></button>
+    </div>
+
+    <!-- STEP 3: REQUEST REASON & MESSAGE -->
+    <div class="step" id="step3">
+      <h2 id="lbl_step3Title"></h2>
+
+      <div class="form-group">
+        <label for="reasonDropdown" id="lbl_dropdown"></label>
+        <div class="custom-select-wrapper" id="reasonCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
+            <span id="reasonTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="reasonDropdown"></div>
+        </div>
+        <input type="hidden" id="reasonDropdownVal" value="">
+      </div>
+
+      <div class="form-group" id="customReasonGroup" style="display: none;">
+        <label for="customReason" id="lbl_customReason"></label>
+        <input type="text" id="customReason">
+      </div>
+
+      <div class="form-group">
+        <label for="customNote" id="lbl_customNote"></label>
+        <textarea id="customNote" rows="2"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl_musicLabel"></label>
+        <div class="custom-select-wrapper" id="musicCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
+            <span id="musicTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="musicCustomOptions"></div>
+        </div>
+        <input type="hidden" id="musicDropdown" value="">
+      </div>
+
+      <div class="form-group" id="audioPreviewGroup" style="display: none;">
+        <div class="custom-preview-player">
+          <div class="preview-eq-bars">
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+            <div class="p-bar"></div>
+          </div>
+        </div>
+        <audio id="audioPreviewPlayer" style="display: none;"></audio>
+      </div>
+
+      <!-- 🌟 နောက်ခံပုံ သို့မဟုတ် Video မဲရွေးချယ်မှု ပြင်ဆင်ထားသည့်နေရာ -->
+      <div class="form-group">
+        <label id="lbl_bgLabel"></label>
+        <div class="file-input-wrapper">
+          <div class="file-btn" id="bgImgLabel"></div>
+          <input type="file" accept="image/*,video/*" onchange="handleBgImage(this)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label id="lbl_qrLabel"></label>
+        <div class="file-input-wrapper">
+          <div class="file-btn" id="qrImgLabel"></div>
+          <input type="file" accept="image/*" onchange="handleQrImage(this)">
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()" style="padding: 10px; font-size: 13px;"></button>
+      </div>
+    </div>
+
+    <!-- STEP 4: RESULT CARD -->
+    <div class="step" id="step4">
+      <h2 id="lbl_step4Title"></h2>
+
       <div id="exportCard">
-        <span id="outSender">From: -</span>
-        <img id="cardBgImg" src="" alt="BG" style="display:none;">
-        <video id="cardBgVideo" src="" autoplay muted loop playsinline style="display:none;"></video>
+        <!-- 🌟 Image နှင့် Video သီးခြားပြသရန် element နှစ်ခု ပေါင်းစပ်ထားပါသည် -->
+        <img id="cardBgImg" class="card-full-bg" alt="Card Background">
+        <video id="cardBgVideo" class="card-full-bg" autoplay loop muted playsinline style="display: none;"></video>
         
-        <div class="my-auto relative z-10 p-2">
-          <h3 id="outReason">အကြောင်းအရာ</h3>
-          <p id="outNote">မှတ်စုစာသား...</p>
+        <span class="sender-tag" id="outSender"></span>
+        <div class="emoji-overlay" id="emojiOverlay"></div>
+        <div class="card-header-content">
+          <h3 id="outReason"></h3>
+          <p id="outNote"></p>
         </div>
-
-        <div class="relative z-10 pb-2">
-          <div id="qrWrapper" class="qr-img-wrapper" style="display:none;">
-            <img id="cardQrImg" src="" alt="QR">
+        <div class="card-qr-overlay">
+          <p id="lbl_qrHint"></p>
+          <div class="qr-img-wrapper" id="qrWrapper">
+            <img id="cardQrImg" alt="QR">
           </div>
-          <span id="lbl_qrHint">ဖိ၍ QR သိမ်းရန်</span>
         </div>
       </div>
 
-      <!-- Card Audio Player -->
-      <div id="cardAudioGroup" style="display:none; margin-bottom: 12px;">
-        <audio id="cardAudioPlayer" controls loop style="width: 100%; height: 34px;"></audio>
+      <div class="custom-music-player" id="cardAudioGroup" style="display: none;">
+        <div class="spinning-disc">
+          <div class="spinning-disc-inner"></div>
+        </div>
+        <div class="anime-dancer-free">
+          <img src="gif/anime.gif" alt="Custom GIF">
+        </div>
+        <div class="equalizer-bars">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <audio id="cardAudioPlayer" autoplay loop style="display: none;"></audio>
       </div>
 
-      <!-- Card Action Buttons -->
-      <div class="grid grid-cols-2 gap-2 mt-3">
-        <button id="btn_saveQr" onclick="downloadSingleQr()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold py-2.5 rounded-xl transition">💾 Save QR</button>
-        <button id="btn_share" onclick="openShareModal()" class="bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-xs py-2.5 rounded-xl shadow-md shadow-cyan-500/20 transition">📤 မျှဝေရန်</button>
+      <div class="btn-group">
+        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;"></button>
+        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;"></button>
       </div>
-      <button id="btn_profileReturn" onclick="returnToProfileOrLogin()" class="w-full mt-2 bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-xs font-semibold py-2.5 rounded-xl transition">🏠 Profile သို့ပြန်ရန်</button>
-    </div>
-
-    <!-- STEP 5: REQUEST HISTORY -->
-    <div id="step5" class="step bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 p-5 rounded-2xl shadow-2xl">
-      <div class="flex items-center justify-between mb-4">
-        <h2 id="lbl_historyTitle" class="text-base font-bold text-cyan-400">မှတ်တမ်းများ</h2>
-        <button id="btn_backHistory" onclick="goToStep(2)" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg transition">⬅ နောက်သို့</button>
-      </div>
-      <div id="historyListContainer" class="space-y-2.5 max-h-96 overflow-y-auto pr-1"></div>
-    </div>
-
-  </div>
-
-  <!-- SHARE MODAL -->
-  <div id="shareModal" style="display: none;" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-cyan-500/40 p-5 rounded-2xl w-full max-w-xs text-center shadow-2xl">
-      <h3 id="lbl_modalTitle" class="text-base font-bold text-cyan-400 mb-1">📤 မျှဝေရန်</h3>
-      <p id="lbl_modalSub" class="text-xs text-slate-400 mb-4">မုန့်ဖိုးတောင်းလွှာနှင့် လင့်ခ်ကို ပို့ရန် -</p>
       
-      <div class="space-y-2.5">
-        <button id="btn_copyLink" onclick="copyShareLink()" class="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-xs py-3 rounded-xl shadow-lg transition">📋 Link ယူမည်</button>
-        <button id="btn_dlQrModal" onclick="downloadSingleQrFromModal()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold py-3 rounded-xl transition">📥 Save QR</button>
-        <button id="btn_closeModal" onclick="closeShareModal()" class="w-full bg-slate-800/50 hover:bg-slate-800 text-slate-400 text-xs font-semibold py-2.5 rounded-xl transition">ပိတ်မည်</button>
+      <div class="btn-group" style="margin-top: 8px;">
+        <button class="btn btn-secondary" id="btn_profileReturn" onclick="returnToProfileOrLogin()" style="padding: 10px; font-size: 13px;"></button>
       </div>
     </div>
+
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Notice Modal ထိန်းချုပ်ရန် Function များ
+    function openNoticeModal() {
+      document.getElementById('noticeModal').style.display = 'flex';
+    }
+    function closeNoticeModal() {
+      document.getElementById('noticeModal').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
