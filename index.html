@@ -2,14 +2,13 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="page_title"></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="page_title">Pocket Money Request</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4891395174599211"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4891395174599211" crossorigin="anonymous"></script>
   
   <style>
     :root {
@@ -32,6 +31,7 @@
     body {
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       background: radial-gradient(circle at center, #131238, #05030f);
       display: flex;
@@ -706,7 +706,7 @@
       100% { transform: scaleY(1); }
     }
 
-    /* 💿 Audio Preview Player Container */
+    /* Audio Preview Player Container */
     .custom-preview-player {
       display: flex;
       align-items: center;
@@ -717,7 +717,7 @@
       border-radius: 14px;
       padding: 6px 12px;
       box-shadow: 0 0 12px var(--accent-glow);
-      position: relative; /* Dropdown Full Width အား ရည်ညွှန်းနိုင်ရန် */
+      position: relative;
     }
 
     .cd-disc-wrapper {
@@ -740,19 +740,18 @@
     }
 
     .cd-center {
-      width: 10px;
+      width: 100px;
       height: 10px;
       background: #05030f;
       border-radius: 50%;
       border: 2px solid #fff;
     }
 
-    /* Embedded Music Dropdown Style */
     #musicCustomSelect {
       flex: 1;
       min-width: 0;
       margin: 0;
-      position: static; /* Dropdown options အား Player Box တစ်ခုလုံးအကျယ်အတိုင်း ပွင့်စေရန် */
+      position: static;
     }
 
     #musicCustomSelect .custom-select-trigger {
@@ -769,7 +768,6 @@
       font-size: 12px;
     }
 
-    /* Full Width Music Dropdown List */
     #musicCustomSelect .custom-options {
       top: 100%;
       left: 0;
@@ -902,32 +900,32 @@
 
       <div id="loginFormSection">
         <div class="form-group">
-          <label id="lbl_loginName"></label>
-          <input type="text" id="loginName">
+          <label for="loginName" id="lbl_loginName"></label>
+          <input type="text" id="loginName" autocomplete="username">
         </div>
         <div class="form-group">
-          <label id="lbl_loginPass"></label>
-          <input type="password" id="loginPass">
+          <label for="loginPass" id="lbl_loginPass"></label>
+          <input type="password" id="loginPass" autocomplete="current-password">
         </div>
         <button class="btn" id="btn_login" onclick="handleLogin()"></button>
       </div>
 
       <div id="signupFormSection" style="display: none;">
         <div class="form-group">
-          <label id="lbl_signupName"></label>
-          <input type="text" id="signupName">
+          <label for="signupName" id="lbl_signupName"></label>
+          <input type="text" id="signupName" autocomplete="username">
         </div>
         <div class="form-group">
-          <label id="lbl_signupNum"></label>
+          <label for="signupNum" id="lbl_signupNum"></label>
           <input type="text" id="signupNum" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass1"></label>
-          <input type="password" id="signupPass1">
+          <label for="signupPass1" id="lbl_signupPass1"></label>
+          <input type="password" id="signupPass1" autocomplete="new-password">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass2"></label>
-          <input type="password" id="signupPass2">
+          <label for="signupPass2" id="lbl_signupPass2"></label>
+          <input type="password" id="signupPass2" autocomplete="new-password">
         </div>
         <button class="btn" id="btn_signup" onclick="handleSignup()"></button>
       </div>
@@ -949,7 +947,7 @@
         <div class="profile-name" id="displayProfileName"></div>
         <div class="profile-id" id="displayProfileNum"></div>
 
-        <!-- 3. Action Buttons (Change Avatar & Name) in a smart row -->
+        <!-- 3. Action Buttons (Change Avatar & Name) -->
         <div class="profile-action-row">
           <div class="file-input-wrapper profile-small-btn">
             <span id="lbl_changeAvatar"></span>
@@ -980,7 +978,7 @@
       <h2 id="lbl_step3Title"></h2>
 
       <div class="form-group">
-        <label for="reasonDropdown" id="lbl_dropdown"></label>
+        <label id="lbl_dropdown"></label>
         <div class="custom-select-wrapper" id="reasonCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
             <span id="reasonTriggerText"></span>
@@ -1001,18 +999,16 @@
         <textarea id="customNote" rows="2"></textarea>
       </div>
 
-      <!-- 🎵 MUSIC PLAYER & DROPDOWN COMBINED SECTION -->
+      <!-- MUSIC PLAYER & DROPDOWN SECTION -->
       <div class="form-group" id="audioPreviewGroup">
         <label id="lbl_musicLabel"></label>
         <div class="custom-preview-player">
-          <!-- 💿 CD Disc -->
           <div class="cd-disc-wrapper">
             <div class="cd-disc" id="cdDiscElement">
               <div class="cd-center"></div>
             </div>
           </div>
 
-          <!-- 🎵 Music Selector Inside CD Box -->
           <div class="custom-select-wrapper" id="musicCustomSelect">
             <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
               <span id="musicTriggerText"></span>
@@ -1022,7 +1018,6 @@
             <input type="hidden" id="musicDropdown" value="">
           </div>
 
-          <!-- 📊 Equalizer Bars -->
           <div class="preview-eq-bars">
             <div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div>
           </div>
@@ -1069,7 +1064,7 @@
         <div class="card-qr-overlay">
           <p id="lbl_qrHint"></p>
           <div class="qr-img-wrapper" id="qrWrapper">
-            <img id="cardQrImg" alt="QR">
+            <img id="cardQrImg" alt="QR Code">
           </div>
         </div>
       </div>
@@ -1079,7 +1074,7 @@
           <div class="spinning-disc-inner"></div>
         </div>
         <div class="anime-dancer-free">
-          <img src="gif/anime.gif" alt="Custom GIF">
+          <img src="gif/anime.gif" alt="Custom Animation">
         </div>
         <div class="equalizer-bars">
           <div class="eq-bar"></div>
