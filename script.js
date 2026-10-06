@@ -165,13 +165,11 @@ const i18n = {
 // 🌟 Injected CSS Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
-  /* Floating Animation */
   @keyframes float1to1 {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-6px); }
   }
 
-  /* Fast Glow Animation (1.0s speed) */
   @keyframes realisticFireGlow {
     0% {
       border-color: #ff3838;
@@ -191,7 +189,6 @@ cardStyleInjected.innerHTML = `
     display: none !important;
   }
 
-  /* Mini Equalizer Wave Animation */
   .mini-eq-container {
     display: inline-flex;
     align-items: flex-end;
@@ -263,7 +260,6 @@ cardStyleInjected.innerHTML = `
     padding: 14px !important;
   }
 
-  /* BG Image and BG Video Positioning */
   #cardBgImg, #cardBgVideo {
     position: absolute !important;
     inset: 0 !important;
@@ -351,20 +347,6 @@ cardStyleInjected.innerHTML = `
 `;
 document.head.appendChild(cardStyleInjected);
 
-// Helper: LocalStorage ထဲတွင် နာမည်တူရှိမရှိ စစ်ဆေးသည့် Function
-function isNameTaken(name, currentNum = null) {
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('user_')) {
-      const u = JSON.parse(localStorage.getItem(key));
-      if (u.name.toLowerCase() === name.toLowerCase() && u.num !== currentNum) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 // Text Localization Function
 function updateTexts() {
   const d = i18n[currentLang] || i18n.my;
@@ -409,9 +391,7 @@ function updateTexts() {
 
   if(document.getElementById('lbl_profileTitle')) document.getElementById('lbl_profileTitle').innerText = d.profileTitle;
   if(document.getElementById('lbl_changeAvatar')) document.getElementById('lbl_changeAvatar').innerText = d.changeAvatar;
-
   if(document.getElementById('lbl_changeNick')) document.getElementById('lbl_changeNick').innerText = d.changeNickBtn;
-
   if(document.getElementById('lbl_reqPocketBtn')) document.getElementById('lbl_reqPocketBtn').innerText = d.reqPocketBtn;
   if(document.getElementById('lbl_historyBtn')) document.getElementById('lbl_historyBtn').innerText = d.historyBtn;
   if(document.getElementById('lbl_historyTitle')) document.getElementById('lbl_historyTitle').innerText = d.historyTitle;
@@ -419,7 +399,6 @@ function updateTexts() {
 
   if(document.getElementById('lbl_step3Title')) document.getElementById('lbl_step3Title').innerText = d.step3Title;
   if(document.getElementById('lbl_dropdown')) document.getElementById('lbl_dropdown').innerText = d.dropdownLabel;
-  
   if(document.getElementById('lbl_customReason')) document.getElementById('lbl_customReason').innerText = d.customReasonLabel;
   if(document.getElementById('customReason')) document.getElementById('customReason').placeholder = d.customReasonPlaceholder;
   if(document.getElementById('lbl_customNote')) document.getElementById('lbl_customNote').innerText = d.customNoteLabel;
@@ -435,10 +414,6 @@ function updateTexts() {
   if(document.getElementById('btn_genCard')) document.getElementById('btn_genCard').innerText = d.genCardBtn;
 
   if(document.getElementById('lbl_step4Title')) document.getElementById('lbl_step4Title').innerText = d.step4Title;
-  if(document.getElementById('lbl_qrHint')) {
-    document.getElementById('lbl_qrHint').innerText = d.qrHint;
-    document.getElementById('lbl_qrHint').style.display = 'none';
-  }
   if(document.getElementById('btn_saveQr')) document.getElementById('btn_saveQr').innerText = d.saveBtn;
   if(document.getElementById('btn_share')) document.getElementById('btn_share').innerText = d.shareBtn;
   if(document.getElementById('btn_profileReturn')) document.getElementById('btn_profileReturn').innerText = d.profileReturnBtn;
@@ -450,14 +425,12 @@ function updateTexts() {
   if(document.getElementById('btn_closeModal')) document.getElementById('btn_closeModal').innerText = d.closeBtn;
 }
 
-// Language Switcher Function
 function changeLanguage(lang) {
   currentLang = lang || 'my';
   updateTexts();
   populateReasonDropdown(currentLang);
 }
 
-// Compress File or Read File as DataURL
 function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
@@ -487,10 +460,8 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
-          
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
-          
           ctx.drawImage(img, 0, 0, width, height);
           resolve(canvas.toDataURL('image/jpeg', quality));
         } catch (err) {
@@ -505,7 +476,6 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   });
 }
 
-// Check Video Duration (Max 15s)
 function getVideoDuration(file) {
   return new Promise((resolve) => {
     const video = document.createElement('video');
@@ -519,7 +489,6 @@ function getVideoDuration(file) {
   });
 }
 
-// Helper: Mini Equalizer Html
 function getMiniEqHtml() {
   return `
     <div class="mini-eq-container">
@@ -531,7 +500,6 @@ function getMiniEqHtml() {
   `;
 }
 
-// Music Dropdown Functions
 function populateMusicDropdown() {
   const container = document.getElementById('musicCustomOptions');
   if (!container) return;
@@ -643,7 +611,6 @@ window.addEventListener('DOMContentLoaded', async () => {
           });
           if (loader) loader.classList.remove('show');
           showStep(4);
-          
           startCardTimer(cardId);
           return;
         }
@@ -655,7 +622,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Render Card Data
 function renderCardData(data) {
   if (!data) return;
 
@@ -754,7 +720,6 @@ function startCardTimer(cardId) {
       return;
     }
 
-    // 🌟 ၁၂၀ မိနစ်မှ စတင်ရေတွက်ရန် မိနစ်စုစုပေါင်းကို တိုက်ရိုက်တွက်ချက်ခြင်း
     const minutes = Math.floor(distance / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
@@ -835,8 +800,8 @@ function selectAuthModeOption(val, text) {
   switchAuthMode(val);
 }
 
-// 🌟 Account သစ်ဖွင့်ခြင်း (Signup Validation - ID နှင့် Name နှစ်ခုလုံး တူမရအောင် စစ်ဆေးပေးသည်)
-function handleSignup() {
+// 🌟 Supabase ဖြင့် အကောင့်သစ်ဖွင့်ခြင်း (Signup with Supabase)
+async function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
   const p1 = document.getElementById('signupPass1').value;
@@ -847,20 +812,24 @@ function handleSignup() {
     return;
   }
 
-  if (localStorage.getItem(`user_${num}`)) {
-    alert(
-      currentLang === 'en'
-        ? '⚠️ This ID is already registered. Please choose another ID.'
-        : '⚠️ ဤ ID အား အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြား ID တစ်ခု ပြောင်းလဲ ရိုက်ထည့်ပါ'
-    );
+  const sb = getSupabase();
+  if (!sb) {
+    alert('Supabase client error.');
     return;
   }
 
-  if (isNameTaken(name)) {
+  // Check if ID or Name already exists in Supabase
+  const { data: existingUser } = await sb
+    .from('users')
+    .select('*')
+    .or(`num.eq.${num},name.eq.${name}`)
+    .maybeSingle();
+
+  if (existingUser) {
     alert(
       currentLang === 'en'
-        ? '⚠️ This name is already taken. Please choose a different name.'
-        : '⚠️ ဤနာမည်ဖြင့် အကောင့်ဖွင့်ထားပြီး ဖြစ်ပါသည်။ ကျေးဇူးပြု၍ အခြားနာမည်တစ်ခု ပြောင်းလဲသုံးပေးပါ။'
+        ? '⚠️ This ID or Name is already registered.'
+        : '⚠️ ဤ ID သို့မဟုတ် နာမည် အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြားတစ်ခု ပြောင်းသုံးပါ'
     );
     return;
   }
@@ -869,19 +838,24 @@ function handleSignup() {
   if (p1.length < 6 || !hasEnglishLetter) {
     alert(
       currentLang === 'en'
-        ? '⚠️ Password must be at least 6 characters and contain English letters (a-z/A-Z).'
-        : '⚠️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး (a-z/A-Z) ပါဝင်ရပါမည်။'
+        ? '⚠️ Password must be at least 6 characters and contain English letters.'
+        : '⚠️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
     );
     return;
   }
 
   if (p1 !== p2) {
-    alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
+    alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။');
     return;
   }
 
   const userData = { name, num, pass: p1, avatar: '', history: [] };
-  localStorage.setItem(`user_${num}`, JSON.stringify(userData));
+  const { error } = await sb.from('users').insert([userData]);
+
+  if (error) {
+    alert('Error: ' + error.message);
+    return;
+  }
   
   alert(currentLang === 'en' ? '✅ Account created successfully!' : '✅ အကောင့်အသစ် ဖွင့်ပြီးပါပြီ!');
   currentUser = userData;
@@ -889,8 +863,8 @@ function handleSignup() {
   goToStep(2);
 }
 
-// Account ဝင်ရောက်ခြင်း (Login)
-function handleLogin() {
+// 🌟 Supabase ဖြင့် အကောင့်ဝင်ခြင်း (Login with Supabase)
+async function handleLogin() {
   const name = document.getElementById('loginName').value.trim();
   const pass = document.getElementById('loginPass').value;
 
@@ -899,20 +873,20 @@ function handleLogin() {
     return;
   }
 
-  let foundUser = null;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('user_')) {
-      const u = JSON.parse(localStorage.getItem(key));
-      if (u.name.toLowerCase() === name.toLowerCase()) {
-        foundUser = u;
-        break;
-      }
-    }
+  const sb = getSupabase();
+  if (!sb) {
+    alert('Supabase client error.');
+    return;
   }
 
-  if (!foundUser) {
-    alert(currentLang === 'en' ? 'Account not found. Please sign up.' : 'ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။ အကောင့်သစ်ဖွင့်ပါ။');
+  const { data: foundUser, error } = await sb
+    .from('users')
+    .select('*')
+    .ilike('name', name)
+    .maybeSingle();
+
+  if (error || !foundUser) {
+    alert(currentLang === 'en' ? 'Account not found. Please sign up.' : 'ဤနာမည်ဖြင့် မှတ်ပုံတင်ထားသော အကောင့်မရှိပါ။');
     return;
   }
 
@@ -937,8 +911,21 @@ function setupProfileView() {
   }
 }
 
-// 🌟 နာမည်ပြောင်းသည့်အခါ နာမည်တူရှိနေပါက ပြောင်းမရအောင် စစ်ဆေးသည့် Logic
-function changeNickname() {
+// 🌟 Supabase ထဲတွင် User Data ကို Sync လုပ်ရန် Helper
+async function syncUserToSupabase() {
+  if (!currentUser) return;
+  const sb = getSupabase();
+  if (sb) {
+    await sb.from('users').update({
+      name: currentUser.name,
+      pass: currentUser.pass,
+      avatar: currentUser.avatar,
+      history: currentUser.history
+    }).eq('num', currentUser.num);
+  }
+}
+
+async function changeNickname() {
   if (!currentUser) return;
   
   let modal = document.getElementById('customNickModal');
@@ -998,20 +985,11 @@ function changeNickname() {
 
   modal.querySelector('#customNickCancel').onclick = closeModal;
 
-  modal.querySelector('#customNickOk').onclick = () => {
+  modal.querySelector('#customNickOk').onclick = async () => {
     const newName = input.value.trim();
     if (newName) {
-      if (isNameTaken(newName, currentUser.num)) {
-        alert(
-          currentLang === 'en'
-            ? '⚠️ This name is already taken by another user.'
-            : '⚠️ ဤနာမည်အား အခြားသူတစ်ဦးမှ အသုံးပြုထားပြီး ဖြစ်ပါသည်။ အခြားနာမည်တစ်ခု ပြောင်းလဲရိုက်ထည့်ပါ။'
-        );
-        return;
-      }
-
       currentUser.name = newName;
-      localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+      await syncUserToSupabase();
       setupProfileView();
       alert(currentLang === 'en' ? "Name updated successfully!" : "နာမည်ပြောင်းလဲပြီးပါပြီ!");
       closeModal();
@@ -1019,12 +997,12 @@ function changeNickname() {
   };
 }
 
-function updateProfileAvatar(input) {
+async function updateProfileAvatar(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       currentUser.avatar = e.target.result;
-      localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+      await syncUserToSupabase();
       document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
     };
     reader.readAsDataURL(input.files[0]);
@@ -1184,7 +1162,6 @@ function updateHistoryTimers() {
       return;
     }
 
-    // 🌟 မှတ်တမ်းစာရင်းတွင်လည်း ၁၂၀ မိနစ်မှစ၍ မှန်ကန်စွာ ရေတွက်ရန်
     const minutes = Math.floor(distance / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
@@ -1269,7 +1246,7 @@ async function deleteCardFromHistory(cardId, index) {
 
   if (currentUser && currentUser.history) {
     currentUser.history.splice(index, 1);
-    localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+    await syncUserToSupabase();
   }
 
   if (loader) loader.classList.remove('show');
@@ -1471,7 +1448,7 @@ async function generateAndSaveCard() {
           reason: finalReason,
           createdAt: new Date().toLocaleString()
         });
-        localStorage.setItem(`user_${currentUser.num}`, JSON.stringify(currentUser));
+        await syncUserToSupabase();
       }
 
       renderCardData({
