@@ -706,7 +706,7 @@
       100% { transform: scaleY(1); }
     }
 
-    /* 💿 Audio Preview Player with Embedded Dropdown */
+    /* 💿 Audio Preview Player Container */
     .custom-preview-player {
       display: flex;
       align-items: center;
@@ -717,7 +717,7 @@
       border-radius: 14px;
       padding: 6px 12px;
       box-shadow: 0 0 12px var(--accent-glow);
-      position: relative;
+      position: relative; /* Dropdown Full Width အား ရည်ညွှန်းနိုင်ရန် */
     }
 
     .cd-disc-wrapper {
@@ -752,6 +752,7 @@
       flex: 1;
       min-width: 0;
       margin: 0;
+      position: static; /* Dropdown options အား Player Box တစ်ခုလုံးအကျယ်အတိုင်း ပွင့်စေရန် */
     }
 
     #musicCustomSelect .custom-select-trigger {
@@ -766,6 +767,16 @@
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: 12px;
+    }
+
+    /* Full Width Music Dropdown List */
+    #musicCustomSelect .custom-options {
+      top: 100%;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      border-radius: 12px;
+      margin-top: 6px;
     }
 
     .preview-eq-bars {
