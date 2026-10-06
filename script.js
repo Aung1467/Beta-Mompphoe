@@ -499,11 +499,19 @@ function changeLanguage(lang) {
   populateReasonDropdown(currentLang);
 }
 
+// 🛡️ မိုဘိုင်းဘရောက်ဆာများအတွက် Video File ဟုတ်မဟုတ် သေချာစစ်ဆေးပေးသည့် Helper
+function isVideoFile(file) {
+  if (!file) return false;
+  if (file.type && file.type.startsWith('video/')) return true;
+  const ext = file.name ? file.name.split('.').pop().toLowerCase() : '';
+  return ['mp4', 'mov', 'avi', 'mkv', 'webm', '3gp'].includes(ext);
+}
+
 function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   return new Promise((resolve) => {
     if (!file) return resolve('');
     
-    if (file.type.startsWith('video/')) {
+    if (isVideoFile(file)) {
       const reader = new FileReader();
       reader.onload = (e) => resolve(e.target.result);
       reader.onerror = () => resolve('');
@@ -544,16 +552,41 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   });
 }
 
+// 🛡️ Video Duration စစ်ဆေးရာတွင် က้างမနေစေရန် Timeout Fallback ထည့်သွင်းထားသည်
 function getVideoDuration(file) {
   return new Promise((resolve) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
+    
+    let resolved = false;
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        window.URL.revokeObjectURL(video.src);
+        resolve(0); // Timeout ဖြစ်ပါက ဆက်သွားစေရန်
+      }
+    }, 3000);
+
     video.onloadedmetadata = () => {
-      window.URL.revokeObjectURL(video.src);
-      resolve(video.duration);
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        window.URL.revokeObjectURL(video.src);
+        resolve(video.duration);
+      }
     };
-    video.onerror = () => resolve(0);
+    
+    video.onerror = () => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        window.URL.revokeObjectURL(video.src);
+        resolve(0);
+      }
+    };
+    
     video.src = URL.createObjectURL(file);
+    video.load();
   });
 }
 
@@ -895,7 +928,7 @@ async function handleSignup() {
     alert(
       currentLang === 'en'
         ? '⚠️ This ID or Name is already registered.'
-        : '⚠️ ဤ ID သို့မဟုတ် နာမည် အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြားတစ်ခု ပြောင်းသုံးပါ'
+        : '⚠️️ ဤ ID သို့မဟုတ် နာမည် အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြားတစ်ခု ပြောင်းသုံးပါ'
     );
     return;
   }
@@ -1407,24 +1440,30 @@ function selectReasonOption(val, text) {
   toggleCustomReason();
 }
 
+// 🛡️ ပြင်ဆင်ပြီးသား Handle Background Image ဖန်ရှင်
 async function handleBgImage(input) {
   if (input.files && input.files[0]) {
     const file = input.files[0];
+    selectedBgFile = file;
 
-    if (file.type.startsWith('video/')) {
+    const isVid = isVideoFile(file);
+
+    if (isVid) {
+      document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Checking video...` : `⏳ Video စစ်ဆေးနေပါပြီ...`;
       const duration = await getVideoDuration(file);
       if (duration > 15) {
         alert(currentLang === 'en' ? '⚠️ Video duration must not exceed 15 seconds.' : '⚠️ Video ကြာချိန်သည် 15 စက္ကန့်ထက် မပိုရပါ။');
         input.value = '';
+        selectedBgFile = null;
+        savedBgImage = '';
+        document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? '📸/🎬 Choose BG Image or Video' : '📸/🎬 ပုံ သို့မဟုတ် Video';
         return;
       }
     }
 
-    selectedBgFile = file;
     document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ ဖိုင် တင်နေပါပြီ...`;
     savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
     
-    const isVid = file.type.startsWith('video/');
     document.getElementById('bgImgLabel').innerText = `✅ ${isVid ? '🎬 Video' : '📸 Image'} (${file.name})`;
   }
 }
