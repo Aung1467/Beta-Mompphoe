@@ -40,12 +40,24 @@ const localMusicList = [
   { name: '🎵 song13.mp3', url: 'music/song13.mp3' }
 ];
 
-// ဘာသာစကား စာသားများ (မြန်မာ / English)
+// ဘာသာစကား စာသားများ (မြန်မာ / English) - Notice စာသားများအပါအဝင်
 const i18n = {
   my: {
     pageTitle: "Beta Monpphoe",
     introMsg: "ကြိုဆိုပါတယ် ခဏစောင့်ပေးပါ...",
     loaderMsg: "ခဏစောင့်ပါ...",
+    noticeBtnText: "! သိရန်",
+    noticeTitle: "📌 အသုံးပြုသူများသိစေရန်",
+    noticeItems: [
+      "ပြုလုပ်သူသည် အသုံးပြုသူများ၏ Data များအားတောင်းခံခြင်း ရယူသိမ်းဆည်းခြင်းများ ပြုလုပ်မည်မဟုတ်ပါ",
+      "အကောင်းမြင်စိတ်ထားပြီး သင့်တော်သည့်အတိုင်းသာ သုံးကြပါရန်မေတ္တာရပ်ခံပါသည်",
+      "အကောင့်ဝင်ရောက်ပြီးမှသာ မုန့်ဖိုးတောင်းလွှာများ ဖန်တီးနိုင်ပါသည်။",
+      "မှန်ကန်သော QR Code နှင့် နောက်ခံပုံ/ဗီဒီယိုများကို အသုံးပြုပါ။",
+      "ဖန်တီးထားသော ကတ်လင့်ခ်များသည် 120 မိနစ်သာ သက်တမ်းရှိပါသည်။",
+      "ညစ်ညမ်းသော VD/ပုံများ, နိုင်ငံရေး, ဘာသာရေး စသည့်အရာများအာ မပြုလုပ်ကြပါရန် မေတ္တာရပ်ခံပါသည်",
+      'Creator အားမုန့်ဖိုးပေးချင်ပါက, အကြံပြုချက်များပေးလိုပါက / Tiktok: <a href="https://www.tiktok.com/@_yato_003?_r=1&_t=ZS-9AIzhZsSGE3" target="_blank" style="color: #00f2fe; text-decoration: underline;">@Yato</a>'
+    ],
+    noticeCloseText: "ပိတ်မည်",
     authTitle: "အကောင့်ဝင်ရန်",
     modeSelectLabel: "အမျိုးအစား ရွေးချယ်ရန်",
     optLogin: "အကောင့်ရှိပြီးသား",
@@ -105,6 +117,18 @@ const i18n = {
     pageTitle: "Beta Monpphoe",
     introMsg: "Welcome! Please wait...",
     loaderMsg: "Please wait...",
+    noticeBtnText: "! Notice",
+    noticeTitle: "📌 Notice for Users",
+    noticeItems: [
+      "The creator does not collect or store users' personal data.",
+      "Please use this app responsibly with a positive mindset.",
+      "You can only create pocket money requests after logging in.",
+      "Please use correct QR codes and background images/videos.",
+      "Created card links are only valid for 120 minutes.",
+      "Please avoid inappropriate content, politics, or religious items.",
+      'If you want to send pocket money or give feedback / Tiktok: <a href="https://www.tiktok.com/@_yato_003?_r=1&_t=ZS-9AIzhZsSGE3" target="_blank" style="color: #00f2fe; text-decoration: underline;">@Yato</a>'
+    ],
+    noticeCloseText: "Close",
     authTitle: "Account Auth",
     modeSelectLabel: "Select Option",
     optLogin: "Login Existing Account",
@@ -335,15 +359,6 @@ cardStyleInjected.innerHTML = `
     align-items: center;
     gap: 6px;
   }
-
-  .custom-preview-player {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 4px 0 !important;
-    margin: 4px auto !important;
-    height: auto !important;
-  }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -353,6 +368,24 @@ function updateTexts() {
   if(document.getElementById('page_title')) document.getElementById('page_title').innerText = d.pageTitle;
   if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
   if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
+  
+  // Notice Modal texts
+  if(document.getElementById('btn_notice')) document.getElementById('btn_notice').innerText = d.noticeBtnText;
+  if(document.getElementById('lbl_noticeTitle')) document.getElementById('lbl_noticeTitle').innerText = d.noticeTitle;
+  const noticeListEl = document.getElementById('lbl_noticeList');
+  if(noticeListEl && d.noticeItems) {
+    noticeListEl.innerHTML = '';
+    d.noticeItems.forEach((itemText, index) => {
+      const li = document.createElement('li');
+      if (index === d.noticeItems.length - 1) {
+        li.style.marginTop = '6px';
+      }
+      li.innerHTML = itemText;
+      noticeListEl.appendChild(li);
+    });
+  }
+  if(document.getElementById('btn_noticeClose')) document.getElementById('btn_noticeClose').innerText = d.noticeCloseText;
+
   if(document.getElementById('lbl_authTitle')) document.getElementById('lbl_authTitle').innerText = d.authTitle;
   if(document.getElementById('lbl_modeSelect')) document.getElementById('lbl_modeSelect').innerText = d.modeSelectLabel;
 
@@ -800,7 +833,6 @@ function selectAuthModeOption(val, text) {
   switchAuthMode(val);
 }
 
-// 🌟 Supabase ဖြင့် အကောင့်သစ်ဖွင့်ခြင်း (Signup with Supabase)
 async function handleSignup() {
   const name = document.getElementById('signupName').value.trim();
   const num = document.getElementById('signupNum').value.trim();
@@ -818,7 +850,6 @@ async function handleSignup() {
     return;
   }
 
-  // Check if ID or Name already exists in Supabase
   const { data: existingUser } = await sb
     .from('users')
     .select('*')
@@ -863,7 +894,6 @@ async function handleSignup() {
   goToStep(2);
 }
 
-// 🌟 Supabase ဖြင့် အကောင့်ဝင်ခြင်း (Login with Supabase)
 async function handleLogin() {
   const name = document.getElementById('loginName').value.trim();
   const pass = document.getElementById('loginPass').value;
@@ -911,7 +941,6 @@ function setupProfileView() {
   }
 }
 
-// 🌟 Supabase ထဲတွင် User Data ကို Sync လုပ်ရန် Helper
 async function syncUserToSupabase() {
   if (!currentUser) return;
   const sb = getSupabase();
