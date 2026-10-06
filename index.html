@@ -921,24 +921,31 @@
 
       <div class="form-group">
         <label id="lbl_musicLabel"></label>
-        <div class="custom-select-wrapper" id="musicCustomSelect">
-          <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
-            <span id="musicTriggerText"></span>
-            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-          </div>
-          <div class="custom-options" id="musicCustomOptions"></div>
-        </div>
-        <input type="hidden" id="musicDropdown" value="">
-      </div>
+<div class="custom-select-wrapper" id="musicCustomSelect">
+  <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
+    <span id="musicTriggerText"></span>
+    <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+  </div>
+  <div class="custom-options" id="musicCustomOptions"></div>
+  <input type="hidden" id="musicDropdown" value="">
+</div>
 
-      <div class="form-group" id="audioPreviewGroup" style="display: none;">
-        <div class="custom-preview-player">
-          <div class="preview-eq-bars">
-            <div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div>
-          </div>
-        </div>
-        <audio id="audioPreviewPlayer" style="display: none;"></audio>
+<div class="form-group" id="audioPreviewGroup" style="display: none;">
+  <div class="custom-preview-player">
+    <!-- 💿 CD Disc အဝိုင်းလေး -->
+    <div class="cd-disc-wrapper">
+      <div class="cd-disc" id="cdDiscElement">
+        <div class="cd-center"></div>
       </div>
+    </div>
+
+    <!-- မူရင်း Equalizer Bars -->
+    <div class="preview-eq-bars">
+      <div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div>
+    </div>
+  </div>
+  <audio id="audioPreviewPlayer" style="display: none;"></audio>
+</div>
 
       <div class="form-group">
         <label id="lbl_bgLabel"></label>

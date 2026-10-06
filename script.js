@@ -221,7 +221,7 @@ const i18n = {
   }
 };
 
-// 🌟 Injected CSS Styles (သီချင်းရွေးချယ်သည့်နေရာနှင့် နောက်ခံပုံကြား Spacing ညှိချက် အပါအဝင်)
+// 🌟 Injected CSS Styles (CD Disc ဒီဇိုင်း၊ သီချင်းရွေးချယ်သည့်နေရာနှင့် နောက်ခံပုံကြား Spacing ညှိချက် အပါအဝင်)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes float1to1 {
@@ -242,6 +242,51 @@ cardStyleInjected.innerHTML = `
       border-color: #ff3838;
       box-shadow: 0 0 8px #ff4d4d, 0 0 16px #ff9f1a, inset 0 0 8px #ff3838;
     }
+  }
+
+  /* 💿 CD Disc Style */
+  .custom-preview-player {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    margin-top: 8px !important;
+  }
+
+  .cd-disc-wrapper {
+    width: 48px;
+    height: 48px;
+    position: relative;
+  }
+
+  .cd-disc {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #1e293b 22%, #0f172a 25%, #334155 35%, #0f172a 65%, #00f2fe 100%);
+    border: 2px solid #00f2fe;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spinCD 3s linear infinite;
+  }
+
+  .cd-disc.paused {
+    animation-play-state: paused;
+  }
+
+  .cd-center {
+    width: 14px;
+    height: 14px;
+    background: #090d16;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+  }
+
+  @keyframes spinCD {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
   .preview-eq-bars, #audioPreviewGroup .preview-eq-bars {
@@ -662,7 +707,7 @@ function selectMusicOption(url, name) {
   const previewGroup = document.getElementById('audioPreviewGroup');
   const player = document.getElementById('audioPreviewPlayer');
   if (previewGroup && player) {
-    previewGroup.style.display = 'block';
+    previewGroup.style.display = 'flex';
     player.src = url;
     player.load();
     player.loop = true;
@@ -952,7 +997,7 @@ async function handleSignup() {
   if (p1.length < 6 || !hasEnglishLetter) {
     alert(
       currentLang === 'en'
-        ? '⚠️️ Password must be at least 6 characters and contain English letters.'
+        ? '⚠ Password must be at least 6 characters and contain English letters.'
         : '⚠️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
     );
     return;
