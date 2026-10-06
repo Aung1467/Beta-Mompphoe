@@ -620,6 +620,45 @@
       z-index: 3;
     }
 
+    .custom-music-player {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(14, 17, 36, 0.9);
+      border: 1.5px solid var(--accent);
+      border-radius: 16px;
+      padding: 6px 12px !important;
+      max-height: 52px !important;
+      margin-bottom: 12px;
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .spinning-disc {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff0055, #00f2fe, #ff0055);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinDisc 3s linear infinite;
+      box-shadow: 0 0 8px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .spinning-disc-inner {
+      width: 12px;
+      height: 12px;
+      background: #05030f;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    @keyframes spinDisc {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .anime-dancer-free {
       width: 40px !important;
       height: 40px !important;
