@@ -377,7 +377,8 @@
     .profile-action-row {
       display: flex;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-top: 10px;
+      margin-bottom: 14px;
     }
 
     .profile-small-btn, .file-btn {
@@ -824,12 +825,18 @@
       <h2 id="lbl_profileTitle"></h2>
       
       <div class="profile-container">
+        <!-- 1. Profile Avatar -->
         <div class="profile-avatar-box" id="profileAvatarBox">
           <svg width="38" height="38" viewBox="0 0 24 24" fill="#a4b0be">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
         </div>
 
+        <!-- 2. Name & ID under Avatar -->
+        <div class="profile-name" id="displayProfileName"></div>
+        <div class="profile-id" id="displayProfileNum"></div>
+
+        <!-- 3. Action Buttons (Change Avatar & Name) in a smart row -->
         <div class="profile-action-row">
           <div class="file-input-wrapper profile-small-btn">
             <span id="lbl_changeAvatar"></span>
@@ -840,9 +847,7 @@
           </button>
         </div>
 
-        <div class="profile-name" id="displayProfileName"></div>
-        <div class="profile-id" id="displayProfileNum"></div>
-
+        <!-- 4. Main Dashboard Buttons -->
         <div class="dashboard-actions">
           <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;"></button>
           <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;"></button>
