@@ -221,7 +221,7 @@ const i18n = {
   }
 };
 
-// 🌟 Injected CSS Styles
+// 🌟 Injected CSS Styles (သီချင်းရွေးချယ်သည့်နေရာနှင့် နောက်ခံပုံကြား Spacing ညှိချက် အပါအဝင်)
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes float1to1 {
@@ -276,10 +276,25 @@ cardStyleInjected.innerHTML = `
     100% { height: 100%; opacity: 1; }
   }
 
+  #musicCustomSelect {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 6px !important; /* 🛠️ Spacing ညှိရန် */
+  }
+
   #musicCustomSelect .custom-select-trigger {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
+  }
+
+  #audioPreviewGroup {
+    margin-bottom: 6px !important;
+    margin-top: 0px !important; /* 🛠️ Spacing ညှိရန် */
+  }
+
+  #lbl_bgLabel {
+    margin-top: 2px !important; /* 🛠️ Spacing ညှိရန် */
   }
 
   #outReason {
@@ -928,7 +943,7 @@ async function handleSignup() {
     alert(
       currentLang === 'en'
         ? '⚠️ This ID or Name is already registered.'
-        : '⚠️️ ဤ ID သို့မဟုတ် နာမည် အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြားတစ်ခု ပြောင်းသုံးပါ'
+        : '⚠ ဤ ID သို့မဟုတ် နာမည် အသုံးပြုပြီးသား ဖြစ်ပါသည်။ အခြားတစ်ခု ပြောင်းသုံးပါ'
     );
     return;
   }
@@ -937,7 +952,7 @@ async function handleSignup() {
   if (p1.length < 6 || !hasEnglishLetter) {
     alert(
       currentLang === 'en'
-        ? '⚠️ Password must be at least 6 characters and contain English letters.'
+        ? '⚠️️ Password must be at least 6 characters and contain English letters.'
         : '⚠️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
     );
     return;
