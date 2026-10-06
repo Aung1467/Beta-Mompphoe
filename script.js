@@ -1,4 +1,4 @@
- // --- Custom Alert ဖန်ရှင်နှင့် Window Alert Override ---
+// --- Custom Alert ဖန်ရှင်နှင့် Window Alert Override ---
 function showCustomAlert(message) {
   let alertBox = document.getElementById('customAlertBox');
   if (!alertBox) {
@@ -276,15 +276,19 @@ cardStyleInjected.innerHTML = `
     100% { height: 100%; opacity: 1; }
   }
 
-  /* Dropdown Wrapper Positioning */
+  /* Dropdown Wrapper Positioning & Width Fix */
   .custom-select-wrapper, #musicCustomSelect, #reasonCustomSelect {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
     margin-bottom: 6px !important;
   }
 
   #musicCustomSelect .custom-select-trigger, .custom-select-trigger {
+    width: 100% !important;
+    box-sizing: border-box !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -330,9 +334,20 @@ cardStyleInjected.innerHTML = `
     color: #00f2fe !important;
   }
 
+  /* Audio Preview Group Width Fix */
   #audioPreviewGroup {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     margin-bottom: 6px !important;
     margin-top: 0px !important;
+  }
+
+  #audioPreviewPlayer {
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   #lbl_bgLabel {
@@ -686,7 +701,7 @@ function populateMusicDropdown() {
     const previewGroup = document.getElementById('audioPreviewGroup');
     const player = document.getElementById('audioPreviewPlayer');
     if (previewGroup && player) {
-      previewGroup.style.display = 'block';
+      previewGroup.style.display = 'flex';
       player.src = localMusicList[0].url;
       player.load();
       player.loop = true;
@@ -994,7 +1009,7 @@ async function handleSignup() {
     alert(
       currentLang === 'en'
         ? '⚠ Password must be at least 6 characters and contain English letters.'
-        : '⚠️️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
+        : '⚠ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
     );
     return;
   }
