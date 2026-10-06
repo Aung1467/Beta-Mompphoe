@@ -221,7 +221,7 @@ const i18n = {
   }
 };
 
-// 🌟 Injected CSS Styles (CD Disc ဒီဇိုင်း၊ သီချင်းရွေးချယ်သည့်နေရာနှင့် နောက်ခံပုံကြား Spacing ညှိချက် အပါအဝင်)
+// 🌟 Injected CSS Styles
 const cardStyleInjected = document.createElement('style');
 cardStyleInjected.innerHTML = `
   @keyframes float1to1 {
@@ -242,51 +242,6 @@ cardStyleInjected.innerHTML = `
       border-color: #ff3838;
       box-shadow: 0 0 8px #ff4d4d, 0 0 16px #ff9f1a, inset 0 0 8px #ff3838;
     }
-  }
-
-  /* 💿 CD Disc Style */
-  .custom-preview-player {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 15px !important;
-    margin-top: 8px !important;
-  }
-
-  .cd-disc-wrapper {
-    width: 48px;
-    height: 48px;
-    position: relative;
-  }
-
-  .cd-disc {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: radial-gradient(circle, #1e293b 22%, #0f172a 25%, #334155 35%, #0f172a 65%, #00f2fe 100%);
-    border: 2px solid #00f2fe;
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: spinCD 3s linear infinite;
-  }
-
-  .cd-disc.paused {
-    animation-play-state: paused;
-  }
-
-  .cd-center {
-    width: 14px;
-    height: 14px;
-    background: #090d16;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-  }
-
-  @keyframes spinCD {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
   }
 
   .preview-eq-bars, #audioPreviewGroup .preview-eq-bars {
@@ -324,7 +279,7 @@ cardStyleInjected.innerHTML = `
   #musicCustomSelect {
     display: flex !important;
     flex-direction: column !important;
-    margin-bottom: 6px !important; /* 🛠️ Spacing ညှိရန် */
+    margin-bottom: 6px !important;
   }
 
   #musicCustomSelect .custom-select-trigger {
@@ -335,11 +290,11 @@ cardStyleInjected.innerHTML = `
 
   #audioPreviewGroup {
     margin-bottom: 6px !important;
-    margin-top: 0px !important; /* 🛠️ Spacing ညှိရန် */
+    margin-top: 0px !important;
   }
 
   #lbl_bgLabel {
-    margin-top: 2px !important; /* 🛠️ Spacing ညှိရန် */
+    margin-top: 2px !important;
   }
 
   #outReason {
@@ -612,7 +567,6 @@ function compressFileToDataUrl(file, maxWidth = 900, quality = 0.8) {
   });
 }
 
-// 🛡️ Video Duration စစ်ဆေးရာတွင် က้างမနေစေရန် Timeout Fallback ထည့်သွင်းထားသည်
 function getVideoDuration(file) {
   return new Promise((resolve) => {
     const video = document.createElement('video');
@@ -623,7 +577,7 @@ function getVideoDuration(file) {
       if (!resolved) {
         resolved = true;
         window.URL.revokeObjectURL(video.src);
-        resolve(0); // Timeout ဖြစ်ပါက ဆက်သွားစေရန်
+        resolve(0);
       }
     }, 3000);
 
@@ -1500,7 +1454,6 @@ function selectReasonOption(val, text) {
   toggleCustomReason();
 }
 
-// 🛡️ ပြင်ဆင်ပြီးသား Handle Background Image ဖန်ရှင်
 async function handleBgImage(input) {
   if (input.files && input.files[0]) {
     const file = input.files[0];
