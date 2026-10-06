@@ -1,3 +1,38 @@
+// --- Custom Alert ဖန်ရှင်နှင့် Window Alert Override ---
+function showCustomAlert(message) {
+  let alertBox = document.getElementById('customAlertBox');
+  if (!alertBox) {
+    alertBox = document.createElement('div');
+    alertBox.id = 'customAlertBox';
+    alertBox.style.cssText = `
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+      background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(0, 242, 254, 0.5);
+      color: #fff; padding: 12px 20px; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 242, 254, 0.3); z-index: 99999; font-size: 13.5px;
+      display: flex; align-items: center; gap: 10px; opacity: 0; transition: all 0.3s ease;
+      backdrop-filter: blur(6px); text-align: center; max-width: 90%;
+    `;
+    document.body.appendChild(alertBox);
+  }
+  alertBox.innerHTML = `<span>${message}</span>`;
+  alertBox.style.display = 'flex';
+  setTimeout(() => {
+    alertBox.style.opacity = '1';
+    alertBox.style.transform = 'translateX(-50%) translateY(0)';
+  }, 10);
+
+  setTimeout(() => {
+    alertBox.style.opacity = '0';
+    alertBox.style.transform = 'translateX(-50%) translateY(-20px)';
+    setTimeout(() => { alertBox.style.display = 'none'; }, 300);
+  }, 3000);
+}
+
+// မူရင်း code ထဲက alert များကို custom style ဖြင့် အလိုအလျောက် ဖော်ပြပေးမည်
+window.alert = function(msg) {
+  showCustomAlert(msg);
+};
+
 // Supabase Credentials
 const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_H7XpgD2tcobQnTTH68p4Nw_9TNfH9tX';
@@ -54,7 +89,7 @@ const i18n = {
       "အကောင့်ဝင်ရောက်ပြီးမှသာ မုန့်ဖိုးတောင်းလွှာများ ဖန်တီးနိုင်ပါသည်။",
       "မှန်ကန်သော QR Code နှင့် နောက်ခံပုံ/ဗီဒီယိုများကို အသုံးပြုပါ။",
       "ဖန်တီးထားသော ကတ်လင့်ခ်များသည် 120 မိနစ်သာ သက်တမ်းရှိပါသည်။",
-      "ညစ်ညမ်းသော VD/ပုံများ, နိုင်ငံရေး, ဘာသာရေး စသည့်အရာများအာ မပြုလုပ်ကြပါရန် မေတ္တာရပ်ခံပါသည်",
+      "ညစ်ညမ်းသော VD/ပုံများ, နိုင်ငံရေး, ဘာသာရေး စသည့်အရာများအား မပြုလုပ်ကြပါရန် မေတ္တာရပ်ခံပါသည်",
       'Creator အားမုန့်ဖိုးပေးချင်ပါက, အကြံပြုချက်များပေးလိုပါက / Tiktok: <a href="https://www.tiktok.com/@_yato_003?_r=1&_t=ZS-9AIzhZsSGE3" target="_blank" style="color: #00f2fe; text-decoration: underline;">@Yato</a>'
     ],
     noticeCloseText: "ပိတ်မည်",
