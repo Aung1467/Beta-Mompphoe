@@ -707,6 +707,11 @@
     }
 
     /* 💿 Audio Preview Player Container */
+    #audioPreviewGroup {
+      position: relative;
+      z-index: 30; /* Dropdown ပွင့်ပါက အောက်မှ Form element များပေါ်သို့ မိုးပြီး ပေါ်စေရန် */
+    }
+
     .custom-preview-player {
       display: flex;
       align-items: center;
@@ -717,7 +722,7 @@
       border-radius: 14px;
       padding: 6px 12px;
       box-shadow: 0 0 12px var(--accent-glow);
-      position: relative; /* Dropdown Full Width အား ရည်ညွှန်းနိုင်ရန် */
+      position: relative;
     }
 
     .cd-disc-wrapper {
@@ -752,7 +757,7 @@
       flex: 1;
       min-width: 0;
       margin: 0;
-      position: static; /* Dropdown options အား Player Box တစ်ခုလုံးအကျယ်အတိုင်း ပွင့်စေရန် */
+      position: relative; /* relative ဟု ပြောင်းလဲထားသောကြောင့် position မလွဲတော့ပါ */
     }
 
     #musicCustomSelect .custom-select-trigger {
@@ -769,7 +774,7 @@
       font-size: 12px;
     }
 
-    /* Full Width Music Dropdown List */
+    /* Music Dropdown List */
     #musicCustomSelect .custom-options {
       top: 100%;
       left: 0;
@@ -777,6 +782,11 @@
       z-index: 100;
       border-radius: 12px;
       margin-top: 6px;
+    }
+
+    /* Music Dropdown Open State - Card မှာ Scrollbar မပေါ်စေရန် အမြင့်ထိန်းညှိထားပါသည် */
+    #musicCustomSelect.open .custom-options {
+      max-height: 150px;
     }
 
     .preview-eq-bars {

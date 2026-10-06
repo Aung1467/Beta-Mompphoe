@@ -1,4 +1,4 @@
-// --- Custom Alert ဖန်ရှင်နှင့် Window Alert Override ---
+ // --- Custom Alert ဖန်ရှင်နှင့် Window Alert Override ---
 function showCustomAlert(message) {
   let alertBox = document.getElementById('customAlertBox');
   if (!alertBox) {
@@ -276,16 +276,58 @@ cardStyleInjected.innerHTML = `
     100% { height: 100%; opacity: 1; }
   }
 
-  #musicCustomSelect {
+  /* Dropdown Wrapper Positioning */
+  .custom-select-wrapper, #musicCustomSelect, #reasonCustomSelect {
+    position: relative !important;
     display: flex !important;
     flex-direction: column !important;
     margin-bottom: 6px !important;
   }
 
-  #musicCustomSelect .custom-select-trigger {
+  #musicCustomSelect .custom-select-trigger, .custom-select-trigger {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
+    cursor: pointer !important;
+  }
+
+  /* Fix for Music & Reason Dropdown Overflow & Overlaying */
+  .custom-options, #musicCustomOptions, #reasonDropdown {
+    display: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-height: 180px !important;
+    overflow-y: auto !important;
+    z-index: 99999 !important;
+    background: rgba(15, 23, 42, 0.98) !important;
+    border: 1.5px solid rgba(0, 242, 254, 0.5) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(10px) !important;
+    margin-top: 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .custom-select-wrapper.open .custom-options,
+  #musicCustomSelect.open #musicCustomOptions,
+  #reasonCustomSelect.open #reasonDropdown {
+    display: block !important;
+  }
+
+  .custom-option {
+    padding: 10px 14px !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    color: #fff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    transition: background 0.2s ease !important;
+  }
+
+  .custom-option:hover {
+    background: rgba(0, 242, 254, 0.15) !important;
+    color: #00f2fe !important;
   }
 
   #audioPreviewGroup {
@@ -952,7 +994,7 @@ async function handleSignup() {
     alert(
       currentLang === 'en'
         ? '⚠ Password must be at least 6 characters and contain English letters.'
-        : '⚠️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
+        : '⚠️️ Password သည် အနည်းဆုံး ၆ လုံး ရှိရမည်ဖြစ်ပြီး English စာလုံး ပါဝင်ရပါမည်။'
     );
     return;
   }
