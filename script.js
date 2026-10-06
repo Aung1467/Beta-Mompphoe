@@ -40,7 +40,7 @@ const localMusicList = [
   { name: '🎵 song13.mp3', url: 'music/song13.mp3' }
 ];
 
-// ဘာသာစကား စာသားများ (မြန်မာ / English)
+// 🌍 ဘာသာစကား စာသားများ (မြန်မာ၊ English၊ Thai၊ Chinese၊ Japanese)
 const i18n = {
   my: {
     pageTitle: "Beta Monpphoe",
@@ -81,7 +81,6 @@ const i18n = {
     backBtn: "⬅ နောက်သို့",
     genCardBtn: "ကတ်ဖန်တီးမည် ✨",
     step4Title: " မုန့်ဖိုးတောင်းလွှာ ",
-    qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 မျှဝေရန်",
     profileReturnBtn: "🏠 Profile သို့ပြန်ရန်",
@@ -140,7 +139,6 @@ const i18n = {
     backBtn: "⬅ Back",
     genCardBtn: "Create Card",
     step4Title: " Pocket Money Request ",
-    qrHint: "", 
     saveBtn: "💾 Save QR",
     shareBtn: "📤 Share Request",
     profileReturnBtn: "🏠 Return to Profile",
@@ -158,6 +156,180 @@ const i18n = {
       { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "Hang out with friends" },
       { val: "သုံးစရာမရှိတော့လို့", text: "Out of pocket money" },
       { val: "အခြား", text: "Other (Custom)" }
+    ]
+  },
+  th: {
+    pageTitle: "Beta Monpphoe",
+    introMsg: "ยินดีต้อนรับ กรุณารอสักครู่...",
+    loaderMsg: "กำลังโหลด...",
+    authTitle: "เข้าสู่ระบบบัญชี",
+    modeSelectLabel: "เลือกประเภท",
+    optLogin: "มีบัญชีอยู่แล้ว",
+    optSignup: "สร้างบัญชีใหม่",
+    nameLabel: "ชื่อ",
+    namePlaceholder: "กรอกชื่อของคุณ",
+    numLabel: "หมายเลข ID",
+    numPlaceholder: "ใส่ ID อะไรก็ได้",
+    passLabel: "รหัสผ่าน",
+    passPlaceholder: "กรอกรหัสผ่าน",
+    pass2Label: "ยืนยันรหัสผ่าน",
+    pass2Placeholder: "กรอกรหัสผ่านอีกครั้ง",
+    loginBtn: "เข้าสู่ระบบ",
+    signupBtn: "สมัครสมาชิก",
+    profileTitle: "ข้อมูลส่วนตัว",
+    changeAvatar: "เปลี่ยนรูปโปรไฟล์",
+    changeNickBtn: "เปลี่ยนชื่อ",
+    reqPocketBtn: "🧧 ขอเงินค่าขนม",
+    historyBtn: "ประวัติ",
+    historyTitle: "ประวัติคำขอ",
+    backHistoryBtn: "⬅ ย้อนกลับ",
+    step3Title: "รายละเอียดคำขอ",
+    dropdownLabel: "เลือกเหตุผล",
+    customReasonLabel: "เหตุผลเพิ่มเติม",
+    customReasonPlaceholder: "ระบุเหตุผลของคุณ",
+    customNoteLabel: "ข้อความ/หมายเหตุ",
+    customNotePlaceholder: "พิมพ์ข้อความของคุณที่นี่...",
+    musicLabel: "เลือกเพลง",
+    bgLabel: "รูปภาพพื้นหลัง / วิดีโอ (สูงสุด 15 วินาที)",
+    bgBtn: "📸/🎬 เลือกภาพพื้นหลังหรือวิดีโอ",
+    qrLabel: "QR Code / ข้อมูลการชำระเงิน",
+    qrBtn: "💳 เลือก QR Code / รูปภาพ",
+    backBtn: "⬅ ย้อนกลับ",
+    genCardBtn: "สร้างการ์ด ✨",
+    step4Title: " คำขอค่าขนม ",
+    saveBtn: "💾 บันทึก QR",
+    shareBtn: "📤 แชร์",
+    profileReturnBtn: "🏠 กลับสู่โปรไฟล์",
+    modalTitle: "📤 แชร์ลิงก์",
+    modalSub: "ส่งการ์ดคำขอและลิงก์ของคุณไปที่:",
+    copyLinkBtn: "📋 คัดลอกลิงก์",
+    dl1to1Btn: "📥 บันทึก QR",
+    closeBtn: "ปิด",
+    alertNote: "❌ กรุณากรอกหมายเหตุ/ข้อความ",
+    alertBg: "❌ กรุณาอัปโหลดรูปภาพพื้นหลังหรือวิดีโอ (สูงสุด 15 วินาที)",
+    alertQr: "❌ กรุณาอัปโหลด QR Code / รูปภาพการชำระเงิน",
+    reasons: [
+      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "เงินค่าขนมเทศกาล" },
+      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "ไปเที่ยวกับแฟน" },
+      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "ไปเที่ยวกับเพื่อน" },
+      { val: "သုံးစရာမရှိတော့လို့", text: "เงินหมดแล้ว" },
+      { val: "အခြား", text: "อื่นๆ (กำหนดเอง)" }
+    ]
+  },
+  zh: {
+    pageTitle: "Beta Monpphoe",
+    introMsg: "欢迎！请稍候...",
+    loaderMsg: "请稍候...",
+    authTitle: "账户验证",
+    modeSelectLabel: "选择选项",
+    optLogin: "已有账户登录",
+    optSignup: "注册新账户",
+    nameLabel: "姓名",
+    namePlaceholder: "输入您的姓名",
+    numLabel: "ID号码",
+    numPlaceholder: "输入任意ID",
+    passLabel: "密码",
+    passPlaceholder: "输入密码",
+    pass2Label: "确认密码",
+    pass2Placeholder: "再次输入密码",
+    loginBtn: "登录",
+    signupBtn: "注册",
+    profileTitle: "用户资料",
+    changeAvatar: "更换头像",
+    changeNickBtn: "修改姓名",
+    reqPocketBtn: "🧧 请求零花钱",
+    historyBtn: "历史记录",
+    historyTitle: "请求历史",
+    backHistoryBtn: "⬅ 返回",
+    step3Title: "请求详情",
+    dropdownLabel: "选择理由",
+    customReasonLabel: "自定义理由",
+    customReasonPlaceholder: "输入您的理由",
+    customNoteLabel: "备注/留言",
+    customNotePlaceholder: "在此输入您的备注...",
+    musicLabel: "选择音乐",
+    bgLabel: "背景图片/视频（最多15秒）",
+    bgBtn: "📸/🎬 选择背景图片或视频",
+    qrLabel: "二维码/支付信息",
+    qrBtn: "💳 选择二维码图片",
+    backBtn: "⬅ 返回",
+    genCardBtn: "生成卡片 ✨",
+    step4Title: " 零花钱请求卡 ",
+    saveBtn: "💾 保存二维码",
+    shareBtn: "📤 分享请求",
+    profileReturnBtn: "🏠 返回个人资料",
+    modalTitle: "📤 分享链接",
+    modalSub: "将您的请求卡和链接发送至：",
+    copyLinkBtn: "📋 复制链接",
+    dl1to1Btn: "📥 保存二维码",
+    closeBtn: "关闭",
+    alertNote: "❌ 请填写备注字段。",
+    alertBg: "❌ 请上传背景图片或视频（最多15秒）。",
+    alertQr: "❌ 请上传二维码/支付图片。",
+    reasons: [
+      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "节日零花钱" },
+      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "和恋人出去逛街" },
+      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "和朋友出去玩" },
+      { val: "သုံးစရာမရှိတော့လို့", text: "零花钱花光了" },
+      { val: "အခြား", text: "其他（自定义）" }
+    ]
+  },
+  ja: {
+    pageTitle: "Beta Monpphoe",
+    introMsg: "ようこそ！お待ちください...",
+    loaderMsg: "お待ちください...",
+    authTitle: "アカウント認証",
+    modeSelectLabel: "オプション選択",
+    optLogin: "既存のアカウントでログイン",
+    optSignup: "新規アカウント作成",
+    nameLabel: "名前",
+    namePlaceholder: "お名前を入力",
+    numLabel: "ID番号",
+    numPlaceholder: "任意のIDを入力",
+    passLabel: "パスワード",
+    passPlaceholder: "パスワードを入力",
+    pass2Label: "パスワード確認",
+    pass2Placeholder: "パスワードを再入力",
+    loginBtn: "ログイン",
+    signupBtn: "登録",
+    profileTitle: "ユーザープロフィール",
+    changeAvatar: "アバター変更",
+    changeNickBtn: "名前編集",
+    reqPocketBtn: "🧧 お小遣いをリクエスト",
+    historyBtn: "履歴",
+    historyTitle: "リクエスト履歴",
+    backHistoryBtn: "⬅ 戻る",
+    step3Title: "リクエスト詳細",
+    dropdownLabel: "理由を選択",
+    customReasonLabel: "カスタム理由",
+    customReasonPlaceholder: "理由を入力",
+    customNoteLabel: "カスタムメモ / メッセージ",
+    customNotePlaceholder: "ここにメモを入力...",
+    musicLabel: "音楽を選択",
+    bgLabel: "背景画像 / 動画（最大15秒）",
+    bgBtn: "📸/🎬 背景画像または動画を選択",
+    qrLabel: "QRコード / 支払い情報",
+    qrBtn: "💳 QR画像を選択",
+    backBtn: "⬅ 戻る",
+    genCardBtn: "カードを作成 ✨",
+    step4Title: " お小遣いリクエスト ",
+    saveBtn: "💾 QR保存",
+    shareBtn: "📤 共有",
+    profileReturnBtn: "🏠 プロフィールに戻る",
+    modalTitle: "📤 リンク共有",
+    modalSub: "リクエストカードとリンクの送信先：",
+    copyLinkBtn: "📋 リンクをコピー",
+    dl1to1Btn: "📥 QR保存",
+    closeBtn: "閉じる",
+    alertNote: "❌ カスタムメモ欄を入力してください。",
+    alertBg: "❌ 背景画像または動画（最大15秒）をアップロードしてください。",
+    alertQr: "❌ QRコード/支払い画像をアップロードしてください。",
+    reasons: [
+      { val: "သတင်းကျွတ်မုန့်ဖိုး", text: "お祭りのお小遣い" },
+      { val: "ရည်းစားနဲ့လျှောက်လည်ရန်", text: "恋人と出かける" },
+      { val: "သူငယ်ချင်းတွေနဲ့လျှောက်လည်ရန်", text: "友達と遊びに行く" },
+      { val: "သုံးစရာမရှိတော့လို့", text: "お小遣いが尽きました" },
+      { val: "အခြား", text: "その他（カスタム）" }
     ]
   }
 };
@@ -427,6 +599,10 @@ function updateTexts() {
 
 function changeLanguage(lang) {
   currentLang = lang || 'my';
+  const langLabels = { my: '🇲🇲 မြန်မာ', en: '🇬🇧 English', th: '🇹🇭 ไทย', zh: '🇨🇳 中文', ja: '🇯🇵 日本語' };
+  document.getElementById('langTriggerText').innerText = langLabels[currentLang] || '🇲🇲 မြန်မာ';
+  document.getElementById('langCustomSelect').classList.remove('open');
+
   updateTexts();
   populateReasonDropdown(currentLang);
 }
@@ -818,7 +994,6 @@ async function handleSignup() {
     return;
   }
 
-  // Check if ID or Name already exists in Supabase
   const { data: existingUser } = await sb
     .from('users')
     .select('*')
@@ -1029,40 +1204,21 @@ function renderHistoryList() {
   currentUser.history.forEach((item, index) => {
     const row = document.createElement('div');
     row.className = 'history-item-row';
-    row.style.display = 'flex';
-    row.style.flexDirection = 'column';
-    row.style.position = 'relative';
-    row.style.padding = '8px 12px';
-    row.style.marginBottom = '6px';
-    row.style.borderRadius = '10px';
-    row.style.background = 'rgba(15, 23, 42, 0.85)';
-    row.style.border = '1px solid rgba(255, 255, 255, 0.08)';
+    row.style.cssText = 'display: flex; flex-direction: column; position: relative; padding: 8px 12px; margin-bottom: 6px; border-radius: 10px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08);';
 
     const topRow = document.createElement('div');
-    topRow.style.display = 'flex';
-    topRow.style.justifyContent = 'space-between';
-    topRow.style.alignItems = 'center';
-    topRow.style.width = '100%';
-    topRow.style.position = 'relative';
-    topRow.style.marginBottom = '2px';
+    topRow.style.cssText = 'display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative; margin-bottom: 2px;';
 
     const expireText = document.createElement('span');
     expireText.className = 'history-timer-span';
-    expireText.style.fontSize = '11px';
-    expireText.style.color = '#ff4757';
-    expireText.style.fontWeight = '600';
+    expireText.style.cssText = 'font-size: 11px; color: #ff4757; font-weight: 600;';
     expireText.dataset.cardId = item.id;
     expireText.innerText = '120:00';
 
     const menuBtn = document.createElement('button');
     menuBtn.className = 'history-menu-btn';
     menuBtn.innerHTML = '≡';
-    menuBtn.style.background = 'transparent';
-    menuBtn.style.border = 'none';
-    menuBtn.style.color = '#fff';
-    menuBtn.style.fontSize = '16px';
-    menuBtn.style.cursor = 'pointer';
-    menuBtn.style.padding = '0 4px';
+    menuBtn.style.cssText = 'background: transparent; border: none; color: #fff; font-size: 16px; cursor: pointer; padding: 0 4px;';
     menuBtn.onclick = (e) => {
       e.stopPropagation();
       toggleHistoryDropdown(index);
@@ -1074,34 +1230,18 @@ function renderHistoryList() {
     const dropdown = document.createElement('div');
     dropdown.className = 'history-dropdown-menu';
     dropdown.id = `historyDropdown_${index}`;
-    dropdown.style.position = 'absolute';
-    dropdown.style.top = '26px';
-    dropdown.style.right = '0';
-    dropdown.style.zIndex = '9999';
-    dropdown.style.background = '#1e293b';
-    dropdown.style.border = '1px solid rgba(255,255,255,0.15)';
-    dropdown.style.borderRadius = '8px';
-    dropdown.style.boxShadow = '0 4px 12px rgba(0,0,0,0.5)';
-    dropdown.style.display = 'none';
-    dropdown.style.minWidth = '90px';
+    dropdown.style.cssText = 'position: absolute; top: 26px; right: 0; z-index: 9999; background: #1e293b; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: none; min-width: 90px;';
 
     const viewItem = document.createElement('div');
     viewItem.className = 'history-dropdown-item';
     viewItem.innerText = currentLang === 'en' ? 'View' : 'ကြည့်ရန်';
-    viewItem.style.padding = '6px 12px';
-    viewItem.style.cursor = 'pointer';
-    viewItem.style.fontSize = '12px';
-    viewItem.style.color = '#fff';
-    viewItem.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+    viewItem.style.cssText = 'padding: 6px 12px; cursor: pointer; font-size: 12px; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.06);';
     viewItem.onclick = () => viewCardFromHistory(item.id);
 
     const deleteItem = document.createElement('div');
     deleteItem.className = 'history-dropdown-item';
     deleteItem.innerText = currentLang === 'en' ? 'Delete' : 'ဖျက်ပြစ်ရန်';
-    deleteItem.style.padding = '6px 12px';
-    deleteItem.style.cursor = 'pointer';
-    deleteItem.style.fontSize = '12px';
-    deleteItem.style.color = '#ff4757';
+    deleteItem.style.cssText = 'padding: 6px 12px; cursor: pointer; font-size: 12px; color: #ff4757;';
     deleteItem.onclick = () => deleteCardFromHistory(item.id, index);
 
     dropdown.appendChild(viewItem);
@@ -1113,11 +1253,7 @@ function renderHistoryList() {
 
     const linkText = document.createElement('span');
     linkText.className = 'history-link-text';
-    linkText.style.display = 'block';
-    linkText.style.width = '100%';
-    linkText.style.fontSize = '11.5px';
-    linkText.style.color = '#cbd5e1';
-    linkText.style.wordBreak = 'break-all';
+    linkText.style.cssText = 'display: block; width: 100%; font-size: 11.5px; color: #cbd5e1; word-break: break-all;';
 
     let cleanLink = item.link || '';
     if (cleanLink.includes('my-pocket-money')) {
@@ -1312,7 +1448,7 @@ function showStep(stepNumber) {
 function toggleCustomReason() {
   const dropdownVal = document.getElementById('reasonDropdownVal').value;
   const customGroup = document.getElementById('customReasonGroup');
-  customGroup.style.display = (dropdownVal === 'အခြား') ? 'block' : 'none';
+  customGroup.style.display = (dropdownVal === 'အခြား' || dropdownVal === 'Other (Custom)' || dropdownVal === 'อื่นๆ (กำหนดเอง)' || dropdownVal === '其他（自定义）' || dropdownVal === 'その他（カスタム）') ? 'block' : 'none';
 }
 
 function populateReasonDropdown(lang) {
@@ -1384,7 +1520,8 @@ async function generateAndSaveCard() {
   const reasonVal = document.getElementById('reasonDropdownVal').value;
   const customReason = document.getElementById('customReason').value.trim();
   const customNote = document.getElementById('customNote').value.trim();
-  const finalReason = (reasonVal === 'အခြား' && customReason) ? customReason : reasonVal;
+  const isOther = (reasonVal === 'အခြား' || reasonVal === 'Other (Custom)' || reasonVal === 'อื่นๆ (กำหนดเอง)' || reasonVal === '其他（自定义）' || reasonVal === 'その他（カスタム）');
+  const finalReason = (isOther && customReason) ? customReason : reasonVal;
 
   const d = i18n[currentLang] || i18n.my;
 
