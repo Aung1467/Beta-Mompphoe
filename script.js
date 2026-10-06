@@ -330,7 +330,7 @@ cardStyleInjected.innerHTML = `
     position: absolute;
     top: 75px;
     left: 50%;
-transform: translateX(-50%);
+    transform: translateX(-50%);
     z-index: 100;
     padding: 6px 14px;
     font-size: 13px;
@@ -357,7 +357,6 @@ function isNameTaken(name, currentNum = null) {
     const key = localStorage.key(i);
     if (key.startsWith('user_')) {
       const u = JSON.parse(localStorage.getItem(key));
-      // တကယ်လို့ နာမည်တူပြီး ID (num) မတူရင် တူတယ်ဟု သတ်မှတ်မည်
       if (u.name.toLowerCase() === name.toLowerCase() && u.num !== currentNum) {
         return true;
       }
@@ -755,7 +754,8 @@ function startCardTimer(cardId) {
       return;
     }
 
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 120));
+    // 🌟 ၁၂၀ မိနစ်မှ စတင်ရေတွက်ရန် မိနစ်စုစုပေါင်းကို တိုက်ရိုက်တွက်ချက်ခြင်း
+    const minutes = Math.floor(distance / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     if (timerEl) {
@@ -811,7 +811,7 @@ async function deleteCardDataAndClean(cardId, storageKey) {
     }
   }
 
-  alert(currentLang === 'en' ? '⚠️️ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
+  alert(currentLang === 'en' ? '⚠ Card expired (120 min). Data cleaned.' : '⚠️ ကတ်သက်တမ်း (မိနစ် 120) ပြည့်သွားပြီဖြစ်ပါ၍ အချက်အလက်များနှင့် လင့်ခ်များကို အလိုအလျောက် ဖျက်ဆီးပြီးပါပြီ။');
   goToStep(2);
 }
 
@@ -842,13 +842,11 @@ function handleSignup() {
   const p1 = document.getElementById('signupPass1').value;
   const p2 = document.getElementById('signupPass2').value;
 
-  // ၁။ ကွက်လပ်များ ပြည့်စုံစွာ ဖြည့်ထားခြင်း ရှိမရှိ စစ်ဆေးခြင်း
   if (!name || !num || !p1 || !p2) {
     alert(currentLang === 'en' ? 'Please fill in all fields.' : 'အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
     return;
   }
 
-  // ၂။ ID တစ်ယောက်ယောက် သုံးပြီးသား ဟုတ်/မဟုတ် စစ်ဆေးခြင်း
   if (localStorage.getItem(`user_${num}`)) {
     alert(
       currentLang === 'en'
@@ -858,7 +856,6 @@ function handleSignup() {
     return;
   }
 
-  // ၃။ နာမည် တူနေသူ ရှိမရှိ စစ်ဆေးခြင်း (Name Unique Check)
   if (isNameTaken(name)) {
     alert(
       currentLang === 'en'
@@ -868,7 +865,6 @@ function handleSignup() {
     return;
   }
 
-  // ၄။ Password အနည်းဆုံး ၆ လုံး နှင့် English စာလုံး ပါဝင်မှု ရှိမရှိ စစ်ဆေးခြင်း
   const hasEnglishLetter = /[a-zA-Z]/.test(p1);
   if (p1.length < 6 || !hasEnglishLetter) {
     alert(
@@ -879,7 +875,6 @@ function handleSignup() {
     return;
   }
 
-  // ၅။ Password ၂ ခု ကိုက်ညီမှု စစ်ဆေးခြင်း
   if (p1 !== p2) {
     alert(currentLang === 'en' ? 'Passwords do not match.' : 'Password ၂ ခု မတူပါ။ ကျေးဇူးပြု၍ စစ်ဆေးပါ။');
     return;
@@ -942,7 +937,7 @@ function setupProfileView() {
   }
 }
 
-// 🌟 နာမည်ပြောင်းသည့်အခါ နာမည်တူရှိနေပါက ပြောင်းမရအောင် စစ်ဆေးသည့် Logic ပါဝင်သော Function
+// 🌟 နာမည်ပြောင်းသည့်အခါ နာမည်တူရှိနေပါက ပြောင်းမရအောင် စစ်ဆေးသည့် Logic
 function changeNickname() {
   if (!currentUser) return;
   
@@ -1006,7 +1001,6 @@ function changeNickname() {
   modal.querySelector('#customNickOk').onclick = () => {
     const newName = input.value.trim();
     if (newName) {
-      // နာမည်အသစ်သည် အခြားသူ သုံးပြီးသားဖြစ်နေပါက Alert ထုတ်ပြမည်
       if (isNameTaken(newName, currentUser.num)) {
         alert(
           currentLang === 'en'
@@ -1190,7 +1184,8 @@ function updateHistoryTimers() {
       return;
     }
 
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    // 🌟 မှတ်တမ်းစာရင်းတွင်လည်း ၁၂၀ မိနစ်မှစ၍ မှန်ကန်စွာ ရေတွက်ရန်
+    const minutes = Math.floor(distance / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     span.innerText = `${currentLang === 'en' ? 'Expires' : 'သက်တမ်း'} - ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
