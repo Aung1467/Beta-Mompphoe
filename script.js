@@ -28,6 +28,12 @@ function showCustomAlert(message) {
   }, 3000);
 }
 
+function selectLangOption(langCode, langLabel) {
+  document.getElementById('langTriggerText').innerText = langLabel;
+  document.getElementById('langCustomSelect').classList.remove('open');
+  changeLanguage(langCode);
+}
+
 // မူရင်း code ထဲက alert များကို custom style ဖြင့် အလိုအလျောက် ဖော်ပြပေးမည်
 window.alert = function(msg) {
   showCustomAlert(msg);
