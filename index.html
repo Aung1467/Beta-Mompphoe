@@ -250,7 +250,7 @@
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       position: relative;
     }
 
@@ -707,17 +707,65 @@
       100% { transform: scaleY(1); }
     }
 
+    /* 💿 Audio Preview Player & Disc Styles */
     .custom-preview-player {
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: transparent !important;
-      border: none !important;
-      border-radius: 0 !important;
-      padding: 10px 16px;
-      box-shadow: none !important;
-      height: 48px;
+      justify-content: space-between;
+      background: rgba(14, 17, 36, 0.6) !important;
+      border: 1.5px solid rgba(0, 242, 254, 0.4) !important;
+      border-radius: 14px !important;
+      padding: 8px 16px;
+      box-shadow: 0 0 10px var(--accent-glow) !important;
+      margin-top: 8px;
     }
+
+    .cd-disc-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cd-disc {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff0055, #00f2fe, #ff0055);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinDisc 3s linear infinite;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .cd-center {
+      width: 10px;
+      height: 10px;
+      background: #05030f;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .preview-eq-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 16px;
+    }
+
+    .p-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 3px;
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .p-bar:nth-child(1) { animation-delay: 0.1s; height: 8px; }
+    .p-bar:nth-child(2) { animation-delay: 0.4s; height: 15px; }
+    .p-bar:nth-child(3) { animation-delay: 0.2s; height: 11px; }
+    .p-bar:nth-child(4) { animation-delay: 0.5s; height: 16px; }
+    .p-bar:nth-child(5) { animation-delay: 0.3s; height: 10px; }
 
     .save-btn { background: linear-gradient(135deg, #2ed573, #26af5f); box-shadow: 0 4px 10px rgba(46, 213, 115, 0.25); }
     .share-btn { background: linear-gradient(135deg, #3742fa, #2f3542); box-shadow: 0 4px 10px rgba(55, 66, 250, 0.25); }
@@ -921,31 +969,32 @@
 
       <div class="form-group">
         <label id="lbl_musicLabel"></label>
-<div class="custom-select-wrapper" id="musicCustomSelect">
-  <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
-    <span id="musicTriggerText"></span>
-    <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-  </div>
-  <div class="custom-options" id="musicCustomOptions"></div>
-  <input type="hidden" id="musicDropdown" value="">
-</div>
-
-<div class="form-group" id="audioPreviewGroup" style="display: none;">
-  <div class="custom-preview-player">
-    <!-- 💿 CD Disc အဝိုင်းလေး -->
-    <div class="cd-disc-wrapper">
-      <div class="cd-disc" id="cdDiscElement">
-        <div class="cd-center"></div>
+        <div class="custom-select-wrapper" id="musicCustomSelect">
+          <div class="custom-select-trigger" onclick="toggleCustomDropdown('musicCustomSelect')">
+            <span id="musicTriggerText"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+          <div class="custom-options" id="musicCustomOptions"></div>
+          <input type="hidden" id="musicDropdown" value="">
+        </div>
       </div>
-    </div>
 
-    <!-- မူရင်း Equalizer Bars -->
-    <div class="preview-eq-bars">
-      <div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div>
-    </div>
-  </div>
-  <audio id="audioPreviewPlayer" style="display: none;"></audio>
-</div>
+      <div class="form-group" id="audioPreviewGroup" style="display: none;">
+        <div class="custom-preview-player">
+          <!-- 💿 CD Disc အဝိုင်းလေး -->
+          <div class="cd-disc-wrapper">
+            <div class="cd-disc" id="cdDiscElement">
+              <div class="cd-center"></div>
+            </div>
+          </div>
+
+          <!-- မူရင်း Equalizer Bars -->
+          <div class="preview-eq-bars">
+            <div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div><div class="p-bar"></div>
+          </div>
+        </div>
+        <audio id="audioPreviewPlayer" style="display: none;"></audio>
+      </div>
 
       <div class="form-group">
         <label id="lbl_bgLabel"></label>
