@@ -1126,6 +1126,27 @@ cardStyleInjected.textContent = `
   .card-qr-overlay { padding: 0 !important; }
   .qr-img-wrapper, #qrWrapper { max-width: 120px !important; }
   #cardAudioGroup { margin: 0 !important; }
+
+  /* ===== Global UI consistency: one control height (44px), equal columns, even spacing ===== */
+  .app-card .btn:not(.btn-mini), .app-card .file-btn, .app-card .custom-select-trigger {
+    min-height: 44px; box-sizing: border-box; display: flex; align-items: center;
+    justify-content: center; line-height: 1.3;
+  }
+  .app-card .custom-select-trigger { justify-content: space-between; }
+  .app-card input[type="text"], .app-card input[type="password"] { height: 44px; box-sizing: border-box; }
+
+  #step2 .dashboard-actions { gap: 10px; }
+  #step2 .dashboard-actions .btn { padding: 0 14px !important; font-size: 13.5px !important; }
+  #step2 .profile-action-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 14px; align-items: stretch;
+  }
+  #step2 .profile-action-row > * {
+    display: flex !important; align-items: center; justify-content: center; flex: none;
+    width: 100%; height: 44px; min-height: 44px; margin: 0; padding: 0 8px !important;
+    box-sizing: border-box; font-size: 12.5px !important; line-height: 1.25;
+    text-align: center; white-space: normal;
+  }
+  #btn_deleteAccount { min-height: 40px !important; margin-top: 6px; background: transparent !important; }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -1201,7 +1222,7 @@ function updateTexts() {
   setText('btn_signup', d.signupBtn);
 
   setText('lbl_profileTitle', d.profileTitle);
-  setText('lbl_changeAvatar', d.changeAvatar);
+  setText('lbl_changeAvatar', '📷 ' + d.changeAvatar);
   setText('lbl_changeNick', '✏ ' + d.changeNickBtn);
   setText('lbl_reqPocketBtn', d.reqPocketBtn);
   setText('lbl_historyBtn', d.historyBtn);
