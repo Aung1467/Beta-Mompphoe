@@ -2625,4 +2625,150 @@ async function generateAndSaveCard() {
     alert(d.alertBg);
     return;
   }
-  if (!uploads.qr.url && !uplo
+  if (!uploads.qr.url && !uploads.qr.fallback) {
+    alert(d.alertQr);
+    return;
+  }
+
+  const sb = getSupabase();
+  if (!sb) {
+    alert(d.msg.dbError);
+    return;
+  }
+
+  isGenerating = true;
+  updateGenButton();
+  const loader = document.getElementById('stepLoader');
+  if (loader) loader.classList.add('show');
+
+  try {
+    // Upload ပြီးသား URL ကို တိုက်ရိုက်သုံးမည်၊ မပြီးသေးသည်ကိုသာ fallback ဖြင့် တင်မည်
+    const [bgUrl, qrUrl] = await Promise.all([
+      uploads.bg.url ? uploads.bg.url : uploadMedia(sb, uploads.bg.fallback, 'bg'),
+      uploads.qr.url ? uploads.qr.url : uploadMedia(sb, uploads.qr.fallback, 'qr')
+    ]);
+
+    const payload = {
+      sender: currentUser.name,
+      reason: finalReason,
+      note: customNote,
+      bg_image: bgUrl,
+      qr_image: qrUrl,
+      music_url: savedMusicUrl
+    };
+
+    const { data, error } = await sb.from('cards').insert([payload]).select();
+    if (error) throw error;
+
+    if (!(data && data.length > 0)) throw new Error('Card was not created.');
+
+    const row = data[0];
+    const generatedId = row.id;
+    const expireTime = parseDbTime(row.created_at) + CARD_LIFETIME_MS;
+    currentShareableLink = `${window.location.origin}${window.location.pathname}?id=${generatedId}`;
+
+    if (!Array.isArray(currentUser.history)) currentUser.history = [];
+    currentUser.history.unshift({
+      id: generatedId,
+      link: currentShareableLink,
+      reason: finalReason,
+      createdAt: new Date().toISOString(),
+      expiresAt: expireTime
+    });
+    // ကျော်လွန်နေသော မှတ်တမ်းဟောင်းများကို ရှင်းမည် (ပြဿနာမရှိစေရန် ၅၀ ခုထိသာ ထိန်းမည်)
+    currentUser.history = currentUser.history.slice(0, 50);
+    await syncUserToSupabase();
+
+    renderCardData({
+      sender: payload.sender,
+      reason: payload.reason,
+      note: payload.note,
+      bg_image: payload.bg_image,
+      qr_image: payload.qr_image,
+      music_url: payload.music_url
+    });
+
+    resetCardForm(false); // ဖိုင်များသည် ကတ်နှင့် ပိုင်ဆိုင်သွားပြီဖြစ်၍ မဖျက်ပါ
+
+    if (loader) loader.classList.remove('show');
+    showStep(4);
+    startCardTimer(generatedId, expireTime);
+  } catch (err) {
+    console.error('Supabase Save Error:', err);
+    if (loader) loader.classList.remove('show');
+    alert('Error: ' + (err.message || JSON.stringify(err)));
+  } finally {
+    isGenerating = false;
+    updateGenButton();
+  }
+}
+
+// ==========================================
+// Save / Share
+// ==========================================
+async function downloadSingleQr() {
+  const src = displayedQrImage;
+  if (!src) {
+    alert(t().msg.noQr);
+    return;
+  }
+
+  try {
+    const blob = await (await fetch(src)).blob();
+    const ext = (blob.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = `Payment_QR.${ext}`;
+    link.href = objectUrl;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+  } catch (err) {
+    console.error('Download QR error:', err);
+    window.open(src, '_blank', 'noopener');
+  }
+}
+
+async function downloadSingleQrFromModal() {
+  await downloadSingleQr();
+  closeShareModal();
+}
+
+function openShareModal() {
+  const shareModal = document.getElementById('shareModal');
+  if (shareModal) shareModal.style.display = 'flex';
+}
+
+function closeShareModal() {
+  const shareModal = document.getElementById('shareModal');
+  if (shareModal) shareModal.style.display = 'none';
+}
+
+async function copyShareLink() {
+  const m = t().msg;
+  if (!currentShareableLink) {
+    alert(m.copyFail);
+    return;
+  }
+
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(currentShareableLink);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = currentShareableLink;
+      ta.style.cssText = 'position:fixed; opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      if (!ok) throw new Error('copy failed');
+    }
+    alert(m.linkCopied);
+    closeShareModal();
+  } catch (err) {
+    console.error('Copy link error:', err);
+    alert(m.copyFail);
+  }
+}
