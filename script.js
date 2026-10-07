@@ -1176,37 +1176,52 @@ cardStyleInjected.textContent = `
   /* QR: square frame, image stretched to fill it */
   #cardQrImg { object-fit: fill !important; }
 
-  /* ===== Card title: the chosen reason sits in a bordered pill where the old title was ===== */
-  #outReason { display: none !important; }
-  #step4 > h2.reason-pill {
-    width: fit-content; max-width: 88%; margin: 26px auto 4px;
-    padding: 7px 18px; box-sizing: border-box; text-align: center;
-    font-size: 16px; font-weight: 700; line-height: 1.4; color: #ffffff;
-    background: rgba(5, 3, 15, 0.55); border: 1.5px solid rgba(0, 242, 254, 0.75);
-    border-radius: 14px; box-shadow: 0 0 12px rgba(0, 242, 254, 0.35);
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9); word-break: break-word;
+  /* ===== Timer: plain text inside the card frame, stuck to the top ===== */
+  .top-card-timer {
+    position: absolute !important; top: 16px !important; left: 50% !important; transform: translateX(-50%) !important;
+    padding: 0 !important; background: none !important; border: none !important; border-radius: 0 !important;
+    box-shadow: none !important; z-index: 10 !important; white-space: nowrap;
+    font-size: 12px !important; font-weight: 600 !important; line-height: 1.35 !important; color: #ffffff !important;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.8);
   }
 
-  /* ===== Volume control (card owner only) ===== */
-  #volBtn {
-    position: absolute; top: 46px; right: 14px; z-index: 12;
-    width: 34px; height: 34px; padding: 0; margin: 0; border-radius: 50%;
-    display: none; align-items: center; justify-content: center;
-    font-size: 16px; line-height: 1; cursor: pointer; color: #ffffff;
-    background: rgba(5, 3, 15, 0.6); border: 1.5px solid rgba(0, 242, 254, 0.7);
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+  /* ===== Title (reason) + note: centered together in the middle of the card ===== */
+  #outReason { display: none !important; }
+  #exportCard {
+    display: grid !important; grid-template-columns: 100%; grid-template-rows: 1fr 1fr;
+    justify-content: stretch !important; align-items: stretch;
+    height: min(calc(100vh - 272px), 637px) !important;
+    height: min(calc(100dvh - 272px), 637px) !important;
   }
+  .card-header-content { grid-area: 1 / 1 / 3 / 2; align-self: center; margin: 0 auto !important; }
+  .card-qr-overlay { grid-area: 2 / 1 / 3 / 2; align-self: end; }
+  .card-header-content > #lbl_step4Title {
+    display: block; width: fit-content; max-width: 90%; margin: 0 auto 10px; padding: 0;
+    font-size: 17px; font-weight: 700; line-height: 1.4; color: #ffffff; text-align: center;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8); word-break: break-word;
+  }
+  .card-header-content > #lbl_step4Title.reason-pill::after {
+    content: ''; display: block; height: 2px; margin-top: 7px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(0, 242, 254, 0), #00f2fe, rgba(0, 242, 254, 0));
+  }
+
+  /* ===== Volume control (card owner only): plain white speaker, no panel background ===== */
+  #volBtn {
+    position: absolute; top: 10px; right: 90px; z-index: 12;
+    width: 28px; height: 28px; padding: 0; margin: 0; display: none; align-items: center; justify-content: center;
+    background: none; border: none; box-shadow: none; cursor: pointer; line-height: 0;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85)); -webkit-tap-highlight-color: transparent;
+  }
+  #volBtn svg { display: block; width: 22px; height: 22px; }
   #volPanel {
-    position: absolute; top: 86px; right: 14px; z-index: 12;
-    display: none; flex-direction: column; gap: 10px; padding: 10px 12px;
-    background: rgba(5, 3, 15, 0.82); border: 1.5px solid rgba(0, 242, 254, 0.5);
-    border-radius: 12px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    position: absolute; top: 44px; right: 14px; z-index: 12;
+    display: none; flex-direction: column; gap: 8px; padding: 0;
+    background: none; border: none; box-shadow: none;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
   }
   #volPanel.open { display: flex; }
-  #volPanel label { display: flex; align-items: center; gap: 8px; color: #ffffff; font-size: 14px; margin: 0; }
-  #volPanel input[type=range] { width: 96px; height: 4px; margin: 0; padding: 0; accent-color: #00f2fe; }
+  #volPanel label { display: flex; align-items: center; justify-content: flex-end; gap: 8px; color: #ffffff; font-size: 14px; margin: 0; }
+  #volPanel input[type=range] { width: 110px; height: 4px; margin: 0; padding: 0; accent-color: #00f2fe; }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -2074,11 +2089,45 @@ function clearUrlParams() {
 // ==========================================
 // Card title pill + volume control
 // ==========================================
+// The title lives inside the card so it is centered together with the note.
+function moveTitleIntoCard() {
+  const h = document.getElementById('lbl_step4Title');
+  const box = document.querySelector('.card-header-content');
+  if (h && box && h.parentNode !== box) box.insertBefore(h, box.firstChild);
+}
+moveTitleIntoCard();
+
 function syncStep4Title(d) {
   const h = document.getElementById('lbl_step4Title');
   if (!h) return;
   h.textContent = currentCardReason || ((d && d.step4Title) || '');
   h.classList.toggle('reason-pill', !!currentCardReason);
+}
+
+const VOL_ICON_ON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="M11 5 6 9H3v6h3l5 4V5z" fill="#fff"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const VOL_ICON_OFF =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="M11 5 6 9H3v6h3l5 4V5z" fill="#fff"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>';
+
+// Puts the speaker on the same row as the "From" tag, just to its left.
+function positionVolumeControl() {
+  const btn = document.getElementById('volBtn');
+  const panel = document.getElementById('volPanel');
+  if (!btn || !panel) return;
+  const size = 28;
+  const tag = document.getElementById('outSender');
+  let top = 10;
+  let right = 14;
+  if (tag && tag.offsetWidth && tag.offsetParent) {
+    top = tag.offsetTop + (tag.offsetHeight - size) / 2;
+    right = (tag.offsetParent.clientWidth - (tag.offsetLeft + tag.offsetWidth)) + tag.offsetWidth + 8;
+  }
+  btn.style.top = top + 'px';
+  btn.style.right = right + 'px';
+  panel.style.top = (top + size + 6) + 'px';
+  panel.style.right = '14px';
 }
 
 // Applies the slider values to the real audio/video elements.
@@ -2095,7 +2144,14 @@ function applyVolumeLevels() {
     if (video.parentNode) video.parentNode.style.opacity = hasVideo ? '1' : '0.35';
   }
   const btn = document.getElementById('volBtn');
-  if (btn && music && video) btn.textContent = (+music.value === 0 && +video.value === 0) ? '🔇' : '🔊';
+  if (btn && music && video) {
+    const off = (+music.value === 0 && +video.value === 0);
+    const state = off ? 'off' : 'on';
+    if (btn.dataset.state !== state) {
+      btn.dataset.state = state;
+      btn.innerHTML = off ? VOL_ICON_OFF : VOL_ICON_ON;
+    }
+  }
 }
 
 function setupVolumeControl() {
@@ -2106,7 +2162,8 @@ function setupVolumeControl() {
   btn.id = 'volBtn';
   btn.type = 'button';
   btn.setAttribute('aria-label', 'Volume');
-  btn.textContent = '🔊';
+  btn.innerHTML = VOL_ICON_ON;
+  btn.dataset.state = 'on';
 
   const panel = document.createElement('div');
   panel.id = 'volPanel';
@@ -2123,8 +2180,16 @@ function setupVolumeControl() {
   });
   panel.addEventListener('click', (e) => e.stopPropagation());
   document.addEventListener('click', () => panel.classList.remove('open'));
+  window.addEventListener('resize', positionVolumeControl);
 
-  panel.querySelector('#volMusic').addEventListener('input', applyVolumeLevels);
+  panel.querySelector('#volMusic').addEventListener('input', () => {
+    const audioEl = document.getElementById('cardAudioPlayer');
+    // Moving the slider is a tap, so it can also (re)start the song if it was paused.
+    if (audioEl && audioEl.getAttribute('src') && audioEl.paused && +panel.querySelector('#volMusic').value > 0) {
+      audioEl.play().catch((e) => console.log('Audio play error:', e));
+    }
+    applyVolumeLevels();
+  });
   panel.querySelector('#volVideo').addEventListener('input', () => {
     const videoEl = document.getElementById('cardBgVideo');
     // Moving the slider is a tap, so it can also lift a muted-autoplay fallback.
@@ -2141,12 +2206,13 @@ function updateVolumeControl(stepNumber) {
   const show = stepNumber === 4 && !isSharedLinkVisitor;
   if (btn) btn.style.display = show ? 'flex' : 'none';
   if (panel && !show) panel.classList.remove('open');
+  positionVolumeControl();
   applyVolumeLevels();
 }
 
 // Video background sound: 'replace' = the video's own sound replaces the chosen music
 // (only when the video really has audio); 'mix' = video sound and music play together.
-const VIDEO_AUDIO_MODE = 'replace';
+const VIDEO_AUDIO_MODE = 'mix';
 
 function videoHasAudio(v) {
   if (typeof v.mozHasAudio === 'boolean') return v.mozHasAudio;
@@ -2252,6 +2318,7 @@ function renderCardData(data) {
       cardAudioGroup.style.display = 'none';
     }
   }
+  positionVolumeControl();
   applyVolumeLevels();
 }
 
@@ -2274,7 +2341,7 @@ function startCardTimer(cardId, expireTime) {
     timerEl = document.createElement('div');
     timerEl.id = 'topCardTimer';
     timerEl.className = 'top-card-timer';
-    document.body.appendChild(timerEl);
+    (document.querySelector('.app-card') || document.body).appendChild(timerEl);
   }
   timerEl.style.display = 'flex';
 
