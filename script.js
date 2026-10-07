@@ -961,14 +961,15 @@ cardStyleInjected.textContent = `
     pointer-events: none !important;
   }
 
-  #exportCard > *:not(#cardBgImg):not(#cardBgVideo) { position: relative !important; z-index: 5 !important; }
+  #exportCard > *:not(#cardBgImg):not(#cardBgVideo):not(#outSender):not(#emojiOverlay) { position: relative !important; z-index: 5 !important; }
 
   #outSender, .sender-tag {
     position: absolute !important; top: 6px !important; right: 6px !important; left: auto !important;
     width: auto !important; max-width: 80% !important; display: inline-block !important; padding: 3px 9px !important;
     font-size: 10.5px !important; font-weight: 700 !important; background: var(--primary, #ff0055) !important;
-    color: #ffffff !important; border-radius: 6px !important; box-shadow: 0 2px 8px rgba(255, 0, 85, 0.4) !important;
+    color: #ffffff !important; border-radius: 6px !important; box-shadow: 0 1px 4px rgba(255, 0, 85, 0.35) !important;
     z-index: 10 !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+    width: fit-content !important; height: auto !important; line-height: 1.35 !important;
   }
 
   #lbl_qrHint { display: none !important; }
@@ -988,6 +989,65 @@ cardStyleInjected.textContent = `
     position: fixed; top: 58px; left: 50%; transform: translateX(-50%); z-index: 100;
     padding: 6px 14px; font-size: 13px; font-weight: 700; display: none; align-items: center; gap: 6px;
     background: rgba(10, 12, 28, 0.9); border: 1.5px solid rgba(0, 242, 254, 0.5); border-radius: 12px; color: #fff;
+  }
+
+  /* ===== Step 4 - scroll မပေါ်စေရန် (ကတ်ကို မျက်နှာပြင်အမြင့်နဲ့ လိုက်ချုံ့) ===== */
+  .app-card.no-scroll { overflow: hidden !important; max-height: none !important; scrollbar-width: none; }
+  .app-card.no-scroll::-webkit-scrollbar { display: none; }
+  body.lock-scroll { overflow: hidden !important; height: 100vh; height: 100dvh; }
+  #exportCard {
+    width: min(100%, calc((100vh - 380px) * 0.75)) !important;
+    width: min(100%, calc((100dvh - 380px) * 0.75)) !important;
+    min-width: 190px !important;
+  }
+
+  /* ===== Open gate countdown ===== */
+  .gate-box { transition: opacity 0.35s ease, transform 0.35s ease; }
+  .gate-box.leaving { animation: gateOut 0.35s ease forwards !important; pointer-events: none; }
+  @keyframes gateOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.8) translateY(-20px); } }
+  #gateCountdown {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    flex-direction: column; pointer-events: none;
+  }
+  #gateCountdown.show { display: flex; }
+  #gateCountdown .num {
+    font-size: 130px; font-weight: 700; line-height: 1; color: #00f2fe;
+    text-shadow: 0 0 25px rgba(0, 242, 254, 0.8), 0 0 60px rgba(255, 0, 85, 0.6);
+  }
+  #gateCountdown .num.pop { animation: countPop 0.85s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+  #gateCountdown .ring {
+    position: absolute; width: 150px; height: 150px; border-radius: 50%;
+    border: 3px solid rgba(0, 242, 254, 0.7); opacity: 0;
+  }
+  #gateCountdown .ring.pop { animation: ringPulse 0.85s ease-out both; }
+  @keyframes countPop {
+    0% { transform: scale(2.4); opacity: 0; }
+    25% { transform: scale(1); opacity: 1; }
+    75% { transform: scale(0.95); opacity: 1; }
+    100% { transform: scale(0.6); opacity: 0; }
+  }
+  @keyframes ringPulse {
+    0% { transform: scale(0.4); opacity: 0.9; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
+
+  /* ===== Card reveal animation ===== */
+  #exportCard.card-hidden { visibility: hidden !important; }
+  #exportCard.card-reveal { animation: cardReveal 1.1s cubic-bezier(0.2, 0.9, 0.3, 1.1) both !important; }
+  @keyframes cardReveal {
+    0% { opacity: 0; transform: perspective(900px) rotateY(-100deg) scale(0.4) translateY(50px); filter: blur(10px) brightness(2); }
+    55% { opacity: 1; transform: perspective(900px) rotateY(10deg) scale(1.07) translateY(0); filter: blur(0) brightness(1.4); }
+    80% { transform: perspective(900px) rotateY(-3deg) scale(0.99); filter: brightness(1.1); }
+    100% { opacity: 1; transform: perspective(900px) rotateY(0) scale(1); filter: none; }
+  }
+  .sparkle-piece {
+    position: absolute; top: 0; will-change: transform, opacity;
+    animation-name: sparkleFall; animation-timing-function: ease-in; animation-fill-mode: both;
+  }
+  @keyframes sparkleFall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(108vh) rotate(420deg); opacity: 0.9; }
   }
 `;
 document.head.appendChild(cardStyleInjected);
@@ -1480,30 +1540,102 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 // Open Gate - shared link ဖြင့်ဝင်သူအတွက် (နှိပ်လိုက်မှ သီချင်း/video စတင်မည်)
 // ==========================================
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function launchSparkles() {
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:997; overflow:hidden;';
+  const icons = ['✨', '🧧', '💖', '⭐', '🎉', '💫'];
+  for (let i = 0; i < 28; i++) {
+    const span = document.createElement('span');
+    span.className = 'sparkle-piece';
+    span.textContent = icons[Math.floor(Math.random() * icons.length)];
+    span.style.left = Math.random() * 100 + '%';
+    span.style.fontSize = (14 + Math.random() * 18) + 'px';
+    span.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+    span.style.animationDelay = (Math.random() * 0.9) + 's';
+    box.appendChild(span);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 5000);
+}
+
 function showOpenGate(sender) {
   const gate = document.getElementById('openGate');
   const btn = document.getElementById('gateBtn');
-  if (!gate || !btn) return;
+  const gateBox = gate ? gate.querySelector('.gate-box') : null;
+  if (!gate || !btn || !gateBox) return;
 
   const cardPlayer = document.getElementById('cardAudioPlayer');
   const bgVideo = document.getElementById('cardBgVideo');
+  const exportCard = document.getElementById('exportCard');
   if (cardPlayer) cardPlayer.pause();
   if (bgVideo) bgVideo.pause();
+
+  // ကတ်ကို countdown ပြီးမှ ပေါ်စေရန် ဖုံးထားမည်
+  if (exportCard) {
+    exportCard.classList.remove('card-reveal');
+    exportCard.classList.add('card-hidden');
+  }
+
+  // countdown element (မရှိသေးလျှင် တည်ဆောက်)
+  let cd = document.getElementById('gateCountdown');
+  if (!cd) {
+    cd = document.createElement('div');
+    cd.id = 'gateCountdown';
+    cd.innerHTML = '<div class="ring"></div><div class="num"></div>';
+    gate.appendChild(cd);
+  }
+  cd.classList.remove('show');
 
   setText('gateTitle', t().gateTitle);
   setText('gateFrom', sender ? `From: ${sender}` : '');
   btn.textContent = t().gateBtn;
   btn.disabled = false;
+  gateBox.classList.remove('leaving');
 
   gate.classList.remove('hide');
   gate.classList.add('show');
 
-  btn.onclick = () => {
+  btn.onclick = async () => {
     btn.disabled = true;
+
     // ဤနေရာသည် user နှိပ်မှု (gesture) ဖြစ်သဖြင့် browser က audio ကို ခွင့်ပြုသည်
-    if (cardPlayer && cardPlayer.getAttribute('src')) cardPlayer.play().catch((e) => console.log('Audio play error:', e));
-    if (bgVideo && bgVideo.getAttribute('src')) bgVideo.play().catch((e) => console.log('Video play error:', e));
+    if (cardPlayer && cardPlayer.getAttribute('src')) {
+      cardPlayer.play().catch((e) => console.log('Audio play error:', e));
+    }
+
+    gateBox.classList.add('leaving');
+    await sleep(380);
+
+    // Countdown 3, 2, 1, 0
+    const numEl = cd.querySelector('.num');
+    const ringEl = cd.querySelector('.ring');
+    cd.classList.add('show');
+    for (const n of [3, 2, 1, 0]) {
+      numEl.textContent = String(n);
+      ringEl.classList.remove('pop');
+      numEl.classList.remove('pop');
+      void numEl.offsetWidth; // animation ပြန်စရန်
+      ringEl.classList.add('pop');
+      numEl.classList.add('pop');
+      await sleep(850);
+    }
+    cd.classList.remove('show');
+
+    // Card reveal animation
+    if (exportCard) {
+      exportCard.classList.remove('card-hidden');
+      void exportCard.offsetWidth;
+      exportCard.classList.add('card-reveal');
+    }
+    if (bgVideo && bgVideo.getAttribute('src')) {
+      bgVideo.play().catch((e) => console.log('Video play error:', e));
+    }
     gate.classList.add('hide');
+    launchSparkles();
     setTimeout(() => gate.classList.remove('show'), 550);
   };
 }
@@ -2181,7 +2313,12 @@ function showStep(stepNumber) {
   }
 
   const appCard = document.querySelector('.app-card');
-  if (appCard) appCard.scrollTop = 0;
+  if (appCard) {
+    appCard.scrollTop = 0;
+    appCard.classList.toggle('no-scroll', stepNumber === 4);
+  }
+  document.body.classList.toggle('lock-scroll', stepNumber === 4);
+  window.scrollTo(0, 0);
 
   // Step 3 မဟုတ်လျှင် preview သီချင်းရပ်၊ Step 4 မဟုတ်လျှင် ကတ်သီချင်းနှင့် video ရပ်
   if (stepNumber !== 3) {
