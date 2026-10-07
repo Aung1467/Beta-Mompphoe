@@ -1,0 +1,17 @@
+{
+  "name": "Monpphoe - Pocket Request",
+  "short_name": "Monpphoe",
+  "description": "Create, customize, and share personalized QR pocket cards easily.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05030f",
+  "theme_color": "#05030f",
+  "lang": "my",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

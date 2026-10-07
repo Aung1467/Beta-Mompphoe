@@ -6,14 +6,13 @@
 const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtveWJ4eW91Y3lxbml4dndwbGtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNDE4NzYsImV4cCI6MjEwNjYxNzg3Nn0.V_TYzwjFO3SwnYUudWsxntm3prfckEXoAynuX5MxM-g';
 
-const MEDIA_BUCKET = 'card-media';                  // Supabase Storage bucket (supabase-setup.sql ကိုကြည့်ပါ)
-const CARD_LIFETIME_MS = 120 * 60 * 1000;           // ကတ်သက်တမ်း ၁၂၀ မိနစ်
-const MAX_VIDEO_BYTES = 15 * 1024 * 1024;           // Video အများဆုံး 15MB
+const MEDIA_BUCKET = 'card-media';
+const CARD_LIFETIME_MS = 120 * 60 * 1000;
+const MAX_VIDEO_BYTES = 15 * 1024 * 1024;
 const MAX_VIDEO_SECONDS = 15;
 const HASH_PREFIX = 'sha256$';
 
 // ==========================================
-// Custom Alert (textContent သုံးထားသဖြင့် HTML injection မဖြစ်နိုင်)
 // ==========================================
 function showCustomAlert(message) {
   let alertBox = document.getElementById('customAlertBox');
@@ -182,7 +181,7 @@ function openLegalModal(type) {
   const closeBtn = document.getElementById('legalModalClose');
 
   if (modalTitle) modalTitle.textContent = content.title;
-  if (modalBody) modalBody.innerHTML = content.body; // ကိုယ်တိုင်ရေးထားသော static content သာ
+  if (modalBody) modalBody.innerHTML = content.body;
   if (closeBtn) closeBtn.textContent = (i18n[lang] || i18n.my).closeBtn;
   if (modal) modal.style.display = 'flex';
 }
@@ -197,16 +196,31 @@ function closeLegalModal() {
 // ==========================================
 let supabaseClient = null;
 
+function setLoader(on) {
+  const loader = document.getElementById('stepLoader');
+  if (loader) loader.classList.toggle('show', !!on);
+}
+
+function withTimeout(promise, ms = 12000) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Request timed out')), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 function getSupabase() {
   if (!supabaseClient && window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
   }
   return supabaseClient;
 }
 
 let currentUser = null;
 let savedMusicUrl = '';
-let displayedQrImage = '';      // Step 4 တွင် ပြနေသော QR (download အတွက်)
+let displayedQrImage = '';
 let currentShareableLink = '';
 let currentLang = 'my';
 let cardTimerInterval = null;
@@ -214,7 +228,6 @@ let historyTimerInterval = null;
 let isSharedLinkVisitor = false;
 let isGenerating = false;
 
-// ပုံ/Video ကို ရွေးလိုက်သည်နှင့် ချက်ချင်း upload လုပ်ပြီး state ကို ဤနေရာတွင် သိမ်းသည်
 const uploads = {
   bg: { file: null, url: '', fallback: '', busy: false, token: 0 },
   qr: { file: null, url: '', fallback: '', busy: false, token: 0 }
@@ -961,26 +974,40 @@ cardStyleInjected.textContent = `
     word-break: break-word; white-space: pre-wrap;
   }
 
-  /* ===== ကတ် 9:16 - နောက်ခံအမဲရောင်မရှိ ===== */
   #exportCard {
     position: relative !important; overflow: hidden !important;
-    box-shadow: 0 0 18px rgba(0, 242, 254, 0.35) !important;
+    box-shadow: none !important;
     animation: none !important;
     aspect-ratio: 9 / 16 !important;
     width: min(100%, calc((100vh - 340px) * 0.5625)) !important;
     width: min(100%, calc((100dvh - 340px) * 0.5625)) !important;
     max-width: 320px !important; min-width: 170px !important;
-    margin: 0 auto 10px auto !important; border-radius: 20px !important; border: 2px solid var(--accent) !important;
+    margin: 0 auto 10px auto !important; border-radius: 0 !important; border: none !important;
     background: transparent !important; display: flex !important; flex-direction: column !important;
     justify-content: space-between !important; padding: 14px !important;
   }
 
-  /* ပုံ/Video ကို 9:16 ကတ်အပြည့် Stretch */
   #cardBgImg, #cardBgVideo {
     position: absolute !important; inset: 0 !important; top: 0 !important; left: 0 !important;
-    width: 100% !important; height: 100% !important; object-fit: fill !important; z-index: 1 !important;
+    width: 100% !important; height: 100% !important; object-fit: cover !important; z-index: 0 !important;
     pointer-events: none !important; background: transparent !important; filter: none !important;
   }
+
+  #cardFeather {
+    --feather-h: 30%;
+    position: absolute; left: 0; right: 0; bottom: 0; height: var(--feather-h);
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to top,
+      rgba(5, 3, 15, 0.96) 0%, rgba(5, 3, 15, 0.84) 25%,
+      rgba(5, 3, 15, 0.45) 55%, rgba(5, 3, 15, 0.12) 82%, rgba(5, 3, 15, 0) 100%);
+  }
+  .app-card > .step { position: relative; z-index: 2; }
+  .app-card:not(.no-scroll) > #cardBgImg,
+  .app-card:not(.no-scroll) > #cardBgVideo,
+  .app-card:not(.no-scroll) > #cardFeather,
+  .app-card.bg-hidden > #cardBgImg,
+  .app-card.bg-hidden > #cardBgVideo,
+  .app-card.bg-hidden > #cardFeather { visibility: hidden !important; }
 
   #exportCard > *:not(#cardBgImg):not(#cardBgVideo):not(#outSender):not(#emojiOverlay) { position: relative !important; z-index: 5 !important; }
 
@@ -997,7 +1024,6 @@ cardStyleInjected.textContent = `
 
   #cardQrImg { display: block !important; width: 100% !important; height: 100% !important; object-fit: contain !important; }
 
-  /* QR - Glow / Animation လုံးဝမရှိ */
   .qr-img-wrapper, #qrWrapper {
     display: none; width: 100% !important; max-width: 100px !important; aspect-ratio: 1 / 1 !important;
     margin: 0 auto !important; border-radius: 10px !important; overflow: hidden !important;
@@ -1012,7 +1038,6 @@ cardStyleInjected.textContent = `
     background: rgba(10, 12, 28, 0.9); border: 1.5px solid rgba(0, 242, 254, 0.5); border-radius: 12px; color: #fff;
   }
 
-  /* ===== Step 4 - scroll မပေါ်စေရန်၊ နောက်ခံအမဲရောင်မရှိစေရန် ===== */
   .app-card.no-scroll {
     overflow: hidden !important; max-height: none !important; scrollbar-width: none;
     background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
@@ -1020,7 +1045,6 @@ cardStyleInjected.textContent = `
   .app-card.no-scroll::-webkit-scrollbar { display: none; }
   body.lock-scroll { overflow: hidden !important; height: 100vh; height: 100dvh; }
 
-  /* Player နောက်ခံအမဲရောင် ဖယ်ရှား */
   #cardAudioGroup { background: transparent !important; box-shadow: none !important; }
 
   /* ===== Open gate countdown ===== */
@@ -1105,7 +1129,7 @@ function updateTexts() {
     d.noticeItems.forEach((itemText, index) => {
       const li = document.createElement('li');
       if (index === d.noticeItems.length - 1) li.style.marginTop = '6px';
-      li.innerHTML = itemText; // static, ကိုယ်တိုင်ရေးထားသော စာသား
+      li.innerHTML = itemText;
       noticeListEl.appendChild(li);
     });
   }
@@ -1183,6 +1207,7 @@ function updateTexts() {
   setText('btn_copyLink', d.copyLinkBtn);
   setText('btn_dlQrModal', d.dl1to1Btn);
   setText('btn_closeModal', d.closeBtn);
+  updateExtraTexts();
 }
 
 function changeLanguage(lang) {
@@ -1191,7 +1216,6 @@ function changeLanguage(lang) {
   updateTexts();
   populateReasonDropdown(currentLang);
 
-  // History စာမျက်နှာ ဖွင့်ထားလျှင် ဘာသာစကားပြောင်းအောင် ပြန်ဆွဲမည်
   const step5 = document.getElementById('step5');
   if (step5 && step5.classList.contains('active')) renderHistoryList();
 }
@@ -1277,8 +1301,6 @@ function getVideoDuration(file) {
   });
 }
 
-// DB မှ ရလာသော အချိန်ကို UTC အဖြစ် မှန်ကန်စွာ ဖတ်ရန်
-// (timestamp without time zone ဖြစ်နေလျှင် ဘာသာစကား/ဒေသ ကွာခြားသူများတွင် ကတ်ကို သက်တမ်းကုန်ဟု မှားစစ်မိတတ်သည်)
 function parseDbTime(value) {
   if (!value) return Date.now();
   if (typeof value === 'number') return value;
@@ -1302,7 +1324,6 @@ function publicMediaUrl(path) {
   return `${SUPABASE_URL}/storage/v1/object/public/${MEDIA_BUCKET}/${path}`;
 }
 
-// Upload speed ပြနိုင်ရန် XHR ဖြင့် တင်သည် (supabase-js သည် progress မပေး)
 function xhrUpload(blob, path, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -1337,7 +1358,6 @@ function formatSpeed(bitsPerSec) {
   return Math.round(bitsPerSec / 1e3) + ' Kbps';
 }
 
-// Fallback - data URL ကို Storage သို့ တင် (မအောင်မြင်လျှင် data URL ပြန်ပေး)
 async function uploadMedia(sb, dataUrl, folder) {
   if (!dataUrl || !dataUrl.startsWith('data:')) return dataUrl;
   try {
@@ -1373,7 +1393,6 @@ async function removeMediaFiles(sb, urls) {
   }
 }
 
-// ကတ်ကို DB မှာရော Storage မှာပါ ဖျက်မည်
 async function deleteCardRecord(cardId) {
   const sb = getSupabase();
   if (!sb || !cardId) return;
@@ -1387,8 +1406,6 @@ async function deleteCardRecord(cardId) {
 }
 
 // ==========================================
-// Password hashing (SHA-256 + ID ကို salt အဖြစ်သုံး)
-// မှတ်ချက် - ဤနည်းသည် plain text ထက် ပိုကောင်းသော်လည်း Supabase Auth + RLS ကို အစားထိုးနိုင်ခြင်းမရှိပါ
 // ==========================================
 async function hashPassword(pass, salt) {
   if (!(window.crypto && window.crypto.subtle)) {
@@ -1501,7 +1518,6 @@ function populateReasonDropdown(lang) {
     container.appendChild(div);
   });
 
-  // လက်ရှိရွေးထားသည်ကို ထိန်းထားပြီး ဘာသာစကားသာ ပြောင်းမည်
   const reasonDropdownVal = document.getElementById('reasonDropdownVal');
   const currentVal = reasonDropdownVal ? reasonDropdownVal.value : '';
   const selected = reasonsList.find((r) => r.val === currentVal) || reasonsList[0];
@@ -1576,7 +1592,129 @@ async function fetchCardById(sb, cardId) {
   return { data: null, networkError: true };
 }
 
+const extraI18n = {
+  my: { deleteBtn: '🗑 အကောင့်ဖျက်ရန်', deleteConfirm: 'အကောင့်နှင့် ကတ်အားလုံးကို အပြီးဖျက်မည်။ ပြန်ယူ၍ မရပါ။ သေချာပါသလား?', deleteDone: '✅ အကောင့်ကို ဖျက်ပြီးပါပြီ။', reportBtn: '⚠ Report', reportConfirm: 'ဤကတ်ကို မသင့်တော်ဟု Report လုပ်မလား?', reportSent: '✅ Report ပို့ပြီးပါပြီ။ ကျေးဇူးတင်ပါသည်။', reportFail: '❌ Report ပို့၍ မရပါ။ နောက်မှ ပြန်ကြိုးစားပါ။' },
+  en: { deleteBtn: '🗑 Delete account', deleteConfirm: 'Your account and all your cards will be permanently deleted. This cannot be undone. Continue?', deleteDone: '✅ Your account has been deleted.', reportBtn: '⚠ Report', reportConfirm: 'Report this card as inappropriate?', reportSent: '✅ Report sent. Thank you.', reportFail: '❌ Could not send the report. Please try again later.' },
+  ja: { deleteBtn: '🗑 アカウント削除', deleteConfirm: 'アカウントとすべてのカードが完全に削除されます。元に戻せません。続けますか？', deleteDone: '✅ アカウントを削除しました。', reportBtn: '⚠ 通報', reportConfirm: 'このカードを不適切として通報しますか？', reportSent: '✅ 通報しました。ありがとうございます。', reportFail: '❌ 通報できませんでした。後でもう一度お試しください。' },
+  ko: { deleteBtn: '🗑 계정 삭제', deleteConfirm: '계정과 모든 카드가 영구 삭제되며 되돌릴 수 없습니다. 계속하시겠습니까?', deleteDone: '✅ 계정이 삭제되었습니다.', reportBtn: '⚠ 신고', reportConfirm: '이 카드를 부적절한 콘텐츠로 신고하시겠습니까?', reportSent: '✅ 신고가 접수되었습니다. 감사합니다.', reportFail: '❌ 신고를 보내지 못했습니다. 나중에 다시 시도해 주세요.' },
+  th: { deleteBtn: '🗑 ลบบัญชี', deleteConfirm: 'บัญชีและการ์ดทั้งหมดจะถูกลบถาวรและกู้คืนไม่ได้ ต้องการดำเนินการต่อหรือไม่?', deleteDone: '✅ ลบบัญชีเรียบร้อยแล้ว', reportBtn: '⚠ รายงาน', reportConfirm: 'รายงานการ์ดนี้ว่าไม่เหมาะสมหรือไม่?', reportSent: '✅ ส่งรายงานแล้ว ขอบคุณ', reportFail: '❌ ส่งรายงานไม่สำเร็จ กรุณาลองใหม่ภายหลัง' },
+  zh: { deleteBtn: '🗑 删除账号', deleteConfirm: '账号及所有卡片将被永久删除，无法恢复。确定继续吗？', deleteDone: '✅ 账号已删除。', reportBtn: '⚠ 举报', reportConfirm: '确定举报此卡片内容不当吗？', reportSent: '✅ 举报已提交，谢谢。', reportFail: '❌ 举报提交失败，请稍后重试。' }
+};
+
+function ex() {
+  return extraI18n[currentLang] || extraI18n.en;
+}
+
+function updateExtraTexts() {
+  const x = ex();
+  setText('btn_deleteAccount', x.deleteBtn);
+  setText('btn_report', x.reportBtn);
+}
+
+function setupExtras() {
+  const head = document.head;
+  if (!document.querySelector('link[rel="manifest"]')) {
+    const l = document.createElement('link');
+    l.rel = 'manifest';
+    l.href = '/manifest.json';
+    head.appendChild(l);
+  }
+  if (!document.querySelector('meta[name="theme-color"]')) {
+    const m = document.createElement('meta');
+    m.name = 'theme-color';
+    m.content = '#05030f';
+    head.appendChild(m);
+  }
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    navigator.serviceWorker.register('/sw.js').catch((e) => console.warn('SW register failed:', e));
+  }
+
+  const actions = document.querySelector('#step2 .dashboard-actions');
+  if (actions && !document.getElementById('btn_deleteAccount')) {
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.id = 'btn_deleteAccount';
+    del.className = 'btn btn-secondary';
+    del.style.cssText = 'padding:10px; font-size:13px; color:#ff6b81; border-color:rgba(255,107,129,0.45);';
+    del.onclick = deleteAccount;
+    actions.appendChild(del);
+  }
+
+  const row = document.querySelector('#step4 .btn-row-mini');
+  if (row && !document.getElementById('btn_report')) {
+    const rep = document.createElement('button');
+    rep.type = 'button';
+    rep.id = 'btn_report';
+    rep.style.cssText = 'display:none; margin:8px auto 0; background:transparent; border:none; color:#fff; font-size:11px; font-weight:700; text-decoration:underline; cursor:pointer; text-shadow:1px 1px 4px rgba(0,0,0,0.9); position:relative; z-index:6;';
+    rep.onclick = reportCard;
+    row.insertAdjacentElement('afterend', rep);
+  }
+  updateExtraTexts();
+}
+
+async function deleteAccount() {
+  if (!currentUser) return;
+  const x = ex();
+  if (!confirm(x.deleteConfirm)) return;
+
+  const num = currentUser.num;
+  const ids = (currentUser.history || []).map((h) => h.id);
+  setLoader(true);
+  try {
+    const sb = getSupabase();
+    if (!sb) throw new Error('No client');
+    for (const id of ids) await deleteCardRecord(id);
+    const { error } = await withTimeout(sb.from('users').delete().eq('num', num));
+    if (error) throw error;
+    handleLogout();
+    alert(x.deleteDone);
+  } catch (err) {
+    console.error('Delete account error:', err);
+    setLoader(false);
+    alert(t().msg.dbError);
+  }
+}
+
+async function reportCard() {
+  const x = ex();
+  let cardId = '';
+  try { cardId = new URL(currentShareableLink).searchParams.get('id') || ''; } catch (e) { /* ignore */ }
+  if (!cardId) return;
+  if (!confirm(x.reportConfirm)) return;
+
+  const btn = document.getElementById('btn_report');
+  if (btn) btn.disabled = true;
+  try {
+    const sb = getSupabase();
+    if (!sb) throw new Error('No client');
+    const { error } = await withTimeout(sb.from('reports').insert([{ card_id: cardId }]));
+    if (error) throw error;
+    alert(x.reportSent);
+  } catch (err) {
+    console.error('Report error:', err);
+    if (btn) btn.disabled = false;
+    alert(x.reportFail);
+  }
+}
+
+function setupCardBackdrop() {
+  const appCard = document.querySelector('.app-card');
+  if (!appCard) return;
+  const img = document.getElementById('cardBgImg');
+  const vid = document.getElementById('cardBgVideo');
+  let feather = document.getElementById('cardFeather');
+  if (!feather) {
+    feather = document.createElement('div');
+    feather.id = 'cardFeather';
+  }
+  appCard.insertBefore(feather, appCard.firstChild);
+  if (vid) appCard.insertBefore(vid, appCard.firstChild);
+  if (img) appCard.insertBefore(img, appCard.firstChild);
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
+  setupCardBackdrop();
+  setupExtras();
   window.currentLang = currentLang;
   updateTexts();
   populateReasonDropdown(currentLang);
@@ -1612,7 +1750,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (loader) loader.classList.remove('show');
 
     if (!data) {
-      // Login စာမျက်နှာသို့ မပို့ဘဲ အကြောင်းရင်းကို ပြမည်
       showUnavailable(networkError ? m.dbError : m.cardGone);
       return;
     }
@@ -1636,7 +1773,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// ကတ်မတွေ့ / သက်တမ်းကုန် / ချိတ်ဆက်မရ - Step 6
 function showUnavailable(message) {
   stopCardTimer();
   setText('lbl_step6Title', t().msg.goneTitle);
@@ -1652,7 +1788,6 @@ function leaveUnavailable() {
 }
 
 // ==========================================
-// Open Gate - shared link ဖြင့်ဝင်သူအတွက် (နှိပ်လိုက်မှ သီချင်း/video စတင်မည်)
 // ==========================================
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -1688,13 +1823,13 @@ function showOpenGate(sender) {
   if (cardPlayer) cardPlayer.pause();
   if (bgVideo) bgVideo.pause();
 
-  // ကတ်ကို countdown ပြီးမှ ပေါ်စေရန် ဖုံးထားမည်
+  const appCardEl = document.querySelector('.app-card');
+  if (appCardEl) appCardEl.classList.add('bg-hidden');
   if (exportCard) {
     exportCard.classList.remove('card-reveal');
     exportCard.classList.add('card-hidden');
   }
 
-  // countdown element (မရှိသေးလျှင် တည်ဆောက်)
   let cd = document.getElementById('gateCountdown');
   if (!cd) {
     cd = document.createElement('div');
@@ -1716,7 +1851,6 @@ function showOpenGate(sender) {
   btn.onclick = async () => {
     btn.disabled = true;
 
-    // ဤနေရာသည် user နှိပ်မှု (gesture) ဖြစ်သဖြင့် browser က audio ကို ခွင့်ပြုသည်
     if (cardPlayer && cardPlayer.getAttribute('src')) {
       cardPlayer.play().catch((e) => console.log('Audio play error:', e));
     }
@@ -1732,7 +1866,7 @@ function showOpenGate(sender) {
       numEl.textContent = String(n);
       ringEl.classList.remove('pop');
       numEl.classList.remove('pop');
-      void numEl.offsetWidth; // animation ပြန်စရန်
+      void numEl.offsetWidth;
       ringEl.classList.add('pop');
       numEl.classList.add('pop');
       await sleep(850);
@@ -1740,6 +1874,7 @@ function showOpenGate(sender) {
     cd.classList.remove('show');
 
     // Card reveal animation
+    if (appCardEl) appCardEl.classList.remove('bg-hidden');
     if (exportCard) {
       exportCard.classList.remove('card-hidden');
       void exportCard.offsetWidth;
@@ -1767,6 +1902,11 @@ function clearUrlParams() {
 function renderCardData(data) {
   if (!data) return;
 
+  const appCardEl = document.querySelector('.app-card');
+  if (appCardEl) appCardEl.classList.remove('bg-hidden');
+  const exportCardEl = document.getElementById('exportCard');
+  if (exportCardEl) exportCardEl.classList.remove('card-hidden');
+
   setText('outSender', data.sender ? `From: ${data.sender}` : '');
   setText('outReason', data.reason || '');
   setText('outNote', data.note || '');
@@ -1781,7 +1921,6 @@ function renderCardData(data) {
       if (bgVideoEl) {
         bgVideoEl.muted = true;
         bgVideoEl.preload = 'auto';
-        // Video မစခင် အမဲရောင်မဖြစ်စေရန် ပထမ frame ကို ပြမည်
         bgVideoEl.onloadeddata = () => {
           try { if (bgVideoEl.paused) bgVideoEl.currentTime = 0.05; } catch (e) { /* ignore */ }
         };
@@ -1951,13 +2090,14 @@ async function handleSignup() {
 
   const btn = document.getElementById('btn_signup');
   if (btn) btn.disabled = true;
+  let navigating = false;
+  setLoader(true);
 
   try {
-    // .or() တွင် user input မထည့်ဘဲ query နှစ်ခု သီးသန့်ခွဲစစ်သည်
-    const [byNum, byName] = await Promise.all([
+    const [byNum, byName] = await withTimeout(Promise.all([
       sb.from('users').select('num').eq('num', num).limit(1),
       sb.from('users').select('num').ilike('name', escapeLike(name)).limit(1)
-    ]);
+    ]));
 
     if (byNum.error || byName.error) throw (byNum.error || byName.error);
 
@@ -1968,18 +2108,20 @@ async function handleSignup() {
 
     const hashed = await hashPassword(p1, num);
     const userData = { name, num, pass: hashed, avatar: '', history: [] };
-    const { error } = await sb.from('users').insert([userData]);
+    const { error } = await withTimeout(sb.from('users').insert([userData]));
     if (error) throw error;
 
     alert(m.signupOk);
     currentUser = userData;
     setupProfileView();
+    navigating = true;
     goToStep(2);
   } catch (err) {
     console.error('Signup error:', err);
     alert(m.dbError);
   } finally {
     if (btn) btn.disabled = false;
+    if (!navigating) setLoader(false);
   }
 }
 
@@ -2001,14 +2143,16 @@ async function handleLogin() {
 
   const btn = document.getElementById('btn_login');
   if (btn) btn.disabled = true;
+  let navigating = false;
+  setLoader(true);
 
   try {
-    const { data: foundUser, error } = await sb
+    const { data: foundUser, error } = await withTimeout(sb
       .from('users')
       .select('*')
       .ilike('name', escapeLike(name))
       .limit(1)
-      .maybeSingle();
+      .maybeSingle());
 
     if (error) throw error;
     if (!foundUser) {
@@ -2023,7 +2167,6 @@ async function handleLogin() {
     if (stored.startsWith(HASH_PREFIX)) {
       ok = (stored === await hashPassword(pass, foundUser.num));
     } else if (stored === pass) {
-      // အဟောင်း plain text password - အောင်မြင်စွာ ဝင်ပြီးလျှင် hash သို့ အလိုအလျောက် ပြောင်းမည်
       ok = true;
       needsUpgrade = true;
     }
@@ -2042,12 +2185,14 @@ async function handleLogin() {
     }
 
     setupProfileView();
+    navigating = true;
     goToStep(2);
   } catch (err) {
     console.error('Login error:', err);
     alert(m.dbError);
   } finally {
     if (btn) btn.disabled = false;
+    if (!navigating) setLoader(false);
   }
 }
 
@@ -2090,13 +2235,17 @@ async function syncUserToSupabase() {
   if (!currentUser) return;
   const sb = getSupabase();
   if (!sb) return;
-  const { error } = await sb.from('users').update({
-    name: currentUser.name,
-    pass: currentUser.pass,
-    avatar: currentUser.avatar,
-    history: currentUser.history
-  }).eq('num', currentUser.num);
-  if (error) console.error('Sync user error:', error);
+  try {
+    const { error } = await withTimeout(sb.from('users').update({
+      name: currentUser.name,
+      pass: currentUser.pass,
+      avatar: currentUser.avatar,
+      history: currentUser.history
+    }).eq('num', currentUser.num));
+    if (error) console.error('Sync user error:', error);
+  } catch (err) {
+    console.error('Sync user failed:', err);
+  }
 }
 
 async function changeNickname() {
@@ -2104,7 +2253,7 @@ async function changeNickname() {
   const m = t().msg;
 
   let modal = document.getElementById('customNickModal');
-  if (modal) modal.remove(); // ဘာသာစကား ပြောင်းထားနိုင်သဖြင့် အသစ်ပြန်ဆောက်မည်
+  if (modal) modal.remove();
 
   modal = document.createElement('div');
   modal.id = 'customNickModal';
@@ -2215,7 +2364,7 @@ async function changeNickname() {
 
 async function updateProfileAvatar(input) {
   if (!(input.files && input.files[0]) || !currentUser) return;
-  const dataUrl = await compressFileToDataUrl(input.files[0], 300, 0.8); // Avatar ကို သေးအောင်ချုံ့သည်
+  const dataUrl = await compressFileToDataUrl(input.files[0], 300, 0.8);
   input.value = '';
   if (!dataUrl) return;
 
@@ -2234,7 +2383,6 @@ function viewHistory() {
 
 function getHistoryExpireTime(item) {
   if (item.expiresAt) return item.expiresAt;
-  // အဟောင်း record များအတွက် localStorage fallback
   const stored = localStorage.getItem(`card_expire_${item.id}`);
   if (stored) return parseInt(stored, 10);
   const fallback = Date.now() + CARD_LIFETIME_MS;
@@ -2439,9 +2587,10 @@ function showStep(stepNumber) {
     appCard.classList.toggle('no-scroll', stepNumber === 4);
   }
   document.body.classList.toggle('lock-scroll', stepNumber === 4);
+  const reportBtnEl = document.getElementById('btn_report');
+  if (reportBtnEl) reportBtnEl.style.display = (stepNumber === 4 && isSharedLinkVisitor) ? 'block' : 'none';
   window.scrollTo(0, 0);
 
-  // Step 3 မဟုတ်လျှင် preview သီချင်းရပ်၊ Step 4 မဟုတ်လျှင် ကတ်သီချင်းနှင့် video ရပ်
   if (stepNumber !== 3) {
     const previewPlayer = document.getElementById('audioPreviewPlayer');
     if (previewPlayer) previewPlayer.pause();
@@ -2455,7 +2604,6 @@ function showStep(stepNumber) {
 }
 
 // ==========================================
-// Create card - Upload (ရွေးသည်နှင့် ချက်ချင်းတင်၊ Kbps/Mbps ပြ)
 // ==========================================
 function updateGenButton() {
   const btn = document.getElementById('btn_genCard');
@@ -2476,7 +2624,6 @@ async function processAndUpload(kind, file) {
   const isVid = isVideoFile(file);
   const token = ++u.token;
 
-  // အရင်တင်ထားသော ဖိုင်ရှိလျှင် ဖျက်မည်
   if (u.url && sb) removeMediaFiles(sb, [u.url]);
   u.file = file;
   u.url = '';
@@ -2490,7 +2637,7 @@ async function processAndUpload(kind, file) {
 
   try {
     if (!isVid) {
-      dataUrl = await compressFileToDataUrl(file, kind === 'bg' ? 900 : 700, 0.8);
+      dataUrl = await compressFileToDataUrl(file, kind === 'bg' ? 1080 : 700, 0.85);
       if (dataUrl) blob = await (await fetch(dataUrl)).blob();
     }
     if (u.token !== token) return;
@@ -2515,7 +2662,6 @@ async function processAndUpload(kind, file) {
     console.warn('Upload error:', err);
 
     if (!isVid && dataUrl) {
-      // ပုံဖြစ်လျှင် ကတ်ဖန်တီးချိန်တွင် နောက်တစ်ကြိမ် ပြန်ကြိုးစားမည်
       u.fallback = dataUrl;
       setFileLabel(label, `✅ ${kind === 'qr' ? 'QR' : '📸 Image'} (${file.name})`, 100);
     } else {
@@ -2569,7 +2715,6 @@ async function handleQrImage(input) {
   await processAndUpload('qr', input.files[0]);
 }
 
-// discard = true ဆိုလျှင် မသုံးဖြစ်သော တင်ထားဖိုင်များကို Storage မှ ဖျက်မည်
 function resetCardForm(discard) {
   const sb = getSupabase();
   ['bg', 'qr'].forEach((k) => {
@@ -2642,7 +2787,6 @@ async function generateAndSaveCard() {
   if (loader) loader.classList.add('show');
 
   try {
-    // Upload ပြီးသား URL ကို တိုက်ရိုက်သုံးမည်၊ မပြီးသေးသည်ကိုသာ fallback ဖြင့် တင်မည်
     const [bgUrl, qrUrl] = await Promise.all([
       uploads.bg.url ? uploads.bg.url : uploadMedia(sb, uploads.bg.fallback, 'bg'),
       uploads.qr.url ? uploads.qr.url : uploadMedia(sb, uploads.qr.fallback, 'qr')
@@ -2675,7 +2819,6 @@ async function generateAndSaveCard() {
       createdAt: new Date().toISOString(),
       expiresAt: expireTime
     });
-    // ကျော်လွန်နေသော မှတ်တမ်းဟောင်းများကို ရှင်းမည် (ပြဿနာမရှိစေရန် ၅၀ ခုထိသာ ထိန်းမည်)
     currentUser.history = currentUser.history.slice(0, 50);
     await syncUserToSupabase();
 
@@ -2688,7 +2831,7 @@ async function generateAndSaveCard() {
       music_url: payload.music_url
     });
 
-    resetCardForm(false); // ဖိုင်များသည် ကတ်နှင့် ပိုင်ဆိုင်သွားပြီဖြစ်၍ မဖျက်ပါ
+    resetCardForm(false);
 
     if (loader) loader.classList.remove('show');
     showStep(4);
