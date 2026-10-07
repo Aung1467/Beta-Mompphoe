@@ -1095,6 +1095,37 @@ cardStyleInjected.textContent = `
     10% { opacity: 1; }
     100% { transform: translateY(108vh) rotate(420deg); opacity: 0.9; }
   }
+
+  /* ===== Step 4 layout: From tag in the corner, title under it, text + QR in one centered column ===== */
+  #step4 > h2 {
+    margin: 34px 0 10px; font-size: 18px; color: #e8fdff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 14px rgba(0, 242, 254, 0.55);
+  }
+  #outSender, .sender-tag { top: 14px !important; right: 14px !important; }
+  #outSender:empty { display: none !important; }
+  .app-card:not(.no-scroll) > #outSender,
+  .app-card.bg-hidden > #outSender { visibility: hidden !important; }
+  .app-card.no-scroll::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 30%;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(5, 3, 15, 0.62), rgba(5, 3, 15, 0));
+  }
+  .app-card.bg-hidden::before { display: none; }
+
+  #exportCard {
+    width: 100% !important; max-width: none !important; min-width: 0 !important;
+    aspect-ratio: auto !important; padding: 0 !important;
+    height: min(calc(100vh - 340px), 569px) !important;
+    height: min(calc(100dvh - 340px), 569px) !important;
+    min-height: 240px !important;
+    justify-content: flex-end !important;
+  }
+  .card-header-content { margin: 0 auto 12px !important; padding: 0 !important; width: 100% !important; text-align: center !important; }
+  #outReason { font-size: 18px !important; margin-bottom: 6px !important; }
+  #outNote { font-size: 14px !important; margin-top: 0 !important; max-height: 8.4em; overflow: hidden; }
+  .card-qr-overlay { padding: 0 !important; }
+  .qr-img-wrapper, #qrWrapper { max-width: 120px !important; }
+  #cardAudioGroup { margin: 0 !important; }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -1710,6 +1741,8 @@ function setupCardBackdrop() {
   appCard.insertBefore(feather, appCard.firstChild);
   if (vid) appCard.insertBefore(vid, appCard.firstChild);
   if (img) appCard.insertBefore(img, appCard.firstChild);
+  const tag = document.getElementById('outSender');
+  if (tag) appCard.insertBefore(tag, feather.nextSibling);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
