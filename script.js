@@ -2040,7 +2040,7 @@ function clearUrlParams() {
 // ==========================================
 // Video background sound: 'replace' = the video's own sound replaces the chosen music
 // (only when the video really has audio); 'mix' = video sound and music play together.
-const VIDEO_AUDIO_MODE = 'replace';
+const VIDEO_AUDIO_MODE = 'mix';
 
 function videoHasAudio(v) {
   if (typeof v.mozHasAudio === 'boolean') return v.mozHasAudio;
