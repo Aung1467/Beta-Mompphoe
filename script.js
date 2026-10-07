@@ -637,7 +637,6 @@ cardStyleInjected.innerHTML = `
     100% { height: 100%; opacity: 1; }
   }
 
-  /* Dropdown Wrapper Positioning & Width Fix */
   .custom-select-wrapper, #musicCustomSelect, #reasonCustomSelect {
     position: relative !important;
     display: flex !important;
@@ -656,7 +655,6 @@ cardStyleInjected.innerHTML = `
     cursor: pointer !important;
   }
 
-  /* Fix for Music & Reason Dropdown Overflow & Overlaying */
   .custom-options, #musicCustomOptions, #reasonDropdown {
     display: none !important;
     position: absolute !important;
@@ -695,7 +693,6 @@ cardStyleInjected.innerHTML = `
     color: #00f2fe !important;
   }
 
-  /* Audio Preview Group Width Fix */
   #audioPreviewGroup {
     width: 100% !important;
     box-sizing: border-box !important;
@@ -837,7 +834,6 @@ function updateTexts() {
   if(document.getElementById('introMsg')) document.getElementById('introMsg').innerText = d.introMsg;
   if(document.getElementById('lbl_loaderMsg')) document.getElementById('lbl_loaderMsg').innerText = d.loaderMsg;
   
-  // Notice Modal texts
   if(document.getElementById('btn_notice')) document.getElementById('btn_notice').innerText = d.noticeBtnText;
   if(document.getElementById('lbl_noticeTitle')) document.getElementById('lbl_noticeTitle').innerText = d.noticeTitle;
   const noticeListEl = document.getElementById('lbl_noticeList');
@@ -928,12 +924,11 @@ function updateTexts() {
 
 function changeLanguage(lang) {
   currentLang = lang || 'my';
-  window.currentLang = currentLang; // Global synchronization
+  window.currentLang = currentLang;
   updateTexts();
   populateReasonDropdown(currentLang);
 }
 
-// 🛡️ မိုဘိုင်းဘရောက်ဆာများအတွက် Video File ဟုတ်မဟုတ် သေချာစစ်ဆေးပေးသည့် Helper
 function isVideoFile(file) {
   if (!file) return false;
   if (file.type && file.type.startsWith('video/')) return true;
@@ -1108,7 +1103,6 @@ window.addEventListener('click', function(e) {
     document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
   }
 
-  // Legal Policy Modal အပြင်ဘက်ကို နှိပ်ရင် ပိတ်သွားစေရန်
   const legalModal = document.getElementById('legalModal');
   if (e.target === legalModal) {
     closeLegalModal();
@@ -1150,7 +1144,6 @@ window.addEventListener('DOMContentLoaded', async () => {
           .single();
 
         if (data && !error) {
-          // သက်တမ်း ကုန်/မကုန် စစ်ဆေးပေးခြင်း
           const createdAt = new Date(data.created_at || Date.now()).getTime();
           const expireTime = createdAt + (120 * 60 * 1000);
           if (Date.now() > expireTime) {
