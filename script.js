@@ -226,6 +226,7 @@ let currentLang = 'my';
 let cardTimerInterval = null;
 let historyTimerInterval = null;
 let isSharedLinkVisitor = false;
+let currentCardReason = '';
 let isGenerating = false;
 
 const uploads = {
@@ -1174,6 +1175,38 @@ cardStyleInjected.textContent = `
 
   /* QR: square frame, image stretched to fill it */
   #cardQrImg { object-fit: fill !important; }
+
+  /* ===== Card title: the chosen reason sits in a bordered pill where the old title was ===== */
+  #outReason { display: none !important; }
+  #step4 > h2.reason-pill {
+    width: fit-content; max-width: 88%; margin: 26px auto 4px;
+    padding: 7px 18px; box-sizing: border-box; text-align: center;
+    font-size: 16px; font-weight: 700; line-height: 1.4; color: #ffffff;
+    background: rgba(5, 3, 15, 0.55); border: 1.5px solid rgba(0, 242, 254, 0.75);
+    border-radius: 14px; box-shadow: 0 0 12px rgba(0, 242, 254, 0.35);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9); word-break: break-word;
+  }
+
+  /* ===== Volume control (card owner only) ===== */
+  #volBtn {
+    position: absolute; top: 46px; right: 14px; z-index: 12;
+    width: 34px; height: 34px; padding: 0; margin: 0; border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    font-size: 16px; line-height: 1; cursor: pointer; color: #ffffff;
+    background: rgba(5, 3, 15, 0.6); border: 1.5px solid rgba(0, 242, 254, 0.7);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+  }
+  #volPanel {
+    position: absolute; top: 86px; right: 14px; z-index: 12;
+    display: none; flex-direction: column; gap: 10px; padding: 10px 12px;
+    background: rgba(5, 3, 15, 0.82); border: 1.5px solid rgba(0, 242, 254, 0.5);
+    border-radius: 12px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  #volPanel.open { display: flex; }
+  #volPanel label { display: flex; align-items: center; gap: 8px; color: #ffffff; font-size: 14px; margin: 0; }
+  #volPanel input[type=range] { width: 96px; height: 4px; margin: 0; padding: 0; accent-color: #00f2fe; }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -1273,7 +1306,7 @@ function updateTexts() {
   setText('btn_backStep3', d.backBtn);
   setText('btn_genCard', d.genCardBtn);
 
-  setText('lbl_step4Title', d.step4Title);
+  syncStep4Title(d);
   setText('btn_saveQr', d.saveBtn);
   setText('btn_share', d.shareBtn);
   setText('btn_profileReturn', d.profileReturnBtn);
@@ -2038,9 +2071,82 @@ function clearUrlParams() {
 // ==========================================
 // Card rendering & timer
 // ==========================================
+// ==========================================
+// Card title pill + volume control
+// ==========================================
+function syncStep4Title(d) {
+  const h = document.getElementById('lbl_step4Title');
+  if (!h) return;
+  h.textContent = currentCardReason || ((d && d.step4Title) || '');
+  h.classList.toggle('reason-pill', !!currentCardReason);
+}
+
+// Applies the slider values to the real audio/video elements.
+function applyVolumeLevels() {
+  const music = document.getElementById('volMusic');
+  const video = document.getElementById('volVideo');
+  const audioEl = document.getElementById('cardAudioPlayer');
+  const videoEl = document.getElementById('cardBgVideo');
+  if (music && audioEl) audioEl.volume = music.value / 100;
+  if (video && videoEl) videoEl.volume = video.value / 100;
+  if (video) {
+    const hasVideo = !!(videoEl && videoEl.getAttribute('src'));
+    video.disabled = !hasVideo;
+    if (video.parentNode) video.parentNode.style.opacity = hasVideo ? '1' : '0.35';
+  }
+  const btn = document.getElementById('volBtn');
+  if (btn && music && video) btn.textContent = (+music.value === 0 && +video.value === 0) ? '🔇' : '🔊';
+}
+
+function setupVolumeControl() {
+  const appCard = document.querySelector('.app-card');
+  if (!appCard || document.getElementById('volBtn')) return;
+
+  const btn = document.createElement('button');
+  btn.id = 'volBtn';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Volume');
+  btn.textContent = '🔊';
+
+  const panel = document.createElement('div');
+  panel.id = 'volPanel';
+  panel.innerHTML =
+    '<label><span>🎵</span><input type="range" id="volMusic" min="0" max="100" value="100"></label>' +
+    '<label><span>🎬</span><input type="range" id="volVideo" min="0" max="100" value="100"></label>';
+
+  appCard.appendChild(btn);
+  appCard.appendChild(panel);
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.classList.toggle('open');
+  });
+  panel.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => panel.classList.remove('open'));
+
+  panel.querySelector('#volMusic').addEventListener('input', applyVolumeLevels);
+  panel.querySelector('#volVideo').addEventListener('input', () => {
+    const videoEl = document.getElementById('cardBgVideo');
+    // Moving the slider is a tap, so it can also lift a muted-autoplay fallback.
+    if (videoEl && videoEl.muted && +panel.querySelector('#volVideo').value > 0) videoEl.muted = false;
+    applyVolumeLevels();
+  });
+}
+
+// Only the card owner sees the speaker; people opening a shared link do not.
+function updateVolumeControl(stepNumber) {
+  setupVolumeControl();
+  const btn = document.getElementById('volBtn');
+  const panel = document.getElementById('volPanel');
+  const show = stepNumber === 4 && !isSharedLinkVisitor;
+  if (btn) btn.style.display = show ? 'flex' : 'none';
+  if (panel && !show) panel.classList.remove('open');
+  applyVolumeLevels();
+}
+
 // Video background sound: 'replace' = the video's own sound replaces the chosen music
 // (only when the video really has audio); 'mix' = video sound and music play together.
-const VIDEO_AUDIO_MODE = 'mix';
+const VIDEO_AUDIO_MODE = 'replace';
 
 function videoHasAudio(v) {
   if (typeof v.mozHasAudio === 'boolean') return v.mozHasAudio;
@@ -2087,6 +2193,8 @@ function renderCardData(data) {
   setText('outSender', data.sender ? `From: ${data.sender}` : '');
   setText('outReason', data.reason || '');
   setText('outNote', data.note || '');
+  currentCardReason = String(data.reason || '').trim();
+  syncStep4Title(t());
 
   const bgSrc = data.bgImage || data.bg_image || '';
   const bgImgEl = document.getElementById('cardBgImg');
@@ -2144,6 +2252,7 @@ function renderCardData(data) {
       cardAudioGroup.style.display = 'none';
     }
   }
+  applyVolumeLevels();
 }
 
 function stopCardTimer() {
@@ -2204,6 +2313,8 @@ async function deleteCardDataAndClean(cardId) {
   setText('outSender', '');
   setText('outReason', '');
   setText('outNote', '');
+  currentCardReason = '';
+  syncStep4Title(t());
 
   const cardAudioGroup = document.getElementById('cardAudioGroup');
   if (cardAudioGroup) cardAudioGroup.style.display = 'none';
@@ -2766,6 +2877,7 @@ function showStep(stepNumber) {
   document.body.classList.toggle('lock-scroll', stepNumber === 4);
   const reportBtnEl = document.getElementById('btn_report');
   if (reportBtnEl) reportBtnEl.style.display = (stepNumber === 4 && isSharedLinkVisitor) ? 'block' : 'none';
+  updateVolumeControl(stepNumber);
   window.scrollTo(0, 0);
 
   if (stepNumber !== 3) {
