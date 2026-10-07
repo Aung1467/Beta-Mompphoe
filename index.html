@@ -837,9 +837,9 @@
     .anime-dancer-free {
       width: 40px !important;
       height: 40px !important;
-      border-radius: 50%;
+      border-radius: 0;
       border: none !important;
-      overflow: hidden !important;
+      overflow: visible !important;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -852,8 +852,9 @@
     .anime-dancer-free img {
       width: 100% !important;
       height: 100% !important;
-      object-fit: cover;
-      border-radius: 50%;
+      object-fit: contain;
+      border-radius: 0;
+      background: transparent;
     }
 
     .equalizer-bars {
@@ -1276,7 +1277,7 @@
           <div class="spinning-disc-inner"></div>
         </div>
         <div class="anime-dancer-free">
-          <img src="gif/anime.gif" alt="" onerror="this.parentNode.style.display='none'">
+          <img src="gif/anime.webp" alt="" onerror="this.parentNode.style.display='none'">
         </div>
         <div class="equalizer-bars">
           <div class="eq-bar"></div>
