@@ -1147,6 +1147,33 @@ cardStyleInjected.textContent = `
     text-align: center; white-space: normal;
   }
   #btn_deleteAccount { min-height: 40px !important; margin-top: 6px; background: transparent !important; }
+
+  /* ===== Top bar: Notice and Language share the same height/font; language is a small dropdown ===== */
+  .notice-btn, #langTrigger {
+    height: 38px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px;
+    padding: 0 14px; font-size: 13px; font-weight: 700; line-height: 1; border-radius: 12px;
+  }
+  #langTrigger {
+    border: 1.5px solid rgba(0, 242, 254, 0.6); background: rgba(10, 12, 28, 0.95); color: #fff;
+    cursor: pointer; box-shadow: 0 0 10px var(--accent-glow); outline: none;
+  }
+  #langTrigger .lang-arrow { color: var(--accent); font-size: 12px; transition: transform 0.2s ease; }
+  #langDD.open #langTrigger .lang-arrow { transform: rotate(180deg); }
+  #langList {
+    display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 100%; width: max-content;
+    z-index: 300; padding: 4px; background: rgba(15, 23, 42, 0.98);
+    border: 1.5px solid rgba(0, 242, 254, 0.5); border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px);
+  }
+  #langDD.open #langList { display: block; }
+  .lang-item {
+    display: flex; align-items: center; height: 36px; padding: 0 12px; border-radius: 8px;
+    font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; white-space: nowrap;
+  }
+  .lang-item:hover, .lang-item.active { background: rgba(0, 242, 254, 0.15); color: var(--accent); }
+
+  /* QR: square frame, image stretched to fill it */
+  #cardQrImg { object-fit: fill !important; }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -1702,6 +1729,64 @@ function setupExtras() {
     row.insertAdjacentElement('afterend', rep);
   }
   updateExtraTexts();
+  setupLangDropdown();
+}
+
+const LANG_OPTIONS = [
+  ['my', '🇲🇲', 'မြန်မာ'], ['en', '🇬🇧', 'English'], ['ja', '🇯🇵', '日本語'],
+  ['ko', '🇰🇷', '한국어'], ['th', '🇹🇭', 'ไทย'], ['zh', '🇨🇳', '中文']
+];
+
+function setupLangDropdown() {
+  const sel = document.getElementById('userLang');
+  if (!sel || document.getElementById('langDD')) return;
+  const host = sel.parentElement;
+  sel.style.display = 'none';
+  host.style.position = 'relative';
+
+  const dd = document.createElement('div');
+  dd.id = 'langDD';
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.id = 'langTrigger';
+  trigger.setAttribute('aria-haspopup', 'listbox');
+  const list = document.createElement('div');
+  list.id = 'langList';
+  list.setAttribute('role', 'listbox');
+
+  const refresh = () => {
+    const cur = LANG_OPTIONS.find((o) => o[0] === currentLang) || LANG_OPTIONS[0];
+    trigger.textContent = '';
+    const label = document.createElement('span');
+    label.textContent = cur[1] + ' ' + cur[2];
+    const arrow = document.createElement('span');
+    arrow.className = 'lang-arrow';
+    arrow.textContent = '▾';
+    trigger.append(label, arrow);
+    list.querySelectorAll('.lang-item').forEach((el) => el.classList.toggle('active', el.dataset.code === currentLang));
+  };
+
+  LANG_OPTIONS.forEach(([code, flag, name]) => {
+    const item = document.createElement('div');
+    item.className = 'lang-item';
+    item.dataset.code = code;
+    item.setAttribute('role', 'option');
+    item.textContent = flag + ' ' + name;
+    item.onclick = () => {
+      sel.value = code;
+      changeLanguage(code);
+      dd.classList.remove('open');
+      refresh();
+    };
+    list.appendChild(item);
+  });
+
+  trigger.onclick = (e) => { e.stopPropagation(); dd.classList.toggle('open'); };
+  document.addEventListener('click', (e) => { if (!dd.contains(e.target)) dd.classList.remove('open'); });
+
+  dd.append(trigger, list);
+  host.appendChild(dd);
+  refresh();
 }
 
 async function deleteAccount() {
