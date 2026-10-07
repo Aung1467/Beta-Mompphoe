@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="page_title"></title>
   
+  <!-- Step 1: AMP Auto Ads Script ထည့်သွင်းခြင်း -->
+  <script async custom-element="amp-auto-ads"
+          src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -709,7 +714,7 @@
     /* 💿 Audio Preview Player Container */
     #audioPreviewGroup {
       position: relative;
-      z-index: 30; /* Dropdown ပွင့်ပါက အောက်မှ Form element များပေါ်သို့ မိုးပြီး ပေါ်စေရန် */
+      z-index: 30;
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -728,7 +733,6 @@
       position: relative;
       width: 100%;
     }
-
 
     .cd-disc-wrapper {
       display: flex;
@@ -757,12 +761,11 @@
       border: 2px solid #fff;
     }
 
-    /* Embedded Music Dropdown Style */
     #musicCustomSelect {
       flex: 1;
       min-width: 0;
       margin: 0;
-      position: relative; /* relative ဟု ပြောင်းလဲထားသောကြောင့် position မလွဲတော့ပါ */
+      position: relative;
     }
 
     #musicCustomSelect .custom-select-trigger {
@@ -779,7 +782,6 @@
       font-size: 12px;
     }
 
-    /* Music Dropdown List */
     #musicCustomSelect .custom-options {
       top: 100%;
       left: 0;
@@ -789,7 +791,6 @@
       margin-top: 6px;
     }
 
-    /* Music Dropdown Open State - Card မှာ Scrollbar မပေါ်စေရန် အမြင့်ထိန်းညှိထားပါသည် */
     #musicCustomSelect.open .custom-options {
       max-height: 150px;
     }
@@ -845,6 +846,11 @@
 </head>
 <body>
 
+  <!-- Step 2: AMP Auto Ads Tag ကို <body> အောက်တည့်တည့်တွင် ထည့်သွင်းခြင်း -->
+  <amp-auto-ads type="adsense"
+      data-ad-client="ca-pub-4891395174599211">
+  </amp-auto-ads>
+
   <!-- Intro Splash Screen -->
   <div id="introSplash">
     <div class="intro-box">
@@ -859,7 +865,7 @@
     <div class="wave"></div>
   </div>
 
-<!-- Centered Top Controls -->
+  <!-- Centered Top Controls -->
   <div class="top-controls-container">
     <button class="notice-btn" id="btn_notice" onclick="openNoticeModal()"></button>
     <div class="top-lang-switcher">
