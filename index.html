@@ -1161,23 +1161,6 @@
 
   </div>
 
-  <!-- Footer Links (App Cards အောက်ဆုံးတွင် ပေါ်စေရန်) -->
-  <footer style="margin-top: 15px; margin-bottom: 15px; text-align: center; font-size: 11px; z-index: 100; position: relative;">
-    <a href="javascript:void(0)" onclick="openLegalModal('about')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">About Us</a> |
-    <a href="javascript:void(0)" onclick="openLegalModal('contact')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Contact Us</a> |
-    <a href="javascript:void(0)" onclick="openLegalModal('privacy')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Privacy Policy</a> |
-    <a href="javascript:void(0)" onclick="openLegalModal('terms')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Terms & Conditions</a>
-  </footer>
-
-  <!-- Policy Info Pop-up Modal -->
-  <div id="legalModal" style="display: none; position: fixed; inset: 0; background: rgba(5, 3, 15, 0.95); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
-    <div style="background: #0e1124; padding: 20px; border-radius: 18px; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; border: 1.5px solid #00f2fe; color: #fff; box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);">
-      <h3 id="legalModalTitle" style="color: #00f2fe; font-size: 16px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;"></h3>
-      <div id="legalModalBody" style="font-size: 12px; line-height: 1.6; color: #cbd5e1; text-align: left;"></div>
-      <button type="button" onclick="closeLegalModal()" class="btn btn-secondary" style="width: 100%; margin-top: 15px; padding: 8px; font-size: 12px;">Close</button>
-    </div>
-  </div>
-
   <script src="script.js"></script>
   <script>
     function openNoticeModal() {
@@ -1185,12 +1168,6 @@
     }
     function closeNoticeModal() {
       document.getElementById('noticeModal').style.display = 'none';
-    }
-    function openLegalModal(type) {
-      document.getElementById('legalModal').style.display = 'flex';
-    }
-    function closeLegalModal() {
-      document.getElementById('legalModal').style.display = 'none';
     }
   </script>
 </body>
