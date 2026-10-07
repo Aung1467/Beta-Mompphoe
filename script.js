@@ -41,6 +41,75 @@ window.alert = function(msg) {
   showCustomAlert(msg);
 };
 
+// ==========================================
+// Policy Modal Data (Multi-language Support)
+// ==========================================
+const legalContent = {
+  about: {
+    my: { title: "ကျွန်ုပ်တို့အကြောင်း", body: "<p>Pocket Request App မှ ကြိုဆိုပါတယ်။ လူကြီးမင်းတို့အနေဖြင့် စိတ်ကြိုက် QR Pocket Card များနှင့် Digital Request Card များကို လွယ်ကူလျင်မြန်စွာ ဖန်တီးပြီး ပြန်လည် မျှဝေနိုင်အောင် ကူညီပေးနေသော ဝန်ဆောင်မှုဖြစ်ပါတယ်။</p>" },
+    en: { title: "About Us", body: "<p>Welcome to Pocket Request App. We offer a convenient tool to generate, customize, and share personalized QR pocket cards and digital request cards effortlessly.</p>" },
+    ja: { title: "私たちについて", body: "<p>Pocket Request Appへようこそ。パーソナライズされたQRポケットカードを簡単に作成、カスタマイズ、共有できる便利なツールを提供しています。</p>" },
+    ko: { title: "회사 소개", body: "<p>Pocket Request App에 오신 것을 환영합니다. 개인 맞춤형 QR 포켓 카드를 쉽게 생성, 맞춤 설정 및 공유할 수 있는 편리한 도구를 제공합니다.</p>" },
+    th: { title: "เกี่ยวกับเรา", body: "<p>ยินดีต้อนรับสู่ Pocket Request App เราให้บริการเครื่องมือที่สะดวกในการสร้าง ปรับแต่ง และแชร์การ์ด QR ดิจิทัลได้อย่างง่ายดาย</p>" },
+    zh: { title: "关于我们", body: "<p>欢迎使用 Pocket Request App。我们提供便捷的工具，供您轻松生成、自定义和分享个性化 QR 卡片。</p>" }
+  },
+  contact: {
+    my: { title: "ဆက်သွယ်ရန်", body: "<p>မေးမြန်းလိုသည်များ သို့မဟုတ် အကြံပြုချက်များရှိပါက အောက်ပါ အီးမေးလ်မှတစ်ဆင့် ဆက်သွယ်နိုင်ပါသည်။</p><p style='margin-top:8px;'>📧 Email: <b>monpphoe@gmail.com</b></p>" },
+    en: { title: "Contact Us", body: "<p>If you have any questions or feedback, feel free to reach out to us:</p><p style='margin-top:8px;'>📧 Email: <b>monpphoe@gmail.com</b></p>" },
+    ja: { title: "お問い合わせ", body: "<p>ご質問やご意見がございましたら、お気軽にお問い合わせください。</p><p style='margin-top:8px;'>📧 Email: <b>monpphoe@gmail.com</b></p>" },
+    ko: { title: "문의하기", body: "<p>질문이나 피드백이 있으시면 언제든지 문의해 주세요。</p><p style='margin-top:8px;'>📧 Email: <b>monpphoe@gmail.com</b></p>" },
+    th: { title: "ติดต่อเรา", body: "<p>หากคุณมีคำถามหรือข้อเสนอแนะ โปรดติดต่อเราได้ที่:</p><p style='margin-top:8px;'>📧 Email: <b>monpphoe@gmail.com</b></p>" },
+    zh: { title: "联系我们", body: "<p>如果您有任何疑问或反馈，请随时联系我们：</p><p style='margin-top:8px;'>📧 Email: <b>monpphoe@gmail.com</b></p>" }
+  },
+  privacy: {
+    my: { title: "ကိုယ်ရေးအချက်အလက် မူဝါဒ", body: "<p>လူကြီးမင်းတို့၏ ကိုယ်ရေးအချက်အလက် လုံခြုံရေးသည် ကျွန်ုပ်တို့အတွက် အရေးကြီးပါသည်။ ကိုယ်ရေးကိုယ်တာ အချက်အလက်များကို ရယူစုဆောင်းခြင်း မရှိပါ။ ကြော်ငြာများ ပြသရန် Google AdSense ကဲ့သို့သော Third-party ဝန်ဆောင်မှုများကို အသုံးပြုထားပါသည်။</p>" },
+    en: { title: "Privacy Policy", body: "<p>Your privacy is important to us. We do not collect or share personal identification data. We use third-party services like Google AdSense to serve ads, which may use cookies to serve personalized ads based on your visits to this website.</p>" },
+    ja: { title: "プライバシーポリシー", body: "<p>お客様のプライバシーは非常に重要です。個人識別情報を収集または共有することはありません。Google AdSenseなどのサードパーティサービスを使用して広告を配信しています。</p>" },
+    ko: { title: "개인정보 처리방침", body: "<p>귀하의 개인정보 보호는 매우 중요합니다. 당사는 개인 식별 데이터를 수집하거나 공유하지 않습니다. Google AdSense와 같은 제3자 서비스를 사용하여 광고를 게재합니다.</p>" },
+    th: { title: "นโยบายความเป็นส่วนตัว", body: "<p>ความเป็นส่วนตัวของคุณมีความสำคัญต่อเรา เราไม่มีการเก็บรวบรวมหรือแชร์ข้อมูลส่วนบุคคล เราใช้บริการของบุคคลที่สาม เช่น Google AdSense เพื่อแสดงโฆษณา</p>" },
+    zh: { title: "隐私政策", body: "<p>您的隐私对我们至关重要。我们不会收集或共享个人身份数据。我们使用 Google AdSense 等第三方服务来展示广告。</p>" }
+  },
+  terms: {
+    my: { title: "စည်းမျဉ်းနှင့် စည်းကမ်းများ", body: "<p>Pocket Request App ကို အသုံးပြုခြင်းဖြင့် QR Card များကို တာဝန်ယူမှုရှိစွာ ဖန်တီးသုံးစွဲရန် သဘောတူညီပါသည်။ မသမာသော လုပ်ရပ်များ သို့မဟုတ် ဥပဒေမဲ့ ပါဝင်အကြောင်းအရာများ မျှဝေခြင်းကို တင်းကြပ်စွာ တားမြစ်ထားပါသည်။</p>" },
+    en: { title: "Terms & Conditions", body: "<p>By using Pocket Request App, you agree to generate and share QR cards responsibly. Misuse or illegal content distribution via generated cards is strictly prohibited.</p>" },
+    ja: { title: "利用規約", body: "<p>Pocket Request Appを使用することで、責任を持ってQRカードを生成および共有することに同意したことになります。違法なコンテンツの distribution は strictly 禁止されています。</p>" },
+    ko: { title: "이용약관", body: "<p>Pocket Request App을 사용함으로써 귀하는 책임감 있게 QR 카드를 생성하고 공유하는 데 동의하게 됩니다. 불법 콘텐츠 유포는 엄격히 금지됩니다.</p>" },
+    th: { title: "ข้อกำหนดและเงื่อนไข", body: "<p>การใช้ Pocket Request App ถือว่าคุณตกลงที่จะสร้างและแชร์การ์ด QR อย่างมีความรับผิดชอบ ห้ามมิให้มีการเผยแพร่เนื้อหาที่ผิดกฎหมายโดยเด็ดขาด</p>" },
+    zh: { title: "条款与条件", body: "<p>使用 Pocket Request App 即表示您同意负责任地生成和分享 QR 卡片。严禁通过生成的卡片分发违法内容。</p>" }
+  }
+};
+
+/**
+ * Open Legal Modal with multi-language support
+ * @param {string} type - 'about', 'contact', 'privacy', or 'terms'
+ */
+function openLegalModal(type) {
+  const langSelect = document.getElementById('userLang');
+  const activeLang = typeof window.currentLang !== 'undefined' 
+    ? window.currentLang 
+    : (langSelect ? langSelect.value : 'my');
+
+  if (legalContent[type]) {
+    const content = legalContent[type][activeLang] || legalContent[type]['en'] || legalContent[type]['my'];
+    
+    const modalTitle = document.getElementById('legalModalTitle');
+    const modalBody = document.getElementById('legalModalBody');
+    const modal = document.getElementById('legalModal');
+
+    if (modalTitle) modalTitle.innerText = content.title;
+    if (modalBody) modalBody.innerHTML = content.body;
+    if (modal) modal.style.display = 'flex';
+  }
+}
+
+/**
+ * Close Legal Modal
+ */
+function closeLegalModal() {
+  const modal = document.getElementById('legalModal');
+  if (modal) modal.style.display = 'none';
+}
+
 // Supabase Credentials
 const SUPABASE_URL = 'https://koybxyoucyqnixvwplke.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtveWJ4eW91Y3lxbml4dndwbGtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwNDE4NzYsImV4cCI6MjEwNjYxNzg3Nn0.V_TYzwjFO3SwnYUudWsxntm3prfckEXoAynuX5MxM-g';
@@ -422,7 +491,7 @@ const i18n = {
     step4Title: " การ์ดขอค่าขนม ",
     qrHint: "", 
     saveBtn: "💾 บันทึก QR",
-    shareBtn: "📤 แชร์การ์ด",
+    shareBtn: "แชร์การ์ด",
     profileReturnBtn: "🏠 กลับหน้าโปรไฟล์",
     modalTitle: "📤 แชร์ลิงก์",
     modalSub: "ส่งการ์ดขอค่าขนมและลิงก์ไปยัง:",
@@ -859,6 +928,7 @@ function updateTexts() {
 
 function changeLanguage(lang) {
   currentLang = lang || 'my';
+  window.currentLang = currentLang; // Global synchronization
   updateTexts();
   populateReasonDropdown(currentLang);
 }
@@ -1037,9 +1107,16 @@ window.addEventListener('click', function(e) {
   if (!e.target.closest('.custom-select-wrapper')) {
     document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
   }
+
+  // Legal Policy Modal အပြင်ဘက်ကို နှိပ်ရင် ပိတ်သွားစေရန်
+  const legalModal = document.getElementById('legalModal');
+  if (e.target === legalModal) {
+    closeLegalModal();
+  }
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
+  window.currentLang = currentLang;
   updateTexts();
   populateReasonDropdown(currentLang);
   populateMusicDropdown();
@@ -1073,6 +1150,15 @@ window.addEventListener('DOMContentLoaded', async () => {
           .single();
 
         if (data && !error) {
+          // သက်တမ်း ကုန်/မကုန် စစ်ဆေးပေးခြင်း
+          const createdAt = new Date(data.created_at || Date.now()).getTime();
+          const expireTime = createdAt + (120 * 60 * 1000);
+          if (Date.now() > expireTime) {
+            if (loader) loader.classList.remove('show');
+            await deleteCardDataAndClean(cardId, `card_expire_${cardId}`);
+            return;
+          }
+
           renderCardData({
             sender: data.sender,
             reason: data.reason,
@@ -1083,7 +1169,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           });
           if (loader) loader.classList.remove('show');
           showStep(4);
-          startCardTimer(cardId);
+          startCardTimer(cardId, expireTime);
           return;
         }
       }
@@ -1165,11 +1251,11 @@ function stopCardTimer() {
   if (timerEl) timerEl.style.display = 'none';
 }
 
-function startCardTimer(cardId) {
+function startCardTimer(cardId, customExpireTime = null) {
   stopCardTimer();
 
   const storageKey = `card_expire_${cardId || 'local_card'}`;
-  let expireTime = localStorage.getItem(storageKey);
+  let expireTime = customExpireTime || localStorage.getItem(storageKey);
 
   if (!expireTime) {
     expireTime = Date.now() + 120 * 60 * 1000;
