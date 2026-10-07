@@ -3,8 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="page_title"></title>
+  <title id="page_title">Pocket Request App</title>
   
+  <!-- SEO & Search Engine Indexing Meta Tags -->
+  <meta name="description" content="Pocket Request App - Create, customize, and share personalized QR pocket cards easily.">
+  <meta name="keywords" content="pocket request, qr card generator, digital pocket card, custom qr code">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="canonical" href="https://yourdomain.com/">
+
+  <!-- Open Graph Meta Tags for Social Media Sharing (Facebook, Messenger, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Pocket Request App">
+  <meta property="og:description" content="Create, customize, and share personalized QR pocket cards easily.">
+  <meta property="og:url" content="https://yourdomain.com/">
+  <meta property="og:site_name" content="Pocket Request App">
+  <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pocket Request App">
+  <meta name="twitter:description" content="Create, customize, and share personalized QR pocket cards easily.">
+  <meta name="twitter:image" content="https://yourdomain.com/og-image.jpg">
+
+  <!-- Structured Data (JSON-LD) for Search Engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Pocket Request App",
+    "url": "https://yourdomain.com/",
+    "description": "Create, customize, and share personalized QR pocket cards easily.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+
   <!-- Step 1: AMP Auto Ads Script ထည့်သွင်းခြင်း -->
   <script async custom-element="amp-auto-ads"
           src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
@@ -867,7 +900,7 @@
 
   <!-- Centered Top Controls -->
   <div class="top-controls-container">
-    <button class="notice-btn" id="btn_notice" onclick="openNoticeModal()"></button>
+    <button type="button" class="notice-btn" id="btn_notice" onclick="openNoticeModal()"></button>
     <div class="top-lang-switcher">
       <select id="userLang" onchange="changeLanguage(this.value)">
         <option value="my" selected>🇲🇲 မြန်မာ</option>
@@ -885,7 +918,7 @@
     <div class="modal-content" style="max-width: 320px; text-align: left; border: 2px solid var(--accent);">
       <h3 id="lbl_noticeTitle" style="color: var(--accent); font-size: 17px; margin-bottom: 10px; text-align: center;"></h3>
       <ul id="lbl_noticeList" style="font-size: 12px; color: #cbd5e1; padding-left: 16px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; font-weight: 600;"></ul>
-      <button class="btn" id="btn_noticeClose" onclick="closeNoticeModal()" style="width: 100%; padding: 10px; font-size: 13px;"></button>
+      <button type="button" class="btn" id="btn_noticeClose" onclick="closeNoticeModal()" style="width: 100%; padding: 10px; font-size: 13px;"></button>
     </div>
   </div>
 
@@ -898,9 +931,9 @@
     <div class="modal-content">
       <h3 id="lbl_modalTitle" style="color:var(--accent); font-size: 17px; margin-bottom:8px; text-shadow: 0 0 6px var(--accent-glow);"></h3>
       <p id="lbl_modalSub" style="font-size:12px; font-weight:600; margin-bottom:14px; color:#cbd5e1;"></p>
-      <button class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()"></button>
-      <button class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadSingleQrFromModal()"></button>
-      <button class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()"></button>
+      <button type="button" class="btn share-btn" id="btn_copyLink" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="copyShareLink()"></button>
+      <button type="button" class="btn save-btn" id="btn_dlQrModal" style="margin-bottom: 8px; font-size: 13px; padding: 10px;" onclick="downloadSingleQrFromModal()"></button>
+      <button type="button" class="btn btn-secondary" id="btn_closeModal" style="font-size: 13px; padding: 10px;" onclick="closeShareModal()"></button>
     </div>
   </div>
 
@@ -927,34 +960,34 @@
 
       <div id="loginFormSection">
         <div class="form-group">
-          <label id="lbl_loginName"></label>
+          <label for="loginName" id="lbl_loginName"></label>
           <input type="text" id="loginName">
         </div>
         <div class="form-group">
-          <label id="lbl_loginPass"></label>
+          <label for="loginPass" id="lbl_loginPass"></label>
           <input type="password" id="loginPass">
         </div>
-        <button class="btn" id="btn_login" onclick="handleLogin()"></button>
+        <button type="button" class="btn" id="btn_login" onclick="handleLogin()"></button>
       </div>
 
       <div id="signupFormSection" style="display: none;">
         <div class="form-group">
-          <label id="lbl_signupName"></label>
+          <label for="signupName" id="lbl_signupName"></label>
           <input type="text" id="signupName">
         </div>
         <div class="form-group">
-          <label id="lbl_signupNum"></label>
+          <label for="signupNum" id="lbl_signupNum"></label>
           <input type="text" id="signupNum" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass1"></label>
+          <label for="signupPass1" id="lbl_signupPass1"></label>
           <input type="password" id="signupPass1">
         </div>
         <div class="form-group">
-          <label id="lbl_signupPass2"></label>
+          <label for="signupPass2" id="lbl_signupPass2"></label>
           <input type="password" id="signupPass2">
         </div>
-        <button class="btn" id="btn_signup" onclick="handleSignup()"></button>
+        <button type="button" class="btn" id="btn_signup" onclick="handleSignup()"></button>
       </div>
     </div>
 
@@ -976,19 +1009,19 @@
 
         <!-- 3. Action Buttons (Change Avatar & Name) in a smart row -->
         <div class="profile-action-row">
-          <div class="file-input-wrapper profile-small-btn">
+          <label class="file-input-wrapper profile-small-btn">
             <span id="lbl_changeAvatar"></span>
             <input type="file" accept="image/*" onchange="updateProfileAvatar(this)">
-          </div>
-          <button class="profile-small-btn" id="lbl_changeNick" onclick="changeNickname()">
+          </label>
+          <button type="button" class="profile-small-btn" id="lbl_changeNick" onclick="changeNickname()">
             <span>✏</span>
           </button>
         </div>
 
         <!-- 4. Main Dashboard Buttons -->
         <div class="dashboard-actions">
-          <button class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;"></button>
-          <button class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;"></button>
+          <button type="button" class="btn" id="lbl_reqPocketBtn" onclick="goToStep(3)" style="padding: 10px; font-size: 13px;"></button>
+          <button type="button" class="btn btn-secondary" id="lbl_historyBtn" onclick="viewHistory()" style="padding: 10px; font-size: 13px;"></button>
         </div>
       </div>
     </div>
@@ -997,7 +1030,7 @@
     <div class="step" id="step5">
       <h2 id="lbl_historyTitle"></h2>
       <div class="history-list-container" id="historyListContainer"></div>
-      <button class="btn btn-secondary" id="btn_backHistory" onclick="goToStep(2)" style="width: 100%; padding: 10px; font-size: 13px;"></button>
+      <button type="button" class="btn btn-secondary" id="btn_backHistory" onclick="goToStep(2)" style="width: 100%; padding: 10px; font-size: 13px;"></button>
     </div>
 
     <!-- STEP 3: REQUEST REASON & MESSAGE -->
@@ -1005,7 +1038,7 @@
       <h2 id="lbl_step3Title"></h2>
 
       <div class="form-group">
-        <label for="reasonDropdown" id="lbl_dropdown"></label>
+        <label id="lbl_dropdown"></label>
         <div class="custom-select-wrapper" id="reasonCustomSelect">
           <div class="custom-select-trigger" onclick="toggleCustomDropdown('reasonCustomSelect')">
             <span id="reasonTriggerText"></span>
@@ -1072,8 +1105,8 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
-        <button class="btn" id="btn_genCard" onclick="generateAndSaveCard()" style="padding: 10px; font-size: 13px;"></button>
+        <button type="button" class="btn btn-secondary" id="btn_backStep3" onclick="goToStep(2)" style="padding: 10px; font-size: 13px;"></button>
+        <button type="button" class="btn" id="btn_genCard" onclick="generateAndSaveCard()" style="padding: 10px; font-size: 13px;"></button>
       </div>
     </div>
 
@@ -1116,12 +1149,12 @@
       </div>
 
       <div class="btn-group">
-        <button class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;"></button>
-        <button class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;"></button>
+        <button type="button" class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;"></button>
+        <button type="button" class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;"></button>
       </div>
       
       <div class="btn-group" style="margin-top: 8px;">
-        <button class="btn btn-secondary" id="btn_profileReturn" onclick="returnToProfileOrLogin()" style="padding: 10px; font-size: 13px;"></button>
+        <button type="button" class="btn btn-secondary" id="btn_profileReturn" onclick="returnToProfileOrLogin()" style="padding: 10px; font-size: 13px;"></button>
       </div>
     </div>
 
