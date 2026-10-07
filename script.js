@@ -197,20 +197,9 @@ function closeLegalModal() {
 // ==========================================
 let supabaseClient = null;
 
-// Request ကြာနေ/ပိတ်နေလျှင် ခလုတ် မညှို့နေစေရန် (ပုံသေ ၁၂ စက္ကန့်)
-function withTimeout(promise, ms = 12000) {
-  let timer;
-  const timeout = new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error('Request timed out')), ms);
-  });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-}
-
 function getSupabase() {
   if (!supabaseClient && window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
-    });
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
   return supabaseClient;
 }
@@ -975,40 +964,23 @@ cardStyleInjected.textContent = `
   /* ===== ကတ် 9:16 - နောက်ခံအမဲရောင်မရှိ ===== */
   #exportCard {
     position: relative !important; overflow: hidden !important;
-    box-shadow: none !important;
+    box-shadow: 0 0 18px rgba(0, 242, 254, 0.35) !important;
     animation: none !important;
     aspect-ratio: 9 / 16 !important;
     width: min(100%, calc((100vh - 340px) * 0.5625)) !important;
     width: min(100%, calc((100dvh - 340px) * 0.5625)) !important;
     max-width: 320px !important; min-width: 170px !important;
-    margin: 0 auto 10px auto !important; border-radius: 0 !important; border: none !important;
+    margin: 0 auto 10px auto !important; border-radius: 20px !important; border: 2px solid var(--accent) !important;
     background: transparent !important; display: flex !important; flex-direction: column !important;
     justify-content: space-between !important; padding: 14px !important;
   }
 
-  /* ပုံ/Video ကို အပြင်ဘောင် (.app-card) အပြည့် cover ဖြင့်ထည့်သည် */
+  /* ပုံ/Video ကို 9:16 ကတ်အပြည့် Stretch */
   #cardBgImg, #cardBgVideo {
     position: absolute !important; inset: 0 !important; top: 0 !important; left: 0 !important;
-    width: 100% !important; height: 100% !important; object-fit: cover !important; z-index: 0 !important;
+    width: 100% !important; height: 100% !important; object-fit: fill !important; z-index: 1 !important;
     pointer-events: none !important; background: transparent !important; filter: none !important;
   }
-
-  /* အောက်ခြေမှ feather (အမြင့် ၃၀%) - --feather-h ဖြင့် ချိန်နိုင်သည် */
-  #cardFeather {
-    --feather-h: ၃၀%;
-    position: absolute; left: 0; right: 0; bottom: 0; height: var(--feather-h);
-    z-index: 1; pointer-events: none;
-    background: linear-gradient(to top,
-      rgba(5, 3, 15, 0.96) 0%, rgba(5, 3, 15, 0.84) 25%,
-      rgba(5, 3, 15, 0.45) 55%, rgba(5, 3, 15, 0.12) 82%, rgba(5, 3, 15, 0) 100%);
-  }
-  .app-card > .step { position: relative; z-index: 2; }
-  .app-card:not(.no-scroll) > #cardBgImg,
-  .app-card:not(.no-scroll) > #cardBgVideo,
-  .app-card:not(.no-scroll) > #cardFeather,
-  .app-card.bg-hidden > #cardBgImg,
-  .app-card.bg-hidden > #cardBgVideo,
-  .app-card.bg-hidden > #cardFeather { visibility: hidden !important; }
 
   #exportCard > *:not(#cardBgImg):not(#cardBgVideo):not(#outSender):not(#emojiOverlay) { position: relative !important; z-index: 5 !important; }
 
@@ -1604,24 +1576,7 @@ async function fetchCardById(sb, cardId) {
   return { data: null, networkError: true };
 }
 
-// ပုံ/Video ကို အပြင်ဘောင် (.app-card) ၏ ပထမ child အဖြစ်ရွှေ့ပြီး feather ထည့်သည်
-function setupCardBackdrop() {
-  const appCard = document.querySelector('.app-card');
-  if (!appCard) return;
-  const img = document.getElementById('cardBgImg');
-  const vid = document.getElementById('cardBgVideo');
-  let feather = document.getElementById('cardFeather');
-  if (!feather) {
-    feather = document.createElement('div');
-    feather.id = 'cardFeather';
-  }
-  appCard.insertBefore(feather, appCard.firstChild);
-  if (vid) appCard.insertBefore(vid, appCard.firstChild);
-  if (img) appCard.insertBefore(img, appCard.firstChild);
-}
-
 window.addEventListener('DOMContentLoaded', async () => {
-  setupCardBackdrop();
   window.currentLang = currentLang;
   updateTexts();
   populateReasonDropdown(currentLang);
@@ -1734,8 +1689,6 @@ function showOpenGate(sender) {
   if (bgVideo) bgVideo.pause();
 
   // ကတ်ကို countdown ပြီးမှ ပေါ်စေရန် ဖုံးထားမည်
-  const appCardEl = document.querySelector('.app-card');
-  if (appCardEl) appCardEl.classList.add('bg-hidden');
   if (exportCard) {
     exportCard.classList.remove('card-reveal');
     exportCard.classList.add('card-hidden');
@@ -1787,7 +1740,6 @@ function showOpenGate(sender) {
     cd.classList.remove('show');
 
     // Card reveal animation
-    if (appCardEl) appCardEl.classList.remove('bg-hidden');
     if (exportCard) {
       exportCard.classList.remove('card-hidden');
       void exportCard.offsetWidth;
@@ -1814,11 +1766,6 @@ function clearUrlParams() {
 // ==========================================
 function renderCardData(data) {
   if (!data) return;
-
-  const appCardEl = document.querySelector('.app-card');
-  if (appCardEl) appCardEl.classList.remove('bg-hidden');
-  const exportCardEl = document.getElementById('exportCard');
-  if (exportCardEl) exportCardEl.classList.remove('card-hidden');
 
   setText('outSender', data.sender ? `From: ${data.sender}` : '');
   setText('outReason', data.reason || '');
@@ -2007,10 +1954,10 @@ async function handleSignup() {
 
   try {
     // .or() တွင် user input မထည့်ဘဲ query နှစ်ခု သီးသန့်ခွဲစစ်သည်
-    const [byNum, byName] = await withTimeout(Promise.all([
+    const [byNum, byName] = await Promise.all([
       sb.from('users').select('num').eq('num', num).limit(1),
       sb.from('users').select('num').ilike('name', escapeLike(name)).limit(1)
-    ]));
+    ]);
 
     if (byNum.error || byName.error) throw (byNum.error || byName.error);
 
@@ -2021,7 +1968,7 @@ async function handleSignup() {
 
     const hashed = await hashPassword(p1, num);
     const userData = { name, num, pass: hashed, avatar: '', history: [] };
-    const { error } = await withTimeout(sb.from('users').insert([userData]));
+    const { error } = await sb.from('users').insert([userData]);
     if (error) throw error;
 
     alert(m.signupOk);
@@ -2056,12 +2003,12 @@ async function handleLogin() {
   if (btn) btn.disabled = true;
 
   try {
-    const { data: foundUser, error } = await withTimeout(sb
+    const { data: foundUser, error } = await sb
       .from('users')
       .select('*')
       .ilike('name', escapeLike(name))
       .limit(1)
-      .maybeSingle());
+      .maybeSingle();
 
     if (error) throw error;
     if (!foundUser) {
@@ -2143,17 +2090,13 @@ async function syncUserToSupabase() {
   if (!currentUser) return;
   const sb = getSupabase();
   if (!sb) return;
-  try {
-    const { error } = await withTimeout(sb.from('users').update({
-      name: currentUser.name,
-      pass: currentUser.pass,
-      avatar: currentUser.avatar,
-      history: currentUser.history
-    }).eq('num', currentUser.num));
-    if (error) console.error('Sync user error:', error);
-  } catch (err) {
-    console.error('Sync user failed:', err);
-  }
+  const { error } = await sb.from('users').update({
+    name: currentUser.name,
+    pass: currentUser.pass,
+    avatar: currentUser.avatar,
+    history: currentUser.history
+  }).eq('num', currentUser.num);
+  if (error) console.error('Sync user error:', error);
 }
 
 async function changeNickname() {
@@ -2547,7 +2490,7 @@ async function processAndUpload(kind, file) {
 
   try {
     if (!isVid) {
-      dataUrl = await compressFileToDataUrl(file, kind === 'bg' ? 1080 : 700, 0.85);
+      dataUrl = await compressFileToDataUrl(file, kind === 'bg' ? 900 : 700, 0.8);
       if (dataUrl) blob = await (await fetch(dataUrl)).blob();
     }
     if (u.token !== token) return;
