@@ -2020,7 +2020,7 @@ function showOpenGate(sender) {
       exportCard.classList.add('card-reveal');
     }
     if (bgVideo && bgVideo.getAttribute('src')) {
-      bgVideo.play().catch((e) => console.log('Video play error:', e));
+      playBgVideoWithSound(bgVideo);
     }
     gate.classList.add('hide');
     launchSparkles();
@@ -2038,6 +2038,44 @@ function clearUrlParams() {
 // ==========================================
 // Card rendering & timer
 // ==========================================
+// Video background sound: 'replace' = the video's own sound replaces the chosen music
+// (only when the video really has audio); 'mix' = video sound and music play together.
+const VIDEO_AUDIO_MODE = 'replace';
+
+function videoHasAudio(v) {
+  if (typeof v.mozHasAudio === 'boolean') return v.mozHasAudio;
+  if (v.audioTracks && v.audioTracks.length > 0) return true;
+  if (typeof v.webkitAudioDecodedByteCount === 'number') return v.webkitAudioDecodedByteCount > 0;
+  return false;
+}
+
+function playBgVideoWithSound(v) {
+  if (!v) return;
+  v.muted = false;
+
+  const applyAudioMode = () => {
+    if (VIDEO_AUDIO_MODE !== 'replace') return;
+    setTimeout(() => {
+      const cp = document.getElementById('cardAudioPlayer');
+      if (cp && !v.muted && !v.paused && videoHasAudio(v)) cp.pause();
+    }, 800);
+  };
+
+  const p = v.play();
+  if (!p || !p.then) { applyAudioMode(); return; }
+  p.then(applyAudioMode).catch(() => {
+    // Browser blocked autoplay with sound: play muted, unmute on the first tap.
+    v.muted = true;
+    v.play().catch((e) => console.log('Video play error:', e));
+    const unmute = () => {
+      v.muted = false;
+      document.removeEventListener('pointerdown', unmute, true);
+      applyAudioMode();
+    };
+    document.addEventListener('pointerdown', unmute, true);
+  });
+}
+
 function renderCardData(data) {
   if (!data) return;
 
@@ -2058,7 +2096,7 @@ function renderCardData(data) {
     if (isVideoSource(bgSrc)) {
       if (bgImgEl) bgImgEl.style.display = 'none';
       if (bgVideoEl) {
-        bgVideoEl.muted = true;
+        bgVideoEl.muted = false;
         bgVideoEl.preload = 'auto';
         bgVideoEl.onloadeddata = () => {
           try { if (bgVideoEl.paused) bgVideoEl.currentTime = 0.05; } catch (e) { /* ignore */ }
@@ -2066,7 +2104,7 @@ function renderCardData(data) {
         bgVideoEl.src = bgSrc;
         bgVideoEl.style.display = 'block';
         bgVideoEl.load();
-        bgVideoEl.play().catch((e) => console.log('Video play error:', e));
+        playBgVideoWithSound(bgVideoEl);
       }
     } else {
       if (bgVideoEl) {
