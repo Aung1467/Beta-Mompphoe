@@ -233,7 +233,7 @@ const uploads = {
   qr: { file: null, url: '', fallback: '', busy: false, token: 0 }
 };
 
-const localMusicList = Array.from({ length: 13 }, (_, i) => ({
+const localMusicList = Array.from({ length: 14 }, (_, i) => ({
   name: `🎵 song${i + 1}.mp3`,
   url: `music/song${i + 1}.mp3`
 }));
