@@ -29,8 +29,10 @@ function showCustomAlert(message) {
 }
 
 function selectLangOption(langCode, langLabel) {
-  document.getElementById('langTriggerText').innerText = langLabel;
-  document.getElementById('langCustomSelect').classList.remove('open');
+  const langTriggerText = document.getElementById('langTriggerText');
+  if (langTriggerText) langTriggerText.innerText = langLabel;
+  const langCustomSelect = document.getElementById('langCustomSelect');
+  if (langCustomSelect) langCustomSelect.classList.remove('open');
   changeLanguage(langCode);
 }
 
@@ -967,7 +969,9 @@ function populateMusicDropdown() {
   if (!container) return;
   container.innerHTML = '';
 
-  const currentVal = document.getElementById('musicDropdown').value;
+  const musicDropdown = document.getElementById('musicDropdown');
+  const musicTriggerText = document.getElementById('musicTriggerText');
+  const currentVal = musicDropdown ? musicDropdown.value : '';
   let found = false;
 
   localMusicList.forEach(song => {
@@ -978,14 +982,14 @@ function populateMusicDropdown() {
     container.appendChild(div);
 
     if (song.url === currentVal) {
-      document.getElementById('musicTriggerText').innerHTML = `${song.name} ${getMiniEqHtml()}`;
+      if (musicTriggerText) musicTriggerText.innerHTML = `${song.name} ${getMiniEqHtml()}`;
       found = true;
     }
   });
 
   if (!found && localMusicList.length > 0) {
-    document.getElementById('musicTriggerText').innerHTML = `${localMusicList[0].name} ${getMiniEqHtml()}`;
-    document.getElementById('musicDropdown').value = localMusicList[0].url;
+    if (musicTriggerText) musicTriggerText.innerHTML = `${localMusicList[0].name} ${getMiniEqHtml()}`;
+    if (musicDropdown) musicDropdown.value = localMusicList[0].url;
     savedMusicUrl = localMusicList[0].url;
     
     const previewGroup = document.getElementById('audioPreviewGroup');
@@ -1000,9 +1004,14 @@ function populateMusicDropdown() {
 }
 
 function selectMusicOption(url, name) {
-  document.getElementById('musicTriggerText').innerHTML = `${name} ${getMiniEqHtml()}`;
-  document.getElementById('musicDropdown').value = url;
-  document.getElementById('musicCustomSelect').classList.remove('open');
+  const musicTriggerText = document.getElementById('musicTriggerText');
+  if (musicTriggerText) musicTriggerText.innerHTML = `${name} ${getMiniEqHtml()}`;
+  
+  const musicDropdown = document.getElementById('musicDropdown');
+  if (musicDropdown) musicDropdown.value = url;
+  
+  const musicCustomSelect = document.getElementById('musicCustomSelect');
+  if (musicCustomSelect) musicCustomSelect.classList.remove('open');
   
   savedMusicUrl = url;
   const previewGroup = document.getElementById('audioPreviewGroup');
@@ -1020,7 +1029,8 @@ function toggleCustomDropdown(wrapperId) {
   document.querySelectorAll('.custom-select-wrapper').forEach(el => {
     if (el.id !== wrapperId) el.classList.remove('open');
   });
-  document.getElementById(wrapperId).classList.toggle('open');
+  const wrapper = document.getElementById(wrapperId);
+  if (wrapper) wrapper.classList.toggle('open');
 }
 
 window.addEventListener('click', function(e) {
@@ -1087,9 +1097,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 function renderCardData(data) {
   if (!data) return;
 
-  document.getElementById('outSender').innerText = data.sender ? `From: ${data.sender}` : '';
-  document.getElementById('outReason').innerText = data.reason || '';
-  document.getElementById('outNote').innerText = data.note || '';
+  const outSender = document.getElementById('outSender');
+  if (outSender) outSender.innerText = data.sender ? `From: ${data.sender}` : '';
+
+  const outReason = document.getElementById('outReason');
+  if (outReason) outReason.innerText = data.reason || '';
+
+  const outNote = document.getElementById('outNote');
+  if (outNote) outNote.innerText = data.note || '';
 
   const bgSrc = data.bgImage || data.bg_image || savedBgImage;
   const bgImgEl = document.getElementById('cardBgImg');
@@ -1186,7 +1201,6 @@ function startCardTimer(cardId) {
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     if (timerEl) {
-      const d = i18n[currentLang] || i18n.my;
       const untilText = currentLang === 'en' ? 'Left' : (currentLang === 'ja' ? '残り' : (currentLang === 'ko' ? '남음' : (currentLang === 'th' ? 'เหลือ' : (currentLang === 'zh' ? '剩余' : 'အထိသာ'))));
       timerEl.innerHTML = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${untilText}`;
     }
@@ -1212,9 +1226,12 @@ async function deleteCardDataAndClean(cardId, storageKey) {
   const qrWr = document.getElementById('qrWrapper');
   if (qrWr) qrWr.style.display = 'none';
 
-  document.getElementById('outSender').innerText = '';
-  document.getElementById('outReason').innerText = '';
-  document.getElementById('outNote').innerText = '';
+  const outSender = document.getElementById('outSender');
+  if (outSender) outSender.innerText = '';
+  const outReason = document.getElementById('outReason');
+  if (outReason) outReason.innerText = '';
+  const outNote = document.getElementById('outNote');
+  if (outNote) outNote.innerText = '';
   
   const cardAudioGroup = document.getElementById('cardAudioGroup');
   if (cardAudioGroup) cardAudioGroup.style.display = 'none';
@@ -1258,26 +1275,37 @@ function switchAuthMode(mode) {
   const signupSec = document.getElementById('signupFormSection');
 
   if (mode === 'login') {
-    loginSec.style.display = 'block';
-    signupSec.style.display = 'none';
+    if (loginSec) loginSec.style.display = 'block';
+    if (signupSec) signupSec.style.display = 'none';
   } else {
-    loginSec.style.display = 'none';
-    signupSec.style.display = 'block';
+    if (loginSec) loginSec.style.display = 'none';
+    if (signupSec) signupSec.style.display = 'block';
   }
 }
 
 function selectAuthModeOption(val, text) {
-  document.getElementById('authModeTriggerText').innerText = text;
-  document.getElementById('authModeSelect').value = val;
-  document.getElementById('authModeCustomSelect').classList.remove('open');
+  const authModeTriggerText = document.getElementById('authModeTriggerText');
+  if (authModeTriggerText) authModeTriggerText.innerText = text;
+  
+  const authModeSelect = document.getElementById('authModeSelect');
+  if (authModeSelect) authModeSelect.value = val;
+  
+  const authModeCustomSelect = document.getElementById('authModeCustomSelect');
+  if (authModeCustomSelect) authModeCustomSelect.classList.remove('open');
+  
   switchAuthMode(val);
 }
 
 async function handleSignup() {
-  const name = document.getElementById('signupName').value.trim();
-  const num = document.getElementById('signupNum').value.trim();
-  const p1 = document.getElementById('signupPass1').value;
-  const p2 = document.getElementById('signupPass2').value;
+  const nameEl = document.getElementById('signupName');
+  const numEl = document.getElementById('signupNum');
+  const p1El = document.getElementById('signupPass1');
+  const p2El = document.getElementById('signupPass2');
+
+  const name = nameEl ? nameEl.value.trim() : '';
+  const num = numEl ? numEl.value.trim() : '';
+  const p1 = p1El ? p1El.value : '';
+  const p2 = p2El ? p2El.value : '';
 
   if (!name || !num || !p1 || !p2) {
     alert(currentLang === 'en' ? 'Please fill in all fields.' : 'အချက်အလက်များအားလုံး ဖြည့်သွင်းပါ။');
@@ -1335,8 +1363,11 @@ async function handleSignup() {
 }
 
 async function handleLogin() {
-  const name = document.getElementById('loginName').value.trim();
-  const pass = document.getElementById('loginPass').value;
+  const nameEl = document.getElementById('loginName');
+  const passEl = document.getElementById('loginPass');
+
+  const name = nameEl ? nameEl.value.trim() : '';
+  const pass = passEl ? passEl.value : '';
 
   if (!name || !pass) {
     alert(currentLang === 'en' ? 'Please enter name and password.' : 'နာမည်နှင့် Password ဖြည့်ပါ။');
@@ -1373,11 +1404,15 @@ async function handleLogin() {
 
 function setupProfileView() {
   if (!currentUser) return;
-  document.getElementById('displayProfileName').innerText = currentUser.name;
-  document.getElementById('displayProfileNum').innerText = `ID: ${currentUser.num}`;
+  const displayProfileName = document.getElementById('displayProfileName');
+  if (displayProfileName) displayProfileName.innerText = currentUser.name;
   
-  if (currentUser.avatar) {
-    document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
+  const displayProfileNum = document.getElementById('displayProfileNum');
+  if (displayProfileNum) displayProfileNum.innerText = `ID: ${currentUser.num}`;
+  
+  const profileAvatarBox = document.getElementById('profileAvatarBox');
+  if (currentUser.avatar && profileAvatarBox) {
+    profileAvatarBox.innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
   }
 }
 
@@ -1472,7 +1507,10 @@ async function updateProfileAvatar(input) {
     reader.onload = async (e) => {
       currentUser.avatar = e.target.result;
       await syncUserToSupabase();
-      document.getElementById('profileAvatarBox').innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
+      const profileAvatarBox = document.getElementById('profileAvatarBox');
+      if (profileAvatarBox) {
+        profileAvatarBox.innerHTML = `<img src="${currentUser.avatar}" alt="Avatar">`;
+      }
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -1779,9 +1817,10 @@ function showStep(stepNumber) {
 }
 
 function toggleCustomReason() {
-  const dropdownVal = document.getElementById('reasonDropdownVal').value;
+  const reasonDropdownVal = document.getElementById('reasonDropdownVal');
+  const dropdownVal = reasonDropdownVal ? reasonDropdownVal.value : '';
   const customGroup = document.getElementById('customReasonGroup');
-  customGroup.style.display = (dropdownVal === 'အခြား') ? 'block' : 'none';
+  if (customGroup) customGroup.style.display = (dropdownVal === 'အခြား') ? 'block' : 'none';
 }
 
 function populateReasonDropdown(lang) {
@@ -1799,16 +1838,25 @@ function populateReasonDropdown(lang) {
   });
 
   if (reasonsList.length > 0) {
-    document.getElementById('reasonTriggerText').innerText = reasonsList[0].text;
-    document.getElementById('reasonDropdownVal').value = reasonsList[0].val;
+    const reasonTriggerText = document.getElementById('reasonTriggerText');
+    if (reasonTriggerText) reasonTriggerText.innerText = reasonsList[0].text;
+    
+    const reasonDropdownVal = document.getElementById('reasonDropdownVal');
+    if (reasonDropdownVal) reasonDropdownVal.value = reasonsList[0].val;
   }
   toggleCustomReason();
 }
 
 function selectReasonOption(val, text) {
-  document.getElementById('reasonTriggerText').innerText = text;
-  document.getElementById('reasonDropdownVal').value = val;
-  document.getElementById('reasonCustomSelect').classList.remove('open');
+  const reasonTriggerText = document.getElementById('reasonTriggerText');
+  if (reasonTriggerText) reasonTriggerText.innerText = text;
+  
+  const reasonDropdownVal = document.getElementById('reasonDropdownVal');
+  if (reasonDropdownVal) reasonDropdownVal.value = val;
+  
+  const reasonCustomSelect = document.getElementById('reasonCustomSelect');
+  if (reasonCustomSelect) reasonCustomSelect.classList.remove('open');
+  
   toggleCustomReason();
 }
 
@@ -1819,32 +1867,35 @@ async function handleBgImage(input) {
 
     const isVid = isVideoFile(file);
 
+    const bgImgLabel = document.getElementById('bgImgLabel');
+
     if (isVid) {
-      document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Checking video...` : `⏳ Video စစ်ဆေးနေပါပြီ...`;
+      if (bgImgLabel) bgImgLabel.innerText = currentLang === 'en' ? `⏳ Checking video...` : `⏳ Video စစ်ဆေးနေပါပြီ...`;
       const duration = await getVideoDuration(file);
       if (duration > 15) {
         alert(currentLang === 'en' ? '⚠️ Video duration must not exceed 15 seconds.' : '⚠️ Video ကြာချိန်သည် 15 စက္ကန့်ထက် မပိုရပါ။');
         input.value = '';
         selectedBgFile = null;
         savedBgImage = '';
-        document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? '📸/🎬 Choose BG Image or Video' : '📸/🎬 ပုံ သို့မဟုတ် Video';
+        if (bgImgLabel) bgImgLabel.innerText = currentLang === 'en' ? '📸/🎬 Choose BG Image or Video' : '📸/🎬 ပုံ သို့မဟုတ် Video';
         return;
       }
     }
 
-    document.getElementById('bgImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ ဖိုင် တင်နေပါပြီ...`;
+    if (bgImgLabel) bgImgLabel.innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ ဖိုင် တင်နေပါပြီ...`;
     savedBgImage = await compressFileToDataUrl(selectedBgFile, 900, 0.8);
     
-    document.getElementById('bgImgLabel').innerText = `✅ ${isVid ? '🎬 Video' : '📸 Image'} (${file.name})`;
+    if (bgImgLabel) bgImgLabel.innerText = `✅ ${isVid ? '🎬 Video' : '📸 Image'} (${file.name})`;
   }
 }
 
 async function handleQrImage(input) {
   if (input.files && input.files[0]) {
     selectedQrFile = input.files[0];
-    document.getElementById('qrImgLabel').innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ QR ပုံ တင်နေပါပြီ...`;
+    const qrImgLabel = document.getElementById('qrImgLabel');
+    if (qrImgLabel) qrImgLabel.innerText = currentLang === 'en' ? `⏳ Uploading...` : `⏳ QR ပုံ တင်နေပါပြီ...`;
     savedQrImage = await compressFileToDataUrl(selectedQrFile, 700, 0.8);
-    document.getElementById('qrImgLabel').innerText = `✅ QR (${input.files[0].name})`;
+    if (qrImgLabel) qrImgLabel.innerText = `✅ QR (${input.files[0].name})`;
   }
 }
 
@@ -1855,9 +1906,13 @@ async function generateAndSaveCard() {
     previewPlayer.currentTime = 0;
   }
 
-  const reasonVal = document.getElementById('reasonDropdownVal').value;
-  const customReason = document.getElementById('customReason').value.trim();
-  const customNote = document.getElementById('customNote').value.trim();
+  const reasonDropdownVal = document.getElementById('reasonDropdownVal');
+  const customReasonEl = document.getElementById('customReason');
+  const customNoteEl = document.getElementById('customNote');
+
+  const reasonVal = reasonDropdownVal ? reasonDropdownVal.value : '';
+  const customReason = customReasonEl ? customReasonEl.value.trim() : '';
+  const customNote = customNoteEl ? customNoteEl.value.trim() : '';
   const finalReason = (reasonVal === 'အခြား' && customReason) ? customReason : reasonVal;
 
   const d = i18n[currentLang] || i18n.my;
@@ -1972,11 +2027,13 @@ function downloadSingleQrFromModal() {
 }
 
 function openShareModal() {
-  document.getElementById('shareModal').style.display = 'flex';
+  const shareModal = document.getElementById('shareModal');
+  if (shareModal) shareModal.style.display = 'flex';
 }
 
 function closeShareModal() {
-  document.getElementById('shareModal').style.display = 'none';
+  const shareModal = document.getElementById('shareModal');
+  if (shareModal) shareModal.style.display = 'none';
 }
 
 function copyShareLink() {
