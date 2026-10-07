@@ -197,9 +197,20 @@ function closeLegalModal() {
 // ==========================================
 let supabaseClient = null;
 
+// Request ကြာနေ/ပိတ်နေလျှင် ခလုတ် မညှို့နေစေရန် (ပုံသေ ၁၂ စက္ကန့်)
+function withTimeout(promise, ms = 12000) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('Request timed out')), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
 function getSupabase() {
   if (!supabaseClient && window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
   }
   return supabaseClient;
 }
@@ -1996,10 +2007,10 @@ async function handleSignup() {
 
   try {
     // .or() တွင် user input မထည့်ဘဲ query နှစ်ခု သီးသန့်ခွဲစစ်သည်
-    const [byNum, byName] = await Promise.all([
+    const [byNum, byName] = await withTimeout(Promise.all([
       sb.from('users').select('num').eq('num', num).limit(1),
       sb.from('users').select('num').ilike('name', escapeLike(name)).limit(1)
-    ]);
+    ]));
 
     if (byNum.error || byName.error) throw (byNum.error || byName.error);
 
@@ -2010,7 +2021,7 @@ async function handleSignup() {
 
     const hashed = await hashPassword(p1, num);
     const userData = { name, num, pass: hashed, avatar: '', history: [] };
-    const { error } = await sb.from('users').insert([userData]);
+    const { error } = await withTimeout(sb.from('users').insert([userData]));
     if (error) throw error;
 
     alert(m.signupOk);
@@ -2045,12 +2056,12 @@ async function handleLogin() {
   if (btn) btn.disabled = true;
 
   try {
-    const { data: foundUser, error } = await sb
+    const { data: foundUser, error } = await withTimeout(sb
       .from('users')
       .select('*')
       .ilike('name', escapeLike(name))
       .limit(1)
-      .maybeSingle();
+      .maybeSingle());
 
     if (error) throw error;
     if (!foundUser) {
@@ -2132,13 +2143,17 @@ async function syncUserToSupabase() {
   if (!currentUser) return;
   const sb = getSupabase();
   if (!sb) return;
-  const { error } = await sb.from('users').update({
-    name: currentUser.name,
-    pass: currentUser.pass,
-    avatar: currentUser.avatar,
-    history: currentUser.history
-  }).eq('num', currentUser.num);
-  if (error) console.error('Sync user error:', error);
+  try {
+    const { error } = await withTimeout(sb.from('users').update({
+      name: currentUser.name,
+      pass: currentUser.pass,
+      avatar: currentUser.avatar,
+      history: currentUser.history
+    }).eq('num', currentUser.num));
+    if (error) console.error('Sync user error:', error);
+  } catch (err) {
+    console.error('Sync user failed:', err);
+  }
 }
 
 async function changeNickname() {
