@@ -2,7 +2,7 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title id="page_title">Pocket Request App</title>
 
   <!-- SEO & Search Engine Indexing Meta Tags -->
@@ -79,7 +79,7 @@
       align-items: center;
       position: relative;
       color: var(--text-color);
-      padding: 10px 0 20px;
+      padding: calc(10px + env(safe-area-inset-top, 0px)) 0 calc(20px + env(safe-area-inset-bottom, 0px));
     }
 
     /* Intro Splash Screen */
@@ -238,7 +238,7 @@
 
     .top-controls-container {
       position: fixed;
-      top: 15px;
+      top: calc(15px + env(safe-area-inset-top, 0px));
       left: 50%;
       transform: translateX(-50%);
       z-index: 100;
@@ -325,7 +325,7 @@
       max-width: 410px;
       max-height: 78vh;
       max-height: 78dvh;
-      margin-top: 60px;
+      margin-top: calc(60px + env(safe-area-inset-top, 0px));
       overflow-y: auto;
       background: var(--bg-glass);
       backdrop-filter: blur(25px);
@@ -517,10 +517,12 @@
       z-index: 10;
     }
 
+    /* Upload progress: --p (0%-100%) ကို script.js မှ ပြောင်းပေးသည် */
     .file-btn {
       width: 100%;
       padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.06);
+      background-color: rgba(255, 255, 255, 0.06);
+      background-image: linear-gradient(90deg, rgba(0, 242, 254, 0.38) var(--p, 0%), transparent var(--p, 0%));
       border: 1.5px solid rgba(0, 242, 254, 0.4);
       border-radius: 12px;
       color: #ffffff;
@@ -531,7 +533,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.3s ease;
+      transition: border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -567,8 +569,11 @@
     .profile-small-btn:hover, .file-btn:hover {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(0, 242, 254, 0.12);
       box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .profile-small-btn:hover {
+      background: rgba(0, 242, 254, 0.12);
     }
 
     .btn-group {
@@ -612,6 +617,33 @@
 
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Step 4 - ခလုတ် ၃ ခု တစ်တန်းထဲ၊ သေးသေးလေး */
+    .btn-row-mini {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .btn-mini {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 7px 4px !important;
+      font-size: 11px !important;
+      line-height: 1.25;
+      border-radius: 10px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: none !important;
+      text-shadow: none;
+    }
+
+    .btn-mini:hover {
+      transform: none;
+      filter: brightness(1.12);
     }
 
     .profile-container {
@@ -673,17 +705,18 @@
       padding-right: 4px;
     }
 
+    /* ကတ် - 9:16 ၊ နောက်ခံအမဲရောင်မရှိ */
     #exportCard {
       width: 100%;
-      max-width: 310px;
-      aspect-ratio: 3 / 4;
+      max-width: 320px;
+      aspect-ratio: 9 / 16;
       margin: 0 auto 12px auto;
       border-radius: 20px;
       position: relative;
       overflow: hidden;
       border: 2px solid var(--accent);
-      box-shadow: 0 0 25px var(--accent-glow), 0 10px 24px rgba(0, 0, 0, 0.8);
-      background: #0f1123;
+      box-shadow: 0 0 18px var(--accent-glow);
+      background: transparent;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -695,8 +728,7 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      filter: brightness(1.06) contrast(1.06) saturate(1.05);
+      object-fit: fill;
       z-index: 1;
       display: none;
     }
@@ -731,24 +763,27 @@
       text-align: center;
     }
 
+    /* QR - Glow/Animation မရှိ */
     .qr-img-wrapper {
       width: 100%;
-      max-width: 90px;
+      max-width: 100px;
       aspect-ratio: 1 / 1;
       margin: 0 auto;
       border-radius: 10px;
       overflow: hidden;
-      border: 2px solid #ff3838;
+      border: 2px solid rgba(255, 255, 255, 0.9);
       background: rgba(255, 255, 255, 0.95);
       display: none;
       z-index: 5;
       position: relative;
+      animation: none;
+      box-shadow: none;
     }
 
     .qr-img-wrapper img {
       width: 100%;
       height: 100%;
-      object-fit: fill;
+      object-fit: contain;
     }
 
     .emoji-overlay {
@@ -759,17 +794,18 @@
       z-index: 3;
     }
 
+    /* Player - နောက်ခံအမဲရောင် ဖယ်ရှားပြီး */
     .custom-music-player {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(14, 17, 36, 0.9);
-      border: 1.5px solid var(--accent);
+      background: transparent;
+      border: 1px solid rgba(0, 242, 254, 0.3);
       border-radius: 16px;
       padding: 6px 12px !important;
       max-height: 52px !important;
-      margin-bottom: 12px;
-      box-shadow: 0 0 10px var(--accent-glow);
+      margin-bottom: 4px;
+      box-shadow: none;
     }
 
     .spinning-disc {
@@ -807,8 +843,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 10px var(--accent-glow);
+      background: transparent;
+      box-shadow: none;
       flex-shrink: 0;
       margin: 0 8px;
     }
@@ -1213,13 +1249,13 @@
       </div>
     </div>
 
-    <!-- STEP 4: RESULT CARD -->
+    <!-- STEP 4: RESULT CARD (9:16) -->
     <div class="step" id="step4">
       <h2 id="lbl_step4Title"></h2>
 
       <div id="exportCard">
         <img id="cardBgImg" class="card-full-bg" alt="Card Background">
-        <video id="cardBgVideo" class="card-full-bg" autoplay loop muted playsinline style="display: none;"></video>
+        <video id="cardBgVideo" class="card-full-bg" autoplay loop muted playsinline preload="auto" style="display: none;"></video>
 
         <span class="sender-tag" id="outSender"></span>
         <div class="emoji-overlay" id="emojiOverlay"></div>
@@ -1251,14 +1287,19 @@
         <audio id="cardAudioPlayer" loop playsinline style="display: none;"></audio>
       </div>
 
-      <div class="btn-group">
-        <button type="button" class="btn save-btn" id="btn_saveQr" onclick="downloadSingleQr()" style="padding: 10px; font-size: 13px;"></button>
-        <button type="button" class="btn share-btn" id="btn_share" onclick="openShareModal()" style="padding: 10px; font-size: 13px;"></button>
+      <!-- ခလုတ် ၃ ခု တစ်တန်းထဲ -->
+      <div class="btn-row-mini">
+        <button type="button" class="btn save-btn btn-mini" id="btn_saveQr" onclick="downloadSingleQr()"></button>
+        <button type="button" class="btn share-btn btn-mini" id="btn_share" onclick="openShareModal()"></button>
+        <button type="button" class="btn btn-secondary btn-mini" id="btn_profileReturn" onclick="returnToProfileOrLogin()"></button>
       </div>
+    </div>
 
-      <div class="btn-group" style="margin-top: 8px;">
-        <button type="button" class="btn btn-secondary" id="btn_profileReturn" onclick="returnToProfileOrLogin()" style="padding: 10px; font-size: 13px;"></button>
-      </div>
+    <!-- STEP 6: ကတ် မတွေ့ / သက်တမ်းကုန် -->
+    <div class="step" id="step6">
+      <h2 id="lbl_step6Title"></h2>
+      <p id="lbl_step6Msg" style="text-align: center; font-size: 13px; font-weight: 600; color: #cbd5e1; line-height: 1.6; margin-bottom: 16px;"></p>
+      <button type="button" class="btn" id="btn_step6Home" onclick="leaveUnavailable()" style="width: 100%; padding: 10px; font-size: 13px;"></button>
     </div>
 
   </div>
