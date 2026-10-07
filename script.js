@@ -230,6 +230,8 @@ const i18n = {
   my: {
     pageTitle: "Beta Monpphoe",
     introMsg: "ကြိုဆိုပါတယ် ခဏစောင့်ပေးပါ...",
+    gateTitle: "🧧 မုန့်ဖိုးတောင်းလွှာ ရောက်ရှိနေပါတယ်",
+    gateBtn: "🧧 ဖွင့်ကြည့်မယ်",
     loaderMsg: "ခဏစောင့်ပါ...",
     noticeBtnText: "! သိရန်",
     noticeTitle: "📌 အသုံးပြုသူများသိစေရန်",
@@ -334,6 +336,8 @@ const i18n = {
   en: {
     pageTitle: "Beta Monpphoe",
     introMsg: "Welcome! Please wait...",
+    gateTitle: "🧧 You received a pocket money request",
+    gateBtn: "🧧 Tap to open",
     loaderMsg: "Please wait...",
     noticeBtnText: "! Notice",
     noticeTitle: "📌 Notice for Users",
@@ -438,6 +442,8 @@ const i18n = {
   ja: {
     pageTitle: "Beta Monpphoe",
     introMsg: "ようこそ！少々お待ちください...",
+    gateTitle: "🧧 お小遣いリクエストが届いています",
+    gateBtn: "🧧 開いてみる",
     loaderMsg: "お待ちください...",
     noticeBtnText: "! お知らせ",
     noticeTitle: "📌 利用規約・注意事項",
@@ -542,6 +548,8 @@ const i18n = {
   ko: {
     pageTitle: "Beta Monpphoe",
     introMsg: "환영합니다! 잠시만 기다려주세요...",
+    gateTitle: "🧧 용돈 요청 카드가 도착했어요",
+    gateBtn: "🧧 열어보기",
     loaderMsg: "잠시만 기다려주세요...",
     noticeBtnText: "! 공지사항",
     noticeTitle: "📌 이용자 유의사항",
@@ -646,6 +654,8 @@ const i18n = {
   th: {
     pageTitle: "Beta Monpphoe",
     introMsg: "ยินดีต้อนรับ กรุณารอสักครู่...",
+    gateTitle: "🧧 มีการ์ดขอค่าขนมส่งถึงคุณ",
+    gateBtn: "🧧 กดเพื่อเปิดดู",
     loaderMsg: "กรุณารอสักครู่...",
     noticeBtnText: "! ข้อแนะนำ",
     noticeTitle: "📌 ข้อตกลงการใช้งาน",
@@ -750,6 +760,8 @@ const i18n = {
   zh: {
     pageTitle: "Beta Monpphoe",
     introMsg: "欢迎！请稍候...",
+    gateTitle: "🧧 您收到一张零花钱请求卡",
+    gateBtn: "🧧 点击打开",
     loaderMsg: "请稍候...",
     noticeBtnText: "! 注意事项",
     noticeTitle: "📌 用户须知",
@@ -1000,6 +1012,8 @@ function updateTexts() {
   document.title = d.pageTitle;
   setText('introMsg', d.introMsg);
   setText('lbl_loaderMsg', d.loaderMsg);
+  setText('gateTitle', d.gateTitle);
+  setText('gateBtn', d.gateBtn);
 
   setText('btn_notice', d.noticeBtnText);
   setText('lbl_noticeTitle', d.noticeTitle);
@@ -1448,6 +1462,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (loader) loader.classList.remove('show');
         showStep(4);
         startCardTimer(cardId, expireTime);
+        showOpenGate(data.sender);
         return;
       }
     }
@@ -1461,6 +1476,37 @@ window.addEventListener('DOMContentLoaded', async () => {
   clearUrlParams();
   isSharedLinkVisitor = false;
 });
+
+// ==========================================
+// Open Gate - shared link ဖြင့်ဝင်သူအတွက် (နှိပ်လိုက်မှ သီချင်း/video စတင်မည်)
+// ==========================================
+function showOpenGate(sender) {
+  const gate = document.getElementById('openGate');
+  const btn = document.getElementById('gateBtn');
+  if (!gate || !btn) return;
+
+  const cardPlayer = document.getElementById('cardAudioPlayer');
+  const bgVideo = document.getElementById('cardBgVideo');
+  if (cardPlayer) cardPlayer.pause();
+  if (bgVideo) bgVideo.pause();
+
+  setText('gateTitle', t().gateTitle);
+  setText('gateFrom', sender ? `From: ${sender}` : '');
+  btn.textContent = t().gateBtn;
+  btn.disabled = false;
+
+  gate.classList.remove('hide');
+  gate.classList.add('show');
+
+  btn.onclick = () => {
+    btn.disabled = true;
+    // ဤနေရာသည် user နှိပ်မှု (gesture) ဖြစ်သဖြင့် browser က audio ကို ခွင့်ပြုသည်
+    if (cardPlayer && cardPlayer.getAttribute('src')) cardPlayer.play().catch((e) => console.log('Audio play error:', e));
+    if (bgVideo && bgVideo.getAttribute('src')) bgVideo.play().catch((e) => console.log('Video play error:', e));
+    gate.classList.add('hide');
+    setTimeout(() => gate.classList.remove('show'), 550);
+  };
+}
 
 function clearUrlParams() {
   if (window.history && window.history.replaceState) {
