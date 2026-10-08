@@ -230,6 +230,9 @@ let currentCardReason = '';
 let currentCardId = '';
 let currentCardMusicBase = '';
 let isGenerating = false;
+// Step 4 left button: a freshly made card (image or video) shows "Back" until its link has been shared, then "Save QR".
+let currentCardIsVideo = false;
+let cardShared = true;
 
 const uploads = {
   bg: { file: null, url: '', fallback: '', busy: false, token: 0 },
@@ -1332,7 +1335,7 @@ function updateTexts() {
   setText('btn_genCard', d.genCardBtn);
 
   syncStep4Title(d);
-  setText('btn_saveQr', d.saveBtn);
+  syncStep4Buttons();
   setText('btn_share', d.shareBtn);
   setText('btn_profileReturn', d.profileReturnBtn);
 
@@ -1345,6 +1348,16 @@ function updateTexts() {
   setText('btn_dlQrModal', d.dl1to1Btn);
   setText('btn_closeModal', d.closeBtn);
   updateExtraTexts();
+}
+
+// Left button of the card screen: "Back" (owner, new video card, link not shared yet) or "Save QR".
+function syncStep4Buttons() {
+  const btn = document.getElementById('btn_saveQr');
+  if (!btn) return;
+  const d = t();
+  const showBack = !isSharedLinkVisitor && !cardShared;
+  btn.textContent = showBack ? d.backBtn : d.saveBtn;
+  btn.onclick = showBack ? () => goToStep(3) : () => downloadSingleQr();
 }
 
 function changeLanguage(lang) {
@@ -2325,6 +2338,9 @@ function renderCardData(data) {
   syncStep4Title(t());
 
   const bgSrc = data.bgImage || data.bg_image || '';
+  currentCardIsVideo = !!(bgSrc && isVideoSource(bgSrc));
+  cardShared = true;
+  syncStep4Buttons();
   const bgImgEl = document.getElementById('cardBgImg');
   const bgVideoEl = document.getElementById('cardBgVideo');
 
@@ -3016,6 +3032,7 @@ function showStep(stepNumber) {
   const reportBtnEl = document.getElementById('btn_report');
   if (reportBtnEl) reportBtnEl.style.display = (stepNumber === 4 && isSharedLinkVisitor) ? 'block' : 'none';
   updateVolumeControl(stepNumber);
+  syncStep4Buttons();
   window.scrollTo(0, 0);
 
   if (stepNumber !== 3) {
@@ -3257,6 +3274,8 @@ async function generateAndSaveCard() {
       qr_image: payload.qr_image,
       music_url: payload.music_url
     });
+    cardShared = false;
+    syncStep4Buttons();
 
     resetCardForm(false);
 
@@ -3335,6 +3354,8 @@ async function copyShareLink() {
       ta.remove();
       if (!ok) throw new Error('copy failed');
     }
+    cardShared = true;
+    syncStep4Buttons();
     alert(m.linkCopied);
     closeShareModal();
   } catch (err) {
