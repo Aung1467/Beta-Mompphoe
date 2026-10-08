@@ -227,6 +227,8 @@ let cardTimerInterval = null;
 let historyTimerInterval = null;
 let isSharedLinkVisitor = false;
 let currentCardReason = '';
+let currentCardId = '';
+let currentCardMusicBase = '';
 let isGenerating = false;
 
 const uploads = {
@@ -1200,28 +1202,35 @@ cardStyleInjected.textContent = `
     font-size: 17px; font-weight: 700; line-height: 1.4; color: #ffffff; text-align: center;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.8); word-break: break-word;
   }
-  .card-header-content > #lbl_step4Title.reason-pill::after {
-    content: ''; display: block; height: 2px; margin-top: 7px; border-radius: 2px;
-    background: linear-gradient(90deg, rgba(0, 242, 254, 0), #00f2fe, rgba(0, 242, 254, 0));
-  }
 
-  /* ===== Volume control (card owner only): plain white speaker, no panel background ===== */
+  /* ===== Volume control (card owner only): plain white speaker in the top-left corner ===== */
   #volBtn {
-    position: absolute; top: 10px; right: 90px; z-index: 12;
+    position: absolute; top: 10px; left: 14px; right: auto; z-index: 12;
     width: 28px; height: 28px; padding: 0; margin: 0; display: none; align-items: center; justify-content: center;
     background: none; border: none; box-shadow: none; cursor: pointer; line-height: 0;
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85)); -webkit-tap-highlight-color: transparent;
   }
   #volBtn svg { display: block; width: 22px; height: 22px; }
   #volPanel {
-    position: absolute; top: 44px; right: 14px; z-index: 12;
-    display: none; flex-direction: column; gap: 8px; padding: 0;
+    position: absolute; top: 44px; left: 14px; right: auto; z-index: 12;
+    display: none; flex-direction: column; align-items: flex-start; gap: 8px; padding: 0;
     background: none; border: none; box-shadow: none;
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
   }
   #volPanel.open { display: flex; }
-  #volPanel label { display: flex; align-items: center; justify-content: flex-end; gap: 8px; color: #ffffff; font-size: 14px; margin: 0; }
+  #volPanel label { display: flex; align-items: center; gap: 8px; color: #ffffff; font-size: 14px; margin: 0; }
   #volPanel input[type=range] { width: 110px; height: 4px; margin: 0; padding: 0; accent-color: #00f2fe; }
+  #volSave {
+    display: inline-flex; align-items: center; margin: 2px 0 0; padding: 2px 0; background: none; border: none;
+    box-shadow: none; color: #ffffff; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #volSave:disabled { opacity: 0.5; }
+
+  /* ===== Button row order: Save QR, Profile, Share ===== */
+  .btn-row-mini > #btn_saveQr { order: 1; }
+  .btn-row-mini > #btn_profileReturn { order: 2; }
+  .btn-row-mini > #btn_share { order: 3; }
 `;
 document.head.appendChild(cardStyleInjected);
 
@@ -2111,7 +2120,7 @@ const VOL_ICON_OFF =
   '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
   '<path d="M11 5 6 9H3v6h3l5 4V5z" fill="#fff"/><path d="M16 9l5 6"/><path d="M21 9l-5 6"/></svg>';
 
-// Puts the speaker on the same row as the "From" tag, just to its left.
+// Puts the speaker in the top-left corner, on the same row as the "From" tag.
 function positionVolumeControl() {
   const btn = document.getElementById('volBtn');
   const panel = document.getElementById('volPanel');
@@ -2119,15 +2128,11 @@ function positionVolumeControl() {
   const size = 28;
   const tag = document.getElementById('outSender');
   let top = 10;
-  let right = 14;
   if (tag && tag.offsetWidth && tag.offsetParent) {
     top = tag.offsetTop + (tag.offsetHeight - size) / 2;
-    right = (tag.offsetParent.clientWidth - (tag.offsetLeft + tag.offsetWidth)) + tag.offsetWidth + 8;
   }
   btn.style.top = top + 'px';
-  btn.style.right = right + 'px';
   panel.style.top = (top + size + 6) + 'px';
-  panel.style.right = '14px';
 }
 
 // Applies the slider values to the real audio/video elements.
@@ -2154,6 +2159,58 @@ function applyVolumeLevels() {
   }
 }
 
+const VOL_TEXT = {
+  my: { ok: '✅ အသံ သိမ်းပြီးပါပြီ', fail: '❌ အသံ သိမ်း၍ မရပါ' },
+  en: { ok: '✅ Volume saved', fail: '❌ Could not save volume' },
+  ja: { ok: '✅ 音量を保存しました', fail: '❌ 音量を保存できませんでした' },
+  ko: { ok: '✅ 볼륨이 저장되었습니다', fail: '❌ 볼륨을 저장할 수 없습니다' },
+  th: { ok: '✅ บันทึกระดับเสียงแล้ว', fail: '❌ บันทึกระดับเสียงไม่สำเร็จ' },
+  zh: { ok: '✅ 音量已保存', fail: '❌ 无法保存音量' }
+};
+
+// Song URL format: "music/song1.mp3#vol=30,60" -> { base, music: 30, video: 60 } (100 = full).
+function parseMusicVolume(raw) {
+  const out = { base: String(raw || ''), music: 100, video: 100 };
+  const i = out.base.indexOf('#vol=');
+  if (i >= 0) {
+    const parts = out.base.slice(i + 5).split(',');
+    out.base = out.base.slice(0, i);
+    const m = parseInt(parts[0], 10);
+    const v = parseInt(parts[1], 10);
+    if (!isNaN(m)) out.music = Math.min(100, Math.max(0, m));
+    if (!isNaN(v)) out.video = Math.min(100, Math.max(0, v));
+  }
+  return out;
+}
+
+// Saves the owner's volume levels on the card so shared-link viewers hear the same mix.
+async function saveVolumeLevels() {
+  const msg = VOL_TEXT[currentLang] || VOL_TEXT.en;
+  const saveBtn = document.getElementById('volSave');
+  const sb = getSupabase();
+  if (!sb || !currentCardId) { alert(msg.fail); return; }
+
+  const m = Math.round(+document.getElementById('volMusic').value);
+  const v = Math.round(+document.getElementById('volVideo').value);
+  const newUrl = (m === 100 && v === 100) ? currentCardMusicBase : `${currentCardMusicBase}#vol=${m},${v}`;
+
+  if (saveBtn) saveBtn.disabled = true;
+  try {
+    const { data, error } = await sb.from('cards').update({ music_url: newUrl }).eq('id', currentCardId).select('id');
+    if (error) throw error;
+    // With row-level security an update can succeed but change 0 rows.
+    if (!data || data.length === 0) throw new Error('No rows updated (check the cards UPDATE policy)');
+    alert(msg.ok);
+    const panel = document.getElementById('volPanel');
+    if (panel) panel.classList.remove('open');
+  } catch (err) {
+    console.error('Save volume error:', err);
+    alert(msg.fail);
+  } finally {
+    if (saveBtn) saveBtn.disabled = false;
+  }
+}
+
 function setupVolumeControl() {
   const appCard = document.querySelector('.app-card');
   if (!appCard || document.getElementById('volBtn')) return;
@@ -2169,7 +2226,8 @@ function setupVolumeControl() {
   panel.id = 'volPanel';
   panel.innerHTML =
     '<label><span>🎵</span><input type="range" id="volMusic" min="0" max="100" value="100"></label>' +
-    '<label><span>🎬</span><input type="range" id="volVideo" min="0" max="100" value="100"></label>';
+    '<label><span>🎬</span><input type="range" id="volVideo" min="0" max="100" value="100"></label>' +
+    '<button type="button" id="volSave">✓ Save</button>';
 
   appCard.appendChild(btn);
   appCard.appendChild(panel);
@@ -2179,6 +2237,7 @@ function setupVolumeControl() {
     panel.classList.toggle('open');
   });
   panel.addEventListener('click', (e) => e.stopPropagation());
+  panel.querySelector('#volSave').addEventListener('click', saveVolumeLevels);
   document.addEventListener('click', () => panel.classList.remove('open'));
   window.addEventListener('resize', positionVolumeControl);
 
@@ -2304,7 +2363,15 @@ function renderCardData(data) {
     qrWr.classList.remove('visible');
   }
 
-  const mUrl = data.musicUrl || data.music_url || '';
+  // The song URL may carry the owner's saved volumes as "#vol=music,video".
+  const musicInfo = parseMusicVolume(data.musicUrl || data.music_url || '');
+  const mUrl = musicInfo.base;
+  currentCardMusicBase = musicInfo.base;
+  setupVolumeControl();
+  const volMusicEl = document.getElementById('volMusic');
+  const volVideoEl = document.getElementById('volVideo');
+  if (volMusicEl) volMusicEl.value = musicInfo.music;
+  if (volVideoEl) volVideoEl.value = musicInfo.video;
   const cardPlayer = document.getElementById('cardAudioPlayer');
   const cardAudioGroup = document.getElementById('cardAudioGroup');
   if (cardPlayer && cardAudioGroup) {
@@ -2333,6 +2400,7 @@ function stopCardTimer() {
 
 function startCardTimer(cardId, expireTime) {
   stopCardTimer();
+  currentCardId = cardId || '';
 
   if (!expireTime) expireTime = Date.now() + CARD_LIFETIME_MS;
 
