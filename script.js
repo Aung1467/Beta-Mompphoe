@@ -373,7 +373,7 @@ const i18n = {
       "Please use correct QR codes and background images/videos.",
       "Created card links are only valid for 120 minutes.",
       "Please avoid inappropriate content, politics, or religious items.",
-      'If you want to send pocket money or give feedback / Tiktok: <a href="https://www.tiktok.com/@_yato_003?_r=1&_t=ZS-9AIzhZsSGE3" target="_blank" rel="noopener" style="color: #00f2fe; text-decoration: underline;">@Yato</a>'
+      'If you want to send pocket money or give feedback / Tiktok: <a href="https://www.tiktok.com/@monp.phoe?_r=1&_t=ZS-9ANSdCegH1F" target="_blank" rel="noopener" style="color: #00f2fe; text-decoration: underline;">@Monp Phoe</a>'
     ],
     noticeCloseText: "Close",
     authTitle: "Account Auth",
@@ -2021,6 +2021,26 @@ function launchSparkles() {
   setTimeout(() => box.remove(), 5000);
 }
 
+// Briefly plays a media element muted inside a user tap so the browser allows
+// a later programmatic play() (needed on iOS/Safari), then rewinds it silently.
+function unlockMedia(el) {
+  if (!el) return;
+  const wasMuted = el.muted;
+  el.muted = true;
+  const restore = () => {
+    el.pause();
+    try { el.currentTime = 0; } catch (e) { /* ignore */ }
+    el.muted = wasMuted;
+  };
+  try {
+    const p = el.play();
+    if (p && p.then) p.then(restore).catch(() => { el.muted = wasMuted; });
+    else restore();
+  } catch (e) {
+    el.muted = wasMuted;
+  }
+}
+
 function showOpenGate(sender) {
   const gate = document.getElementById('openGate');
   const btn = document.getElementById('gateBtn');
@@ -2061,9 +2081,10 @@ function showOpenGate(sender) {
   btn.onclick = async () => {
     btn.disabled = true;
 
-    if (cardPlayer && cardPlayer.getAttribute('src')) {
-      cardPlayer.play().catch((e) => console.log('Audio play error:', e));
-    }
+    // Unlock audio/video inside this tap (mobile autoplay rules) but stay silent.
+    // The real playback starts only after the 3-2-1-0 countdown, together with the card.
+    unlockMedia(cardPlayer && cardPlayer.getAttribute('src') ? cardPlayer : null);
+    unlockMedia(bgVideo && bgVideo.getAttribute('src') ? bgVideo : null);
 
     gateBox.classList.add('leaving');
     await sleep(380);
@@ -2089,6 +2110,11 @@ function showOpenGate(sender) {
       exportCard.classList.remove('card-hidden');
       void exportCard.offsetWidth;
       exportCard.classList.add('card-reveal');
+    }
+    if (cardPlayer && cardPlayer.getAttribute('src')) {
+      try { cardPlayer.currentTime = 0; } catch (e) { /* ignore */ }
+      cardPlayer.muted = false;
+      cardPlayer.play().catch((e) => console.log('Audio play error:', e));
     }
     if (bgVideo && bgVideo.getAttribute('src')) {
       playBgVideoWithSound(bgVideo);
