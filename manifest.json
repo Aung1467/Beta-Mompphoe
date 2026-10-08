@@ -4,7 +4,7 @@
   "description": "Create, customize, and share personalized QR pocket cards easily.",
   "start_url": "/",
   "scope": "/",
-  "display": "standalone",
+  "browser": "standalone",
   "orientation": "portrait",
   "background_color": "#05030f",
   "theme_color": "#05030f",
