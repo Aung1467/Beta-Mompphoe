@@ -1213,7 +1213,7 @@ cardStyleInjected.textContent = `
   #volBtn svg { display: block; width: 22px; height: 22px; }
   #volPanel {
     position: absolute; top: 44px; left: 14px; right: auto; z-index: 12;
-    display: none; flex-direction: row; align-items: center; gap: 12px; padding: 0;
+    display: none; flex-direction: column; align-items: stretch; gap: 4px; padding: 0;
     background: none; border: none; box-shadow: none;
     filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
   }
@@ -1222,7 +1222,7 @@ cardStyleInjected.textContent = `
   #volPanel input[type=range] { width: 110px; height: 4px; margin: 0; padding: 0; accent-color: #00f2fe; }
   #volPanel .vol-rows { display: flex; flex-direction: column; gap: 8px; }
   #volSave {
-    display: inline-flex; align-items: center; margin: 0; padding: 4px 0; background: none; border: none;
+    display: inline-flex; align-items: center; align-self: flex-end; margin: 0; padding: 4px 0; background: none; border: none;
     box-shadow: none; color: #ffffff; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 0;
     white-space: nowrap; -webkit-tap-highlight-color: transparent;
   }
