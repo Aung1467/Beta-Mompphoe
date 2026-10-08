@@ -1015,6 +1015,29 @@ transform-origin: bottom center;
       box-shadow: 0 0 25px var(--accent-glow);
     }
 
+
+    .about-static {
+      width: 90%;
+      max-width: 410px;
+      margin: 18px auto 0;
+      padding: 16px 18px;
+      position: relative;
+      z-index: 10;
+      background: rgba(10, 12, 28, 0.88);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      border-radius: 18px;
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+    .about-static h1 { font-size: 16px; color: var(--accent); margin-bottom: 8px; text-align: left; text-shadow: none; }
+    .about-static h2 { font-size: 14px; color: #ffeaa7; margin: 12px 0 4px; text-align: left; text-shadow: none; }
+    .about-static p { margin: 6px 0; }
+    .about-static ol { margin: 6px 0 6px 20px; }
+    .about-static a { color: var(--accent); }
+    .about-links { text-align: center; margin-top: 10px !important; }
+    body.lock-scroll .about-static { display: none; }
+
     footer a:hover {
       text-decoration: underline !important;
     }
@@ -1305,12 +1328,29 @@ transform-origin: bottom center;
 
   </div>
 
+  <!-- Static content (readable by search engines and visitors) -->
+  <section class="about-static" aria-label="About Pocket Request App">
+    <h1>Pocket Request App - မုန့်ဖိုးတောင်းလွှာ ဖန်တီးမယ်</h1>
+    <p>Pocket Request App (Monpphoe) သည် သူငယ်ချင်း၊ ချစ်သူ၊ မိသားစုထံ မုန့်ဖိုးကို ရယ်စရာ၊ ချစ်စရာ ပုံစံဖြင့် တောင်းနိုင်ရန် <b>QR Pocket Card</b> ကို ဖန်တီးပြီး link တစ်ခုတည်းဖြင့် မျှဝေနိုင်သော အခမဲ့ ဝက်ဘ်အက်ပ်ဖြစ်ပါသည်။ ကိုယ်ပိုင်စာသား၊ နောက်ခံပုံ သို့မဟုတ် Video၊ နှစ်သက်ရာ သီချင်းနှင့် QR ပုံကို ပေါင်းစပ်ပြီး ကတ်တစ်ခု ပြုလုပ်နိုင်ပါသည်။</p>
+    <h2>အသုံးပြုနည်း အကျဉ်း</h2>
+    <ol>
+      <li>အကောင့်ဖွင့်ပြီး ဝင်ရောက်ပါ။</li>
+      <li>"မုန့်ဖိုးတောင်းရန်" ကိုနှိပ်ပြီး အကြောင်းအရာ၊ စာတို၊ သီချင်း၊ နောက်ခံပုံ/Video၊ QR ပုံ ရွေးချယ်ပါ။</li>
+      <li>"ကတ်ဖန်တီးမည်" ကိုနှိပ်ပါ။</li>
+      <li>"မျှဝေရန်" မှ link ကို ကူးပြီး Messenger၊ Telegram စသည်တို့တွင် ပို့ပါ။ ကတ်သည် မိနစ် ၁၂၀ အတွင်းသာ ကြည့်နိုင်ပါသည်။</li>
+    </ol>
+    <h2>Quick overview</h2>
+    <p>Pocket Request App is a free web app to build a playful pocket money request card with your own message, background image or video, music and QR code, then share it with one link. Cards expire after 120 minutes. We do not process payments; always verify the sender before you send money.</p>
+    <p class="about-links"><a href="guide.html">အသုံးပြုနည်း / Guide</a> · <a href="about.html">About</a> · <a href="contact.html">Contact</a></p>
+  </section>
+
   <!-- Footer Links -->
   <footer style="margin-top: 15px; margin-bottom: 15px; text-align: center; font-size: 11px; z-index: 100; position: relative;">
-    <a href="javascript:void(0)" onclick="openLegalModal('about')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">About Us</a> |
-    <a href="javascript:void(0)" onclick="openLegalModal('contact')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Contact Us</a> |
-    <a href="javascript:void(0)" onclick="openLegalModal('privacy')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Privacy Policy</a> |
-    <a href="javascript:void(0)" onclick="openLegalModal('terms')" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Terms &amp; Conditions</a>
+    <a href="about.html" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">About Us</a> |
+    <a href="guide.html" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Guide</a> |
+    <a href="contact.html" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Contact Us</a> |
+    <a href="privacy.html" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Privacy Policy</a> |
+    <a href="terms.html" style="color: #00f2fe; margin: 0 5px; text-decoration: none;">Terms &amp; Conditions</a>
   </footer>
 
   <!-- Policy Info Pop-up Modal -->
