@@ -1,4 +1,4 @@
-const CACHE = 'monpphoe-v2';
+const CACHE = 'monpphoe-v3';
 const SHELL = ['/', '/script.js', '/manifest.json', '/icon-192.png'];
 
 self.addEventListener('install', (e) => {
